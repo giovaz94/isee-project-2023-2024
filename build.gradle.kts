@@ -1,6 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-// import org.gradle.internal.extensions.stdlib.capitalized
+import org.gradle.internal.extensions.stdlib.capitalized
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -45,19 +45,19 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
-/*
 projectDir.walkTopDown().filter { it.extension == "mas2j" }.forEach { mas2jFile ->
     val taskName = "run${mas2jFile.nameWithoutExtension.capitalized()}Mas"
-    tasks.register<JavaExec>(taskName) {
-        group = "run"
-        classpath = sourceSets.getByName("main").runtimeClasspath
-        mainClass.set("jason.infra.centralised.RunCentralisedMAS")
-        args(mas2jFile.path)
-        standardInput = System.`in`
-        javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+    if (!tasks.names.contains(taskName)) {
+        tasks.register<JavaExec>(taskName) {
+            group = "run"
+            classpath = sourceSets.getByName("main").runtimeClasspath
+            mainClass.set("jason.infra.centralised.RunCentralisedMAS")
+            args(mas2jFile.path)
+            standardInput = System.`in`
+            javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+        }
     }
 }
-*/
 
 // Set the project version based on the git history.
 gitSemVer {
