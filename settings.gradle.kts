@@ -1,0 +1,26 @@
+plugins {
+    id("org.danilopianini.gradle-pre-commit-git-hooks") version "2.0.22"
+    // For automizing gradle scans.
+    id("com.gradle.develocity") version "4.0"
+    // Provides a repository for downloading JVMs, provisioning them automatically if missing.
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
+}
+
+rootProject.name = "ise-project"
+
+develocity {
+    buildScan {
+        termsOfUseUrl = "https://gradle.com/terms-of-service"
+        termsOfUseAgree = "yes"
+        uploadInBackground = !System.getenv("CI").toBoolean()
+        publishing.onlyIf { it.buildResult.failures.isNotEmpty() }
+    }
+}
+
+gitHooks {
+    commitMsg { conventionalCommits() }
+    preCommit {
+        tasks("ktlintCheck", "detekt", "--parallel")
+    }
+    createHooks(overwriteExisting = true)
+}

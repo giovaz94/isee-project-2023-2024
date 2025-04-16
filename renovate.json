@@ -1,0 +1,41 @@
+{
+  "configMigration": true,
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    "helpers:pinGitHubActionDigests",
+    ":pinDevDependencies",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    ":separateMajorReleases",
+    ":separatePatchReleases",
+    ":rebaseStalePrs",
+    ":enableVulnerabilityAlerts",
+    "npm:unpublishSafe",
+    ":docker",
+    "docker:pinDigests",
+    "preview:dockerCompose",
+    "preview:dockerVersions"
+  ],
+  "automerge": true,
+  "git-submodules": {
+    "enabled": true
+  },
+  "prConcurrentLimit": 25,
+  "prHourlyLimit": 0,
+  "packageRules": [
+    {
+      "description": "CI updates must be tagged as `ci`",
+      "matchPaths": [".github/workflows/*.yml", ".github/workflows/*.yaml"],
+      "semanticCommitType": "ci"
+    },
+    {
+      "description": "Core dependencies must be scoped as `core-deps`",
+      "matchPackageNames": [
+        "/^org\\.jetbrains\\.kotlin.*/",
+        "/^org\\.scala-lang.*/"
+      ],
+      "semanticCommitScope": "core-deps"
+    }
+  ]
+}
