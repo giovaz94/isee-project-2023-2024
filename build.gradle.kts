@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.shadowJar)
 }
 
-group = "io.github" // TODO: update this!
+group = "io.github.evasim"
 
 repositories {
     mavenCentral()
