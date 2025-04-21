@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.jason)
+    implementation(libs.bundles.javafx)
     testImplementation(libs.bundles.kotlin.testing)
 }
 
