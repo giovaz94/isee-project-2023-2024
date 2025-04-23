@@ -3,6 +3,7 @@ package io.github.evasim.model
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicReference
 
+/** A type alias for the energy amount. */
 typealias Energy = Int
 
 /** A collectable food item in the simulation. */
@@ -28,14 +29,26 @@ interface Food : Entity {
 
     /** Food factory methods. */
     companion object {
-        /** Creates a new food with the given id, shape, position, and number of pieces. */
-        fun of(id: EntityId, shape: Shape, position: Position2D, pieces: Int): Food =
+        /** Creates a new [Food] with the given id, shape, position, and number of pieces. */
+        fun of(id: Entity.Id, shape: Shape, position: Position2D, pieces: Int): Food =
             FoodImpl(id, shape, position, pieces)
+
+        /**
+         * Creates a new [Food] instance with the specified shape, position, and number of pieces.
+         * The [Id]entifier is automatically generated based on the provided position,
+         * under the assumption that food can only be placed once at a given location.
+         *
+         * **Note:** This method does not enforce uniqueness of positions: calling it multiple times with the
+         * same position will result in multiple food entities with the same identifier.
+         * It is the caller's responsibility to ensure positional uniqueness.
+         */
+        fun of(shape: Shape, position: Position2D, pieces: Int): Food =
+            FoodImpl(Entity.Id("food@${position.x}-${position.y}"), shape, position, pieces)
     }
 }
 
 private class FoodImpl(
-    override val id: EntityId,
+    override val id: Entity.Id,
     override val shape: Shape,
     override val position: Position2D,
     numPieces: Int,

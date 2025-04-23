@@ -38,8 +38,8 @@ classDiagram
 
     class Shape {
         <<interface>>
-        +in(p2D: Position2D) Boolean
-        +intersects(s: Shape) Boolean
+        +contains(p2D: Position2D) Boolean
+        +intersect(s: Shape) Boolean
     }
     class Circle
     Shape <|-- Circle
@@ -61,6 +61,11 @@ classDiagram
         +shape: Shape
     }
     Entity *--> "*" Shape
+    
+    class EntityId {
+        +value: String
+    }
+    Entity *--> EntityId
 
     class Food {
         <<interface>>
@@ -79,8 +84,12 @@ classDiagram
     class Blob {
         <<interface>>
         +initialPosition: Position2D
-        +speed: Vector2D
-        +update(v2D: Vector2D)
+        +velocity: Vector2D
+        +health: Health
+        +sight: Sight
+        +personality: Personality
+        +applyForce(v2D: Vector2D)
+        +update(Δt: Duration)
         +canReproduce() Boolean
         +isDead() Boolean
         +isAlive() Boolean
@@ -95,11 +104,6 @@ classDiagram
     Personality <|-- Hawk
     class Dove 
     Personality <|-- Dove
-
-    class BlobId {
-        +id: String
-    }
-    Blob *--> BlobId
     
     class Health {
         +health: Int
