@@ -85,6 +85,16 @@ projectDir.walkTopDown().filter { it.extension == "mas2j" }.forEach { mas2jFile 
     }
 }
 
+tasks.register<JavaExec>("runApp") {
+    group = "run"
+    description = "Execute application"
+    classpath = sourceSets.getByName("main").runtimeClasspath
+    mainClass.set("io.github.evasim.Main")
+    args = listOf()
+    standardInput = System.`in`
+    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+}
+
 // Set the project version based on the git history.
 gitSemVer {
     assignGitSemanticVersion()
