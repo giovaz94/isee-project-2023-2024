@@ -5,10 +5,12 @@ import io.kotest.assertions.fail
 import io.kotest.core.spec.style.FreeSpec
 import io.mockk.mockk
 import javafx.application.Platform
+import kotlinx.coroutines.delay
 import java.time.Duration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
+import kotlin.time.Duration.Companion.seconds
 
 class UITest : FreeSpec({
 
@@ -31,7 +33,7 @@ class UITest : FreeSpec({
         val viewThread = thread(start = true) {
             view.start() // this blocks until the view is closed
         }
-        Thread.sleep(Duration.ofSeconds(2)) // let the UI start
+        delay(2.seconds) // let the UI start
         // Terminates the JavaFX application
         Platform.runLater {
             javafx.stage.Window.getWindows().filterIsInstance<javafx.stage.Stage>().forEach { it.close() }

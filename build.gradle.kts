@@ -27,9 +27,7 @@ dependencies {
         implementation("${it.module.group}:${it.module.name}:${it.versionConstraint.requiredVersion}:${platform()}")
     }
     testImplementation(libs.bundles.kotlin.testing)
-    testImplementation("org.testfx:testfx-core:4.0.18")
-    testImplementation("org.testfx:testfx-junit5:4.0.18")
-    testImplementation("org.testfx:openjfx-monocle:21.0.2")
+    testImplementation(libs.bundles.testfx)
 }
 
 sourceSets {
