@@ -1,3 +1,4 @@
+import Utils.platform
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.internal.extensions.stdlib.capitalized
@@ -8,6 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.dokka)
     alias(libs.plugins.git.semantic.versioning)
     alias(libs.plugins.shadowJar)
+    application
 }
 
 group = "io.github.evasim"
@@ -20,7 +22,10 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.jason)
-    implementation(libs.bundles.javafx)
+    implementation(libs.javafx)
+    libs.bundles.javafx.modules.get().forEach {
+        implementation("${it.module.group}:${it.module.name}:${it.versionConstraint.requiredVersion}:${platform()}")
+    }
     testImplementation(libs.bundles.kotlin.testing)
 }
 
@@ -44,6 +49,10 @@ tasks.withType<Test>().configureEach {
         exceptionFormat = TestExceptionFormat.FULL
     }
     useJUnitPlatform()
+}
+
+application {
+    mainClass.set("io.github.evasim.EvaSimApp")
 }
 
 projectDir.walkTopDown().filter { it.extension == "mas2j" }.forEach { mas2jFile ->
