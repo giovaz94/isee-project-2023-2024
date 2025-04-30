@@ -56,6 +56,12 @@ application {
     mainClass.set("io.github.evasim.EvaSimApp")
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 projectDir.walkTopDown().filter { it.extension == "mas2j" }.forEach { mas2jFile ->
     val taskName = "run${mas2jFile.nameWithoutExtension.capitalized()}Mas"
     if (!tasks.names.contains(taskName)) {

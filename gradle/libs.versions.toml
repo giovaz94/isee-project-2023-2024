@@ -1,5 +1,5 @@
 [versions]
-javafx = "23.0.2"
+javafx = "22.0.2"
 kotlin = "2.1.20"
 kotest = "5.9.1"
 testfx = "4.0.18"
@@ -19,7 +19,7 @@ kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", 
 mockk = "io.mockk:mockk:1.13.17"
 testfx-core = { module = "org.testfx:testfx-core", version.ref = "testfx" }
 testfx-junit = { module = "org.testfx:testfx-junit5", version.ref = "testfx" }
-openjfx-monocle = "org.testfx:openjfx-monocle:21.0.2"
+openjfx-monocle = "org.testfx:openjfx-monocle:17.0.10"
 
 [bundles]
 kotlin-testing = [

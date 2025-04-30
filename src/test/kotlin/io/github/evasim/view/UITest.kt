@@ -6,7 +6,6 @@ import io.kotest.core.spec.style.FreeSpec
 import io.mockk.mockk
 import javafx.application.Platform
 import kotlinx.coroutines.delay
-import java.time.Duration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -37,15 +36,12 @@ class UITest : FreeSpec({
         // Terminates the JavaFX application
         Platform.runLater {
             javafx.stage.Window.getWindows().filterIsInstance<javafx.stage.Stage>().forEach { it.close() }
+            Platform.exit()
         }
-        viewThread.join(Duration.ofSeconds(5))
+        viewThread.join(5.seconds.inWholeMilliseconds)
         if (viewThread.isAlive) {
             viewThread.interrupt()
             fail("Test is stuck. The view thread did not terminate.")
         }
-    }
-
-    afterSpec {
-        runCatching { Platform.exit() }
     }
 })
