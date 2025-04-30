@@ -62,6 +62,15 @@ java {
     }
 }
 
+tasks.withType<JavaExec> {
+    jvmArgs = listOf(
+        "--module-path",
+        configurations.runtimeClasspath.get().asPath,
+        "--add-modules",
+        "javafx.controls,javafx.fxml",
+    )
+}
+
 projectDir.walkTopDown().filter { it.extension == "mas2j" }.forEach { mas2jFile ->
     val taskName = "run${mas2jFile.nameWithoutExtension.capitalized()}Mas"
     if (!tasks.names.contains(taskName)) {
