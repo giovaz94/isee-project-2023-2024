@@ -27,6 +27,9 @@ interface Blob : Entity {
     /** The blob current [Sight]. */
     val sight: Sight
 
+    /** The blob personality. */
+    val personality: Personality
+
     /** Applies a force to the blob, changing its velocity. */
     fun applyForce(force: Vector2D)
 
@@ -57,14 +60,16 @@ interface Blob : Entity {
         operator fun invoke(
             id: Entity.Id,
             shape: Shape,
+            personality: Personality,
             position: Position2D,
             velocity: Vector2D,
             defaultDirection: Direction = Direction.DOWN,
             sightShape: Shape = Cone(radius = 5.0, fovDegrees = Degrees(value = 90.0)),
-            health: Health = Health(min = 0, max = 2),
+            health: Health = Health(min = 0.0, max = 2.0),
         ): Blob = BlobImpl(
             id,
             shape,
+            personality,
             position,
             velocity,
             defaultDirection,
@@ -112,13 +117,14 @@ private data class BasicHealth(
         currentEnergy = min(currentEnergy + health, max)
     }
     override fun minus(health: Energy) {
-        currentEnergy = max(current - health, 0)
+        currentEnergy = max(current - health, min)
     }
 }
 
 private class BlobImpl(
     override val id: Entity.Id,
     override val shape: Shape,
+    override val personality: Personality,
     private var currentPosition: Position2D,
     private var currentVelocity: Vector2D,
     override val defaultDirection: Direction,

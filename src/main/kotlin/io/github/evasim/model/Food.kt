@@ -4,7 +4,7 @@ import java.util.Collections
 import java.util.concurrent.atomic.AtomicReference
 
 /** A type alias for the energy amount. */
-typealias Energy = Int
+typealias Energy = Double
 
 /** A collectable food item in the simulation. */
 interface Food : Entity {
@@ -54,7 +54,7 @@ private class FoodImpl(
     numPieces: Int,
 ) : Food {
 
-    private val pieceSet = (1..numPieces).map { PieceImpl(energy = 1) }.toSet()
+    private val pieceSet = (1..numPieces).map { PieceImpl(energy = 1.0) }.toSet()
 
     override val totalEnergy: Energy = pieceSet.sumOf { it.energy }
 
