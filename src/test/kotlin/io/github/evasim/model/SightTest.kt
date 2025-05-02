@@ -33,7 +33,7 @@ class SightTest : FreeSpec({
     }
 
     "Blobs with conical Sight" - {
-        val conicalSight = Cone(radius = 5.0, fovDegrees = 90.0)
+        val conicalSight = Cone(radius = 5.0, fovDegrees = Degrees(90.0))
 
         "should see each other if they are in their sight" {
             val blob1 = blob(conicalSight, position = origin, velocity = Vector2D(2.0, 0.0)) // facing right
@@ -69,7 +69,7 @@ class SightTest : FreeSpec({
     companion object {
         fun blob(sightShape: Shape, position: Position2D, velocity: Vector2D = Vector2D(1.0, 0.0)) =
             // NOTE: id is not unique, but it's ok for the test
-            Blob(Entity.Id("blob"), Circle(1.0), position, velocity, sightShape)
+            Blob(Entity.Id("blob"), Circle(1.0), position, velocity, Direction.DOWN, sightShape)
 
         fun food(position: Position2D): Food = Food.of(shape = Circle(radius = 1.0), position = position, pieces = 2)
     }

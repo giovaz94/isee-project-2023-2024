@@ -14,12 +14,15 @@ interface Blob : Entity {
     /** The blob current velocity as a 2D vector with speed and direction. */
     val velocity: Vector2D
 
-    /** The blob current direction as a 2D vector, which is actually a versor. */
-    val direction: Vector2D
-        get() = velocity.normalized()
+    /** The blob default direction when stationary. */
+    val defaultDirection: Direction
+
+    /** The blob current direction as a 2D versor. If the blob is stationary, it defaults to [defaultDirection]. */
+    val direction: Direction
+        get() = velocity.normalized() ?: defaultDirection
 
     /** The blob current [Health]. */
-    var health: Health
+    val health: Health
 
     /** The blob current [Sight]. */
     val sight: Sight
@@ -47,20 +50,25 @@ interface Blob : Entity {
 
     /** The blob's factory methods. */
     companion object {
-        /** Creates a new [Blob] with the given id, shape, position, velocity, sight shape, and health. */
+        /**
+         * Creates a new [Blob] with the given id, shape, position, velocity,
+         * default stationary direction, sight shape, and health.
+         */
         operator fun invoke(
             id: Entity.Id,
             shape: Shape,
             position: Position2D,
             velocity: Vector2D,
-            sightShape: Shape = Cone(radius = 5.0, fovDegrees = 90.0),
+            defaultDirection: Direction = Direction.DOWN,
+            sightShape: Shape = Cone(radius = 5.0, fovDegrees = Degrees(value = 90.0)),
             health: Health = Health(min = 0, max = 2),
         ): Blob = BlobImpl(
             id,
             shape,
-            Sight(sightShape, position, velocity.normalized()),
             position,
             velocity,
+            defaultDirection,
+            Sight(sightShape, position, velocity.normalized() ?: defaultDirection),
             health,
         )
     }
@@ -78,10 +86,10 @@ interface Health {
     val max: Energy
 
     /** Increases the current health by the given amount. */
-    operator fun plus(health: Energy): Health
+    operator fun plus(health: Energy)
 
     /** Decreases the current health by the given amount. */
-    operator fun minus(health: Energy): Health
+    operator fun minus(health: Energy)
 
     /** Health factory methods. */
     companion object {
@@ -94,21 +102,28 @@ interface Health {
 }
 
 private data class BasicHealth(
-    override val current: Energy,
+    private var currentEnergy: Energy,
     override val min: Energy,
     override val max: Energy,
 ) : Health {
-    override fun plus(health: Energy): Health = copy(current = min(current + health, max))
-    override fun minus(health: Energy): Health = copy(current = max(current - health, 0))
+    override val current: Energy
+        get() = currentEnergy
+    override fun plus(health: Energy) {
+        currentEnergy = min(currentEnergy + health, max)
+    }
+    override fun minus(health: Energy) {
+        currentEnergy = max(current - health, 0)
+    }
 }
 
 private class BlobImpl(
     override val id: Entity.Id,
     override val shape: Shape,
-    private var currentSight: Sight,
     private var currentPosition: Position2D,
     private var currentVelocity: Vector2D,
-    private var currentHealth: Health,
+    override val defaultDirection: Direction,
+    override val sight: Sight,
+    override val health: Health,
 ) : Blob {
 
     override val initialPosition: Position2D = currentPosition
@@ -118,15 +133,6 @@ private class BlobImpl(
 
     override val velocity: Vector2D
         get() = currentVelocity
-
-    override val sight: Sight
-        get() = currentSight
-
-    override var health: Health
-        get() = currentHealth
-        set(value) {
-            currentHealth = value
-        }
 
     override fun applyForce(force: Vector2D) = update(currentPosition, currentVelocity + force)
 
@@ -141,14 +147,14 @@ private class BlobImpl(
     private fun update(position: Position2D, velocity: Vector2D) {
         currentPosition = position
         currentVelocity = velocity
-        currentSight.update(position, velocity.normalized())
+        sight.update(position, velocity.normalized() ?: defaultDirection)
     }
 
     override fun isDead(): Boolean = !isAlive()
 
-    override fun isAlive(): Boolean = currentHealth.let { it.current > it.min }
+    override fun isAlive(): Boolean = health.let { it.current > it.min }
 
-    override fun isHungry(): Boolean = currentHealth.let { it.current < it.max }
+    override fun isHungry(): Boolean = health.let { it.current < it.max }
 
-    override fun canReproduce(): Boolean = currentHealth.let { it.current == it.max }
+    override fun canReproduce(): Boolean = health.let { it.current == it.max }
 }

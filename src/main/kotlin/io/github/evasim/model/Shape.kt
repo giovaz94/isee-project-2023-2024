@@ -14,12 +14,12 @@ sealed interface Shape {
      * The direction is optional since some shapes (like circles) are not direction-dependent.
      * To check for containment in world space use [Placed.contains] instead.
      */
-    fun locallyContains(p2D: Position2D, direction: Vector2D? = null): Boolean
+    fun locallyContains(p2D: Position2D, direction: Direction? = null): Boolean
 }
 
 /** A circular shape defined by its [radius]. */
 data class Circle(val radius: Double) : Shape {
-    override fun locallyContains(p2D: Position2D, direction: Vector2D?): Boolean =
+    override fun locallyContains(p2D: Position2D, direction: Direction?): Boolean =
         p2D.let { (x, y) -> x * x + y * y <= radius * radius }
 }
 
@@ -31,7 +31,7 @@ data class Rectangle(val width: Double, val height: Double) : Shape {
     /** The half-height of the rectangle. */
     val halfHeight = height / 2
 
-    override fun locallyContains(p2D: Position2D, direction: Vector2D?): Boolean =
+    override fun locallyContains(p2D: Position2D, direction: Direction?): Boolean =
         p2D.x in -halfWidth..halfWidth && p2D.y in -halfHeight..halfHeight
 }
 
@@ -40,13 +40,12 @@ data class Rectangle(val width: Double, val height: Double) : Shape {
  * @property radius the radius of the circle this cone is inscribed in.
  * @property fovDegrees the Field Of View, i.e., the full angular width of the cone in degrees (e.g., 90 for 90° fov).
  */
-data class Cone(val radius: Double, val fovDegrees: Double) : Shape {
-    override fun locallyContains(p2D: Position2D, direction: Vector2D?): Boolean {
+data class Cone(val radius: Double, val fovDegrees: Degrees) : Shape {
+    override fun locallyContains(p2D: Position2D, direction: Direction?): Boolean {
         requireNotNull(direction) { "Cannot verify if a position is inside the cone without direction." }
-        val normalizedDirection = direction.normalized()
-        val toPoint = p2D.toVector2D().normalized()
-        val cosAngle = normalizedDirection.dot(toPoint)
-        val cosHalfFOV = cos(Math.toRadians(fovDegrees / 2.0))
+        val toPoint = p2D.toVector2D().normalized() ?: return true
+        val cosAngle = direction.dot(toPoint)
+        val cosHalfFOV = cos(Math.toRadians(fovDegrees.value / 2.0))
         return Circle(radius).locallyContains(p2D) && cosAngle >= cosHalfFOV
     }
 }
@@ -54,17 +53,14 @@ data class Cone(val radius: Double, val fovDegrees: Double) : Shape {
 /** Creates a [Placed] shape at the given position. */
 infix fun <S : Shape> S.at(position: Position2D): Placed<S> = Placed(this, position)
 
-/** Creates a [Placed] shape at the given position and direction. */
-infix fun <S : Shape> S.at(pose: Pose): Placed<S> = Placed(this, pose.first, pose.second.normalized())
-
 /** A [shape] placed in the world, i.e., with a specific [position] and, possibly, a [direction]. */
-data class Placed<S : Shape>(val shape: S, var position: Position2D, var direction: Vector2D? = null) {
+data class Placed<S : Shape>(val shape: S, var position: Position2D, var direction: Direction? = null) {
 
     /** Check whether the given point lies withing this placed shape. */
     operator fun contains(point: Position2D): Boolean = shape.locallyContains(point - position, direction)
 
     /** Update the position and direction of this placed shape. */
-    fun update(position: Position2D, direction: Vector2D? = null) {
+    fun update(position: Position2D, direction: Direction? = null) {
         this.position = position
         this.direction = direction
     }
