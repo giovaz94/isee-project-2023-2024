@@ -1,5 +1,7 @@
 package io.github.evasim.model
 
+import kotlin.time.Duration
+
 /**
  * Represents the simulation world that encompasses all entities, foods, and blobs
  * and defines the overall structure and behavior of the environment.
@@ -12,18 +14,6 @@ interface World {
      * is determined separately.
      */
     val shape: Shape
-
-    /**
-     * A sequence of all entities present in the simulation world.
-     *
-     * The `entities` sequence provides access to every `Entity` in the simulation,
-     * including both dynamic and static ones. Each `Entity` represents an independent
-     * element of the simulation, such as `Blob`s, `Food`, or other interactable objects.
-     *
-     * This sequence is typically used for iterating over all entities to simulate interactions,
-     * detect collisions, or update the state of the world and its contents.
-     */
-    val entities: Sequence<Entity>
 
     /**
      * A sequence of all food items in the simulation world.
@@ -62,11 +52,6 @@ interface World {
     val spawnZones: Sequence<SpawnZone>
 
     /**
-     * Adds a new entity to the world and returns an updated world instance.
-     */
-    fun addEntity(entity: Entity): World
-
-    /**
      * Adds a new food item to the world and returns an updated world instance.
      */
     fun addFood(food: Food): World
@@ -82,6 +67,14 @@ interface World {
     fun addSpawnZone(spawnZone: SpawnZone): World
 
     /**
+     * Updates the state of the world based on the given elapsed time.
+     *
+     * @param elapsed The duration of time that has passed since the last update.
+     * @return A new instance of the world with the updated state.
+     */
+    fun update(elapsed: Duration): World
+
+    /**
      * Provides companion object methods for managing and creating `World` instances.
      */
     companion object {
@@ -89,17 +82,15 @@ interface World {
          * Creates a new instance of the `World` using the specified parameters.
          *
          * @param shape the shape defining the boundaries of the world.
-         * @param entities a sequence of entities that exist in the world.
          * @param foods a sequence of food items present in the world.
          * @param blobs a sequence of blobs present in the world.
          * @param spawnZones a sequence of spawn zones within the*/
         fun invoke(
             shape: Shape,
-            entities: Sequence<Entity>,
             foods: Sequence<Food>,
             blobs: Sequence<Blob>,
             spawnZones: Sequence<SpawnZone>,
-        ): World = WorldImpl(shape, entities, foods, blobs, spawnZones)
+        ): World = WorldImpl(shape, foods, blobs, spawnZones)
 
         /**
          * Creates an empty world with no entities, foods, blobs, or spawn zones.
@@ -112,7 +103,6 @@ interface World {
          */
         fun empty(shape: Shape): World = WorldImpl(
             shape = shape,
-            entities = emptySequence(),
             foods = emptySequence(),
             blobs = emptySequence(),
             spawnZones = emptySequence(),
@@ -125,49 +115,25 @@ interface World {
  * containing entities, food items, blobs, and spawn zones within a specific shape.
  *
  * @property shape the shape that defines the boundaries of this world.
- * @property entities the collection of entities present in the world.
  * @property foods the collection of food items available in the world.
  * @property blobs the collection of blobs interacting within the world.
  * @property spawnZones the collection of spawn zones where entities can appear.
  */
 internal data class WorldImpl(
     override val shape: Shape,
-    override val entities: Sequence<Entity>,
     override val foods: Sequence<Food>,
     override val blobs: Sequence<Blob>,
     override val spawnZones: Sequence<SpawnZone>,
 ) : World {
 
-    /**
-     * Adds an entity to the world and returns a new updated world instance.
-     *
-     * @param entity the entity to be added to the world.
-     * @return a new instance of the world with the added entity included.
-     */
-    override fun addEntity(entity: Entity): World = copy(entities = entities + entity)
-
-    /**
-     * Adds a new food item to the world and returns an updated world instance.
-     *
-     * @param food the food item to be added to the world.
-     * @return a new instance of the world with the added food item included.
-     */
     override fun addFood(food: Food): World = copy(foods = foods + food)
 
-    /**
-     * Adds a new blob to the world and returns an updated world instance.
-     *
-     * @param blob the blob to be added to the world.
-     * @return a new instance of the world with the added blob included.
-     */
     override fun addBlob(blob: Blob): World = copy(blobs = blobs + blob)
 
-    /**
-     * Adds a new spawn zone to the world and returns an updated world instance.
-     *
-     * @param spawnZone the spawn zone to be added, defining an area within the world
-     *                  where entities can be generated or appear.
-     * @return a new instance of the world with the additional spawn zone included.
-     */
     override fun addSpawnZone(spawnZone: SpawnZone): World = copy(spawnZones = spawnZones + spawnZone)
+
+    override fun update(elapsed: Duration): World {
+        blobs.forEach { it.update(elapsed) }
+        return this
+    }
 }

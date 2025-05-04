@@ -2,6 +2,7 @@ package io.github.evasim.model
 
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.time.Duration
 
 /** A type alias for the energy amount. */
 typealias Energy = Double
@@ -62,6 +63,10 @@ private class FoodImpl(
 
     override fun attemptCollecting(blob: Blob): Boolean = pieceSet
         .any { it.collectedBy.compareAndSet(null, blob) }
+
+    override fun update(elapsedTime: Duration) {
+        position
+    }
 
     private class PieceImpl(override val energy: Energy) : Food.Piece {
         var collectedBy: AtomicReference<Blob?> = AtomicReference(null)

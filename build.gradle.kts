@@ -26,6 +26,7 @@ dependencies {
     libs.bundles.javafx.modules.get().forEach {
         implementation("${it.module.group}:${it.module.name}:${it.versionConstraint.requiredVersion}:${platform()}")
     }
+    implementation(libs.bundles.coroutines)
     testImplementation(libs.bundles.kotlin.testing)
     testImplementation(libs.bundles.testfx)
 }

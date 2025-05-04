@@ -3,6 +3,7 @@ javafx = "22.0.2"
 kotlin = "2.1.20"
 kotest = "5.9.1"
 testfx = "4.0.18"
+coroutines = "1.7.3"
 
 [libraries]
 jason = "io.github.jason-lang:interpreter:3.2.0"
@@ -15,6 +16,8 @@ javafx-swing = { module = "org.openjfx:javafx-swing", version.ref = "javafx" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotest-junit5-jvm = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
+kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlin-coroutines-javafx = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-javafx", version.ref = "coroutines" }
 kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
 mockk = "io.mockk:mockk:1.13.17"
 testfx-core = { module = "org.testfx:testfx-core", version.ref = "testfx" }
@@ -35,6 +38,7 @@ javafx-modules = [
     "javafx-swing",
 ]
 testfx = [ "testfx-core", "testfx-junit", "openjfx-monocle" ]
+coroutines = ["kotlin-coroutines", "kotlin-coroutines-javafx"]
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

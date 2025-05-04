@@ -36,9 +36,6 @@ interface Blob : Entity {
     /** Updates the blob velocity with the given vector. */
     fun updateVelocity(newVelocity: Vector2D)
 
-    /** Updates the blob internal position based on the current velocity and elapsed time. */
-    fun update(elapsedTime: Duration)
-
     /** Returns whether the blob is alive. Dual to [isDead]. */
     fun isAlive(): Boolean
 

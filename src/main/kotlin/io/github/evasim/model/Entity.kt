@@ -1,5 +1,7 @@
 package io.github.evasim.model
 
+import kotlin.time.Duration
+
 /** An interface modeling a generic entity in the simulation. */
 interface Entity {
 
@@ -18,6 +20,9 @@ interface Entity {
 
     /** The shape of the entity in the simulation space. */
     val shape: Shape
+
+    /** Updates the blob internal position based on the current velocity and elapsed time. */
+    fun update(elapsedTime: Duration) {}
 
     /**
      * Check whether this entity is colliding with another entity.

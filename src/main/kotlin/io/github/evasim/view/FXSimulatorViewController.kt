@@ -1,5 +1,10 @@
 package io.github.evasim.view
 
+import io.github.evasim.controller.Domain
+import io.github.evasim.model.Blob
+import io.github.evasim.model.Entity
+import io.github.evasim.model.Food
+import io.github.evasim.model.at
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.Group
@@ -13,9 +18,38 @@ import javafx.scene.shape.Circle
 import javafx.scene.shape.Rectangle
 import java.net.URL
 import java.util.ResourceBundle
+import javafx.scene.shape.Shape as JFxShape
+
+/**
+ * Interface representing drawable elements in a graphical user interface.
+ *
+ * This interface defines the contract for rendering simulation-related data onto a graphical canvas or pane.
+ * Implementations of this interface are expected to handle the visualization of both the simulation domain as a whole
+ * and individual entities within the simulation.
+ */
+interface DrawableInterface {
+
+    /**
+     * Renders the current state of the simulation domain.
+     *
+     * @param domain The domain representing the simulation state,
+     *               which includes all entities and their respective properties
+     *               to be visualized in the view.
+     */
+    fun render(domain: Domain)
+
+    /**
+     * Renders a graphical representation of the given entity.
+     *
+     * @param entity The entity to be rendered. Provides details such as its shape, position, and other properties
+     *               used for creating its graphical representation.
+     * @return A JavaFX shape object representing the visual depiction of the provided entity.
+     */
+    fun renderEntity(entity: Entity): JFxShape
+}
 
 @Suppress("detekt:all")
-internal class FXSimulatorViewController : Initializable {
+internal class FXSimulatorViewController : Initializable, DrawableInterface {
     @FXML private lateinit var simulationPane: AnchorPane
 
     @FXML private lateinit var startButton: Button
@@ -37,7 +71,6 @@ internal class FXSimulatorViewController : Initializable {
         AnchorPane.setLeftAnchor(simulationGroup, 0.0)
         AnchorPane.setRightAnchor(simulationGroup, 0.0)
         AnchorPane.setBottomAnchor(simulationGroup, 0.0)
-        drawStubObjects()
         simulationPane.addEventFilter(ScrollEvent.SCROLL) { event ->
             val zoomFactor = if (event.deltaY > 0) 1.1 else 0.9
             scale *= zoomFactor
@@ -50,24 +83,48 @@ internal class FXSimulatorViewController : Initializable {
         stopButton.setOnAction { onStop() }
     }
 
-    private fun drawStubObjects() {
+    override fun render(domain: Domain) {
         simulationGroup.children.clear()
-        // Stub blobs (circles)
-        for (i in 0 until 5) {
-            val blob = Circle(60.0 + i * 80, 200.0, 30.0, Color.web("#6C63FF", 0.8))
-            blob.stroke = Color.web("#222b45")
-            blob.strokeWidth = 2.0
-            simulationGroup.children.add(blob)
+        val elements = domain.blobs + domain.foods
+        elements.forEach {
+            println(it)
+            simulationGroup.children.add(renderEntity(it))
         }
-        // Stub food (rectangles)
-        for (i in 0 until 8) {
-            val food = Rectangle(80.0 + i * 60, 400.0, 18.0, 18.0)
-            food.arcWidth = 6.0
-            food.arcHeight = 6.0
-            food.fill = Color.web("#00B894", 0.85)
-            food.stroke = Color.web("#222b45")
-            food.strokeWidth = 1.5
-            simulationGroup.children.add(food)
+    }
+
+    override fun renderEntity(entity: Entity): JFxShape {
+        val shape = entity.shape
+        val placed = shape.at(entity.position)
+
+        return when (entity) {
+            is Blob -> {
+                val x = placed.position.x
+                val y = placed.position.y
+                val radius = 30.0
+                val color = Color.web("#6C63FF", 0.8)
+                val circle = Circle(x, y, radius, color)
+                circle.stroke = Color.web("#222b45")
+                circle.strokeWidth = 2.0
+                circle
+            }
+
+            is Food -> {
+                val x = placed.position.x
+                val y = placed.position.y
+                val width = 18.0
+                val height = 18.0
+                val color = Color.web("#00B894", 0.85)
+                val rectangle = Rectangle(x, y, width, height)
+                rectangle.arcWidth = 6.0
+                rectangle.arcHeight = 6.0
+                rectangle.fill = color
+                rectangle.stroke = Color.web("#222b45")
+                rectangle.strokeWidth = 1.5
+
+                rectangle
+            }
+
+            else -> throw IllegalArgumentException("Unknown entity type: ${entity::class.simpleName}")
         }
     }
 
