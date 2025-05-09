@@ -2,6 +2,7 @@ package io.github.evasim
 
 import io.github.evasim.controller.SimulatorController
 import io.github.evasim.model.Blob
+import io.github.evasim.model.Dove
 import io.github.evasim.model.Entity
 import io.github.evasim.model.Position2D
 import io.github.evasim.model.Rectangle
@@ -22,6 +23,7 @@ object EvaSimApp {
             id = Entity.Id("PROVA1"),
             shape = Rectangle(width = 10.0, height = 10.0),
             position = Position2D(x = 10.0, y = 210.0),
+            personality = Dove,
             velocity = Vector2D(0.0, 0.0),
         )
 

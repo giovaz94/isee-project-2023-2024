@@ -6,12 +6,13 @@ import io.github.evasim.view.FXAppContext
 import io.github.evasim.view.FXSimulatorView
 import io.github.evasim.view.SimulatorView
 import javafx.application.Application
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.time.Duration
 
 typealias Domain = World
@@ -141,9 +142,8 @@ interface UIControllerManager {
 
 /** The simulation controller. */
 class SimulatorController(
-    private var domain: Domain = World.empty(
-        Rectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT),
-    ),
+    private var domain: Domain = World.empty(Rectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT)),
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : Controller, UIControllerManager {
 
     /**
@@ -163,10 +163,8 @@ class SimulatorController(
     private lateinit var view: SimulatorView
 
     override suspend fun launchUIAsync() {
-        withContext(Dispatchers.IO) {
-            Thread {
-                Application.launch(FXSimulatorView::class.java)
-            }.start()
+        CoroutineScope(dispatcher).launch {
+            Application.launch(FXSimulatorView::class.java)
         }
 
         view = FXAppContext.viewReady.await()
