@@ -1,12 +1,13 @@
 package io.github.evasim.view
 
-import io.github.evasim.controller.Domain
-import io.github.evasim.controller.SimulatorController
+import io.github.evasim.controller.Boundary
+import io.github.evasim.view.utils.resource
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.scene.Scene
 import javafx.stage.Stage
 import kotlinx.coroutines.CompletableDeferred
+import java.net.URL
 
 /**
  * Represents the application context for the JavaFX-based simulator.
@@ -28,23 +29,12 @@ object FXAppContext {
 }
 
 /** JavaFX implementation of the simulator view. */
-class FXSimulatorView : Application(), SimulatorView {
-    private val viewController = FXSimulatorViewController()
-
-    private var simulatorController: SimulatorController? = null
-
-    override var controller: SimulatorController?
-        get() = simulatorController
-        set(value) {
-            simulatorController = value
-        }
+class FXSimulatorView : Application(), Boundary {
 
     override fun start(primaryStage: Stage) {
-        println("Starting JavaFX application")
-        val fxmlFile = javaClass.getResource(LAYOUT_FILE) ?: error("Could not find fxml file")
-        val styleFile = javaClass.getResource(STYLE_FILE) ?: error("Could not find style file")
+        val fxmlFile: URL = resource(LAYOUT_FILE)
+        val styleFile = resource(STYLE_FILE)
         val fxmlLoader = FXMLLoader(fxmlFile)
-        fxmlLoader.setController(viewController)
         primaryStage.apply {
             title = "EvaSim Simulator"
             scene = Scene(fxmlLoader.load())
@@ -54,18 +44,10 @@ class FXSimulatorView : Application(), SimulatorView {
         FXAppContext.viewReady.complete(this)
     }
 
-    override fun start() {
-        requireNotNull(simulatorController) { "Controller must be set before starting the view." }
-        launch()
-        FXAppContext.viewReady.complete(this)
-    }
-
-    override fun render(domain: Domain) {
-        viewController.render(domain)
-    }
+    override fun start() = launch()
 
     private companion object {
-        private const val LAYOUT_FILE = "/ui/layouts/MainWindow.fxml"
-        private const val STYLE_FILE = "/ui/css/style.css"
+        private const val LAYOUT_FILE = "ui/layouts/MainWindow.fxml"
+        private const val STYLE_FILE = "ui/css/style.css"
     }
 }

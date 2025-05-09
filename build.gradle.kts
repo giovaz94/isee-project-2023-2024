@@ -27,6 +27,7 @@ dependencies {
         implementation("${it.module.group}:${it.module.name}:${it.versionConstraint.requiredVersion}:${platform()}")
     }
     implementation(libs.bundles.coroutines)
+    implementation("com.google.guava:guava:33.4.8-jre")
     testImplementation(libs.bundles.kotlin.testing)
     testImplementation(libs.bundles.testfx)
 }

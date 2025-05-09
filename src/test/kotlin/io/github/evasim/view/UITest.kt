@@ -1,9 +1,7 @@
 package io.github.evasim.view
 
-import io.github.evasim.controller.SimulatorController
 import io.kotest.assertions.fail
 import io.kotest.core.spec.style.FreeSpec
-import io.mockk.mockk
 import javafx.application.Platform
 import kotlinx.coroutines.delay
 import java.util.concurrent.CountDownLatch
@@ -28,7 +26,7 @@ class UITest : FreeSpec({
     }
 
     "JavaFX UI launches without errors" {
-        val view = FXSimulatorView().also { it.controller = mockk<SimulatorController>() }
+        val view = FXSimulatorView()
         val viewThread = thread(start = true) {
             view.start() // this blocks until the view is closed
         }

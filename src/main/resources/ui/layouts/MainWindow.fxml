@@ -1,32 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<SplitPane xmlns:fx="http://javafx.com/fxml"
-    orientation="HORIZONTAL"
-    prefWidth="1400.0" prefHeight="700.0"
-   dividerPositions="0.80">
-    <items>
-        <AnchorPane fx:id="simulationPane" minWidth="400.0" styleClass="simulation-pane" />
-        <VBox spacing="20.0" alignment="TOP_CENTER" minWidth="250.0" styleClass="controls-pane">
-            <Label text="Simulation Controls" styleClass="controls-title" />
-            <HBox spacing="10.0" alignment="CENTER">
-                <Button fx:id="startButton" text="Start" />
-                <Button fx:id="pauseButton" text="Pause" />
-                <Button fx:id="stopButton" text="Stop" />
+<SplitPane xmlns:fx="http://javafx.com/fxml" prefWidth="1400.0" prefHeight="700.0" dividerPositions="0.80"
+           fx:controller="io.github.evasim.view.controllers.FXSimulatorViewController">
+    <AnchorPane fx:id="simulationPane" minWidth="400.0" styleClass="simulation-pane"/>
+    <VBox spacing="20.0" alignment="TOP_CENTER" minWidth="250.0" styleClass="controls-pane">
+        <Label text="Simulation Controls" styleClass="controls-title"/>
+        <HBox spacing="10.0" alignment="CENTER">
+            <Button fx:id="startButton" text="Start"/>
+            <Button fx:id="pauseButton" text="Pause"/>
+            <Button fx:id="stopButton" text="Stop"/>
+        </HBox>
+        <Separator/>
+        <Label text="Parameters" styleClass="controls-section"/>
+        <VBox spacing="10.0">
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Label text="Blob Speed:"/>
+                <Slider fx:id="blobSpeedSlider" min="0.1" max="5.0" value="1.0"
+                        blockIncrement="0.1"/>
             </HBox>
-            <Separator />
-            <Label text="Parameters" styleClass="controls-section" />
-            <VBox spacing="10.0">
-                <HBox spacing="10.0" alignment="CENTER_LEFT">
-                    <Label text="Blob Speed:" />
-                    <Slider fx:id="blobSpeedSlider" min="0.1" max="5.0" value="1.0"
-                        blockIncrement="0.1" />
-                </HBox>
-                <HBox spacing="10.0" alignment="CENTER_LEFT">
-                    <Label text="Food Amount:" />
-                    <TextField fx:id="foodAmountField" promptText="e.g. 20" />
-                </HBox>
-            </VBox>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Label text="Food Amount:"/>
+                <TextField fx:id="foodAmountField" promptText="e.g. 20"/>
+            </HBox>
         </VBox>
-    </items>
+    </VBox>
 </SplitPane>

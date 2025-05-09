@@ -110,15 +110,6 @@ interface World {
     }
 }
 
-/**
- * Implementation of the `World` interface that models a simulation world
- * containing entities, food items, blobs, and spawn zones within a specific shape.
- *
- * @property shape the shape that defines the boundaries of this world.
- * @property foods the collection of food items available in the world.
- * @property blobs the collection of blobs interacting within the world.
- * @property spawnZones the collection of spawn zones where entities can appear.
- */
 internal data class WorldImpl(
     override val shape: Shape,
     override val foods: Sequence<Food>,
