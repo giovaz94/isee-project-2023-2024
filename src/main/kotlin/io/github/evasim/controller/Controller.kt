@@ -2,6 +2,7 @@ package io.github.evasim.controller
 
 import io.github.evasim.model.Blob
 import io.github.evasim.model.Circle
+import io.github.evasim.model.Direction
 import io.github.evasim.model.Dove
 import io.github.evasim.model.Entity
 import io.github.evasim.model.Food
@@ -13,6 +14,7 @@ import io.github.evasim.model.World
 import kotlin.concurrent.thread
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 typealias Domain = World
 
@@ -88,52 +90,43 @@ interface Controller {
 /** The simulation controller. */
 object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
 
-    private var domain: Domain = World.empty(shape = Rectangle(width = 50.0, height = 50.0))
+    private var domain: Domain = World.empty(shape = Rectangle(width = 1024.0, height = 650.0))
 
     init {
-        val blob = Blob(
-            id = Entity.Id("PROVA1"),
-            shape = Rectangle(width = 10.0, height = 10.0),
-            position = Position2D(x = 10.0, y = 210.0),
-            personality = Dove,
-            velocity = Vector2D(x = 0.0, y = 0.0),
+        val hawkBlob = Blob(
+            id = Entity.Id("hawk"),
+            shape = Circle(radius = 10.0),
+            personality = Hawk,
+            position = Position2D(x = 800.0, y = 0.0),
+            velocity = Vector2D(x = -15.0, y = 20.0),
         )
-        domain = domain.addBlob(blob)
-    }
-
-    /**
-     * Mocked simulation behavior.
-     * TODO remove this.
-     */
-    fun start() {
+        val doveBlob = Blob(
+            id = Entity.Id("dove"),
+            shape = Circle(radius = 10.0),
+            personality = Dove,
+            position = Position2D(x = 0.0, y = 0.0),
+            velocity = Vector2D(x = 10.0, y = 10.0),
+        )
+        val food = Food.of(
+            shape = Circle(radius = 20.0),
+            position = Position2D(x = 500.0, y = 500.0),
+            pieces = 2,
+        )
+        domain = domain.addBlob(hawkBlob)
+        domain = domain.addBlob(doveBlob)
+        domain = domain.addFood(food)
         thread {
-            val hawkBlob = Blob(
-                id = Entity.Id("hawk"),
-                shape = Circle(radius = 10.0),
-                personality = Hawk,
-                position = Position2D(x = 800.0, y = 0.0),
-                velocity = Vector2D(x = -10.0, y = 20.0),
-            )
-            val doveBlob = Blob(
-                id = Entity.Id("dove"),
-                shape = Circle(radius = 10.0),
-                personality = Dove,
-                position = Position2D(x = 0.0, y = 0.0),
-                velocity = Vector2D(x = 10.0, y = 10.0),
-            )
-            val food = Food.of(
-                shape = Circle(radius = 20.0),
-                position = Position2D(x = 500.0, y = 500.0),
-                pieces = 2,
-            )
-            post(UpdatedEntity(food))
+            Thread.sleep(1.seconds.inWholeMilliseconds)
+            post(UpdatedWorld(domain))
             val delta = 50.milliseconds
             repeat(times = 1_000) {
                 post(UpdatedEntity(doveBlob))
                 post(UpdatedEntity(hawkBlob))
                 Thread.sleep(delta.inWholeMilliseconds)
-                doveBlob.update(delta)
-                hawkBlob.update(delta)
+                domain = domain.update(delta)
+                if (it % 10 == 0) {
+                    hawkBlob.applyForce(Direction.DOWN)
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package io.github.evasim.controller
 
 import com.google.common.eventbus.EventBus
 import io.github.evasim.model.Entity
+import io.github.evasim.model.World
 
 /** A notable event in the simulation to be published towards subscribers. */
 sealed interface Event
@@ -36,6 +37,9 @@ open class EventBusPublisher : EventPublisher {
 
 /** An [entity] update event. */
 data class UpdatedEntity<E : Entity>(val entity: E) : Event
+
+/** A [world] update event. */
+data class UpdatedWorld(val world: World) : Event
 
 /** A factory method to create an [UpdatedEntity] from an [Entity]. */
 fun <E : Entity> E.updated(): UpdatedEntity<E> = UpdatedEntity(this)

@@ -61,7 +61,7 @@ interface Blob : Entity {
             position: Position2D,
             velocity: Vector2D,
             defaultDirection: Direction = Direction.DOWN,
-            sightShape: Shape = Cone(radius = 5.0, fovDegrees = Degrees(value = 90.0)),
+            sightShape: Shape = Cone(radius = 75.0, fovDegrees = Degrees(value = 90.0)),
             health: Health = Health(min = 0.0, max = 2.0),
         ): Blob = BlobImpl(
             id,

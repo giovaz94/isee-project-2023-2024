@@ -1,6 +1,5 @@
 package io.github.evasim
 
-import io.github.evasim.controller.SimulatorController
 import io.github.evasim.view.FXSimulatorView
 import java.util.logging.Logger
 
@@ -11,7 +10,6 @@ object EvaSimApp {
     @JvmStatic
     fun main(args: Array<String>) {
         Logger.getLogger(javaClass.name).info("Starting EvaSim application...")
-        SimulatorController.start()
         FXSimulatorView().start()
     }
 }

@@ -4,16 +4,22 @@ import com.google.common.eventbus.Subscribe
 import io.github.evasim.controller.EventSubscriber
 import io.github.evasim.controller.SimulatorController
 import io.github.evasim.controller.UpdatedEntity
+import io.github.evasim.controller.UpdatedWorld
+import io.github.evasim.controller.updated
 import io.github.evasim.model.Blob
 import io.github.evasim.model.Entity
 import io.github.evasim.model.Food
-import io.github.evasim.view.renderables.BlobRenderable
-import io.github.evasim.view.renderables.FoodRenderable
+import io.github.evasim.model.at
+import io.github.evasim.model.origin
+import io.github.evasim.view.renderables.blobRenderable
+import io.github.evasim.view.renderables.foodRenderable
+import io.github.evasim.view.renderables.shapeRenderable
 import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.geometry.Point2D
 import javafx.scene.Cursor
+import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.control.Slider
 import javafx.scene.control.TextField
@@ -74,18 +80,30 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
     }
 
     @Subscribe
+    fun update(updatedWorldEvent: UpdatedWorld) {
+        updatedWorldEvent.world.foods.plus(updatedWorldEvent.world.blobs).forEach {
+            update(it.updated())
+        }
+        val newNode = with(shapeRenderable()) {
+            (updatedWorldEvent.world.shape at origin).render()
+        }.also { it.userData = updatedWorldEvent.world.hashCode() }
+        update(newNode)
+    }
+
+    @Subscribe
     fun <E : Entity> update(updatedEntity: UpdatedEntity<E>) {
         val newNode = when (val e = updatedEntity.entity) {
-            is Food -> with(FoodRenderable) { e.render() }
-            is Blob -> with(BlobRenderable) { e.render() }
+            is Food -> with(foodRenderable) { e.render() }
+            is Blob -> with(blobRenderable) { e.render() }
             else -> error("Unsupported entity type: ${e::class.simpleName}")
-        }
-        newNode.userData = updatedEntity.entity.id
-        Platform.runLater {
-            with(simulationGroup.children) {
-                find { it.userData == updatedEntity.entity.id }?.let { simulationGroup.children.remove(it) }
-                add(newNode)
-            }
+        }.also { it.userData = updatedEntity.entity.id.value }
+        update(newNode)
+    }
+
+    private fun update(node: Node) = Platform.runLater {
+        with(simulationGroup.children) {
+            find { it.userData == node.userData }?.let { remove(it) }
+            add(node)
         }
     }
 

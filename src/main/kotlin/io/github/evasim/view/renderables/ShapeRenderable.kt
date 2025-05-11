@@ -8,31 +8,49 @@ import io.github.evasim.model.Shape
 import io.github.evasim.view.Renderable
 import javafx.scene.Node
 import javafx.scene.paint.Color
+import javafx.scene.paint.CycleMethod
+import javafx.scene.paint.RadialGradient
+import javafx.scene.paint.Stop
+import javafx.scene.shape.Arc
+import javafx.scene.shape.ArcType
+import kotlin.math.atan2
 import javafx.scene.shape.Circle as JFXCircle
 import javafx.scene.shape.Rectangle as JFXRectangle
 
-internal class ShapeRenderable<S : Shape> : Renderable<Placed<S>, Node> {
-    override fun Placed<S>.render(): Node {
-        return when (val s = shape) {
-            is Circle -> {
-                JFXCircle(s.radius).apply {
-                    translateX = position.x
-                    translateY = position.y
-                    fill = Color.ORANGE
-                    stroke = Color.DARKORANGE
-                }
-            }
-            is Rectangle -> {
-                JFXRectangle(s.width, s.height).apply {
-                    translateX = position.x
-                    translateY = position.y
-                    fill = Color.CORNFLOWERBLUE
-                    stroke = Color.DARKBLUE
-                }
-            }
-            is Cone -> TODO("Cone rendering not implemented yet")
+internal fun shapeRenderable(background: Color = Color.TRANSPARENT) = Renderable<Placed<Shape>, Node> {
+    when (val s = shape) {
+        is Circle -> JFXCircle(s.radius).apply {
+            translateX = position.x
+            translateY = position.y
+            fill = background
+            stroke = Color.DARKGRAY
+        }
+        is Rectangle -> JFXRectangle(s.width, s.height).apply {
+            translateX = position.x
+            translateY = position.y
+            fill = background
+            stroke = Color.DARKGRAY
+        }
+        is Cone -> Arc().apply {
+            val degreeDirection = Math.toDegrees(atan2(-(direction?.y ?: 0.0), direction?.x ?: 0.0))
+            centerX = position.x
+            centerY = position.y
+            radiusX = s.radius
+            radiusY = s.radius
+            startAngle = degreeDirection - s.fovDegrees.value / 2
+            length = s.fovDegrees.value
+            type = ArcType.ROUND
+            fill = RadialGradient(
+                0.0,
+                0.0,
+                position.x,
+                position.y,
+                s.radius,
+                false,
+                CycleMethod.NO_CYCLE,
+                Stop(0.0, background),
+                Stop(1.0, Color.TRANSPARENT),
+            )
         }
     }
 }
-
-internal fun <S : Shape> Placed<S>.renderWith(renderer: Renderable<Placed<S>, Node>): Node = renderer.run { render() }

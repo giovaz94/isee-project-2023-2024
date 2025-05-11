@@ -10,30 +10,28 @@ import javafx.scene.shape.Arc
 import javafx.scene.shape.ArcType
 import kotlin.math.max
 
-internal object FoodRenderable : Renderable<Food, Node> {
-    override fun Food.render(): Node {
-        val root = Group()
-        when (val s = this.shape) {
-            is Circle -> {
-                val angleStep = 360.0 / max(1, pieces.size)
-                pieces.forEachIndexed { i, piece ->
-                    val startAngle = i * angleStep
-                    val arc = Arc(position.x, position.y, s.radius, s.radius, startAngle, angleStep).apply {
-                        type = ArcType.ROUND
-                        fill = piece.collectedBy()?.let { Color.LIGHTBLUE } ?: Color.LIGHTGREEN
-                        stroke = Color.DARKGRAY
-                        strokeWidth = 1.0
-                    }
-                    root.children.add(arc)
+internal val foodRenderable = Renderable<Food, Node> {
+    val root = Group()
+    when (val s = this.shape) {
+        is Circle -> {
+            val angleStep = 360.0 / max(1, pieces.size)
+            pieces.forEachIndexed { i, piece ->
+                val startAngle = i * angleStep
+                val arc = Arc(position.x, position.y, s.radius, s.radius, startAngle, angleStep).apply {
+                    type = ArcType.ROUND
+                    fill = piece.collectedBy()?.let { Color.LIGHTBLUE } ?: Color.LIGHTGREEN
+                    stroke = Color.DARKGRAY
+                    strokeWidth = 1.0
                 }
+                root.children.add(arc)
             }
-            else -> error(
-                """
-                |Expected a Circle shape for Food, but got $s.
-                |This is raised because of laziness other shapes rendering are not implemented yet.
-                """.trimIndent(),
-            )
         }
-        return root
+        else -> error(
+            """
+            |Expected a Circle shape for Food, but got $s.
+            |This is raised because of laziness other shapes rendering are not implemented yet.
+            """.trimIndent(),
+        )
     }
+    root
 }

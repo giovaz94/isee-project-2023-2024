@@ -7,7 +7,7 @@ interface Sight {
      * The portion of the environment currently visible to the entity.
      * This area determines what the entity can perceive and react to.
      */
-    val visibilityArea: Placed<out Shape>
+    val visibilityArea: Placed<Shape>
 
     /**
      * Checks whether the given entity is within the sight's field of view.
@@ -31,7 +31,7 @@ interface Sight {
     }
 }
 
-internal data class SightImpl(override val visibilityArea: Placed<out Shape>) : Sight {
+internal data class SightImpl(override val visibilityArea: Placed<Shape>) : Sight {
 
     override fun update(position: Position2D, direction: Direction) = visibilityArea.update(position, direction)
 
