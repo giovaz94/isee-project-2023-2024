@@ -19,18 +19,9 @@ typealias Domain = World
  */
 @JvmInline value class UserInput(val input: Char)
 
-// TODO
-// /**
-// * Encapsulates a single event represented as a string.
-// * It serves as a lightweight wrapper for event data to be processed within the application
-// * or passed between components.
-// * @property event The string representing the event.
-// */
-// @JvmInline value class Event(val event: String)
-
 /**
- * Represents a controller interface responsible for managing user inputs, events,
- * domain updates, and rendering within a simulation or application.
+ * Represents the simulation controller interface responsible for managing user inputs, events,
+ * domain updates, and rendering.
  */
 interface Controller {
 
@@ -41,21 +32,15 @@ interface Controller {
      * such as keystrokes or actions for processing within a simulation or application flow.
      * It is initialized as an empty mutable list upon first access.
      *
-     * The list supports typical mutable operations like adding, removing, or modifying inputs.
+     * TODO: drop in favor of event bus architecture (?)
      */
     val userInputs: MutableList<UserInput>
         get() = mutableListOf()
 
     /**
-     * A mutable list of events represented by `Event` objects.
-     *
-     * This property acts as a collection to store and manage events,
-     * facilitating event-driven behavior in the application such as
-     * notifications, logging, or triggering specific actions.
-     *
-     * The list is initialized as an empty mutable list upon first access
-     * and supports operations such as adding, removing, or modifying events
-     * as part of the controller's functionality.
+     * A mutable list of events.
+     * This property acts as a collection to store and manage events, enabling event-driven behavior.
+     * TODO: who process them?
      */
     val events: MutableList<Event>
         get() = mutableListOf()

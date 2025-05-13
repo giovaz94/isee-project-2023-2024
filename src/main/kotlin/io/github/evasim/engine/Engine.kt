@@ -96,7 +96,6 @@ class SimulationEngine(
 
             val elapsedTime = System.nanoTime() - now
             val sleepTime = (timePerFrame - elapsedTime) / SECOND_TIMEOUT
-            println("Sleep for $sleepTime ms")
             if (sleepTime > 0) {
                 Thread.sleep(sleepTime)
             }
