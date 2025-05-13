@@ -3,13 +3,12 @@ package io.github.evasim.view.controllers
 import com.google.common.eventbus.Subscribe
 import io.github.evasim.controller.EventSubscriber
 import io.github.evasim.controller.SimulatorController
-import io.github.evasim.controller.UpdatedEntity
 import io.github.evasim.controller.UpdatedWorld
 import io.github.evasim.model.Blob
-import io.github.evasim.model.Entity
 import io.github.evasim.model.Food
 import io.github.evasim.view.renderables.blobRenderable
 import io.github.evasim.view.renderables.foodRenderable
+import io.github.evasim.view.renderables.worldRenderable
 import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
@@ -77,21 +76,10 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
 
     @Subscribe
     fun update(updatedWorldEvent: UpdatedWorld) {
-//        if (simulationGroup.children.isEmpty()) {
-//            with(shapeRenderable(Color.web("cyan", .2))) {
-//                updatedWorldEvent.world.spawnZones.map { zone ->
-//                    zone.placedShape.render().also { it.userData = zone.hashCode() }
-//                }
-//            }.forEach { update(it) }
-//            with(shapeRenderable()) {
-//                update(
-//                    (updatedWorldEvent.world.shape at updatedWorldEvent.world.position).render().also {
-//                        it.userData = updatedWorldEvent.world.hashCode()
-//                    },
-//                )
-//            }
-//        }
-        val updatedNode = updatedWorldEvent.world.foods.toSet().plus(updatedWorldEvent.world.blobs.toSet())
+        val worldNode = with(worldRenderable) {
+            updatedWorldEvent.world.render()
+        }
+        val updatedNodes = updatedWorldEvent.world.foods.toSet().plus(updatedWorldEvent.world.blobs.toSet())
             .map { entity ->
                 when (entity) {
                     is Food -> with(foodRenderable) { entity.render() }
@@ -99,18 +87,7 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
                     else -> error("Unsupported entity type: ${entity::class.simpleName}")
                 }
             }.toSet()
-        update(updatedNode)
-    }
-
-    @Subscribe
-    fun <E : Entity> update(updatedEntity: UpdatedEntity<E>) {
-        error("To not be called")
-//        val newNode = when (val e = updatedEntity.entity) {
-//            is Food -> with(foodRenderable) { e.render() }
-//            is Blob -> with(blobRenderable) { e.render() }
-//            else -> error("Unsupported entity type: ${e::class.simpleName}")
-//        }
-//        update(newNode)
+        update(updatedNodes + worldNode)
     }
 
     private fun update(nodes: Set<Node>) = Platform.runLater {
