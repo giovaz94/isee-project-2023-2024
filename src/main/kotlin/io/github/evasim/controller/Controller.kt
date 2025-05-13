@@ -93,8 +93,8 @@ object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
             spawnZones = setOf(
                 SpawnZone(HollowCircle(innerRadius = 800.0, outerRadius = 1_000.0), Position2D(1_000.0, 1_000.0)),
             ),
-            blobsAmount = 10,
-            hawkyBlobs = 1,
+            blobsAmount = 120,
+            hawkyBlobs = 60,
         ),
     )
 
@@ -110,7 +110,5 @@ object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
         events.add(event)
     }
 
-    override fun render() {
-        post(UpdatedWorld(domain))
-    }
+    override fun render() = post(UpdatedWorld(domain))
 }
