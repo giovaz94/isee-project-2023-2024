@@ -22,7 +22,7 @@ interface Entity {
     val shape: Shape
 
     /** Updates the blob internal position based on the current velocity and elapsed time. */
-    fun update(elapsedTime: Duration) {}
+    fun update(elapsedTime: Duration)
 
     /**
      * Check whether this entity is colliding with another entity.
@@ -41,13 +41,16 @@ interface Entity {
                 is Circle -> myShape at position circleIntersect (otherShape at other.position)
                 is Rectangle -> myShape at position circleRectIntersect (otherShape at other.position)
                 is Cone -> TODO("No collisions with cones yet")
+                is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
             }
             is Rectangle -> when (otherShape) {
                 is Circle -> otherShape at other.position circleRectIntersect (myShape at position)
                 is Rectangle -> myShape at position rectIntersect (otherShape at other.position)
                 is Cone -> TODO("No collisions with cones yet")
+                is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
             }
             is Cone -> TODO("No collisions with cones yet")
+            is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
         }
     }
 }

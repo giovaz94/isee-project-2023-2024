@@ -199,3 +199,6 @@ fun Position2D.toVector2D(): Vector2D = Vector2D(x, y)
 
 /** The origin of the coordinate system. */
 val origin: Position2D = Position2D(0.0, 0.0)
+
+/** A zero vector in a 2D space, i.e., a vector with both components equal to zero. */
+val zero: Vector2D = Vector2D(0.0, 0.0)

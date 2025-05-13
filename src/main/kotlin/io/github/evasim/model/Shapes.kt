@@ -1,6 +1,10 @@
 package io.github.evasim.model
 
+import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
+import kotlin.random.Random
 
 /**
  * A shape in a two-dimensional space relative whose coordinates are **local**, i.e., relative to the origin.
@@ -50,6 +54,16 @@ data class Cone(val radius: Double, val fovDegrees: Degrees) : Shape {
     }
 }
 
+/** A hollow circular shape defined by its [innerRadius] and [outerRadius]. */
+data class HollowCircle(val innerRadius: Double, val outerRadius: Double) : Shape {
+    init {
+        require(innerRadius < outerRadius) { "Inner radius must be less than outer radius." }
+    }
+
+    override fun locallyContains(p2D: Position2D, direction: Direction?): Boolean =
+        p2D.let { (x, y) -> x * x + y * y in (innerRadius * innerRadius)..(outerRadius * outerRadius) }
+}
+
 /** Creates a [Placed] shape at the given position. */
 infix fun <S : Shape> S.at(position: Position2D): Placed<S> = Placed(this, position)
 
@@ -85,4 +99,31 @@ internal infix fun Placed<Rectangle>.rectIntersect(other: Placed<Rectangle>): Bo
     val sumHalfWidth = this.shape.halfWidth + other.shape.halfWidth
     val sumHalfHeight = this.shape.halfHeight + other.shape.halfHeight
     return Rectangle(sumHalfWidth * 2, sumHalfHeight * 2).locallyContains(deltaPosition)
+}
+
+/** Generate a random position within the given [bounds]. */
+fun positionWithin(bounds: Placed<Shape>): Position2D = when (val shape = bounds.shape) {
+    is Rectangle -> Position2D(
+        x = Random.nextDouble(bounds.position.x - (shape.width / 2), bounds.position.x + (shape.width / 2)),
+        y = Random.nextDouble(bounds.position.y - (shape.height / 2), bounds.position.y + (shape.height / 2)),
+    )
+    is Circle -> {
+        val angle = Random.nextDouble(0.0, 2 * PI)
+        val radius = shape.radius * sqrt(Random.nextDouble())
+        Position2D(
+            x = bounds.position.x + radius * cos(angle),
+            y = bounds.position.y + radius * sin(angle),
+        )
+    }
+    is HollowCircle -> {
+        val angle = Random.nextDouble(0.0, 2 * PI)
+        val innerSquared = shape.innerRadius * shape.innerRadius
+        val outerSquared = shape.outerRadius * shape.outerRadius
+        val radius = sqrt(Random.nextDouble(innerSquared, outerSquared))
+        Position2D(
+            x = bounds.position.x + radius * cos(angle),
+            y = bounds.position.y + radius * sin(angle),
+        )
+    }
+    else -> TODO("No position generation for $shape yet.")
 }

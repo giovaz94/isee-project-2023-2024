@@ -6,6 +6,7 @@ testfx = "4.0.18"
 coroutines = "1.7.3"
 
 [libraries]
+google-guava = "com.google.guava:guava:33.4.8-jre"
 jason = "io.github.jason-lang:interpreter:3.2.0"
 javafx = { module = "org.openjfx:javafx", version.ref = "javafx" }
 javafx-base = { module = "org.openjfx:javafx-base", version.ref = "javafx" }

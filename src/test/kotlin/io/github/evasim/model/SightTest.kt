@@ -69,7 +69,7 @@ class SightTest : FreeSpec({
     companion object {
         fun blob(sightShape: Shape, position: Position2D, velocity: Vector2D = Vector2D(1.0, 0.0)) =
             // NOTE: id is not unique, but it's ok for the test
-            Blob(Entity.Id("blob"), Circle(1.0), Dove, position, velocity, Direction.DOWN, sightShape)
+            Blob(Entity.Id("blob"), Dove, position, Circle(1.0), velocity, Direction.DOWN, sightShape)
 
         fun food(position: Position2D): Food = Food.of(shape = Circle(radius = 1.0), position = position, pieces = 2)
     }

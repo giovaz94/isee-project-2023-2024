@@ -19,17 +19,19 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlin.stdlib.jdk8)
-    implementation(libs.jason)
-    implementation(libs.javafx)
-    libs.bundles.javafx.modules.get().forEach {
-        implementation("${it.module.group}:${it.module.name}:${it.versionConstraint.requiredVersion}:${platform()}")
+    with(libs) {
+        implementation(kotlin.stdlib)
+        implementation(kotlin.stdlib.jdk8)
+        implementation(jason)
+        implementation(javafx)
+        bundles.javafx.modules.get().forEach {
+            implementation("${it.module.group}:${it.module.name}:${it.versionConstraint.requiredVersion}:${platform()}")
+        }
+        implementation(bundles.coroutines)
+        implementation(google.guava)
+        testImplementation(bundles.kotlin.testing)
+        testImplementation(bundles.testfx)
     }
-    implementation(libs.bundles.coroutines)
-    implementation("com.google.guava:guava:33.4.8-jre")
-    testImplementation(libs.bundles.kotlin.testing)
-    testImplementation(libs.bundles.testfx)
 }
 
 sourceSets {
@@ -85,16 +87,6 @@ projectDir.walkTopDown().filter { it.extension == "mas2j" }.forEach { mas2jFile 
             javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
         }
     }
-}
-
-tasks.register<JavaExec>("runApp") {
-    group = "run"
-    description = "Execute application"
-    classpath = sourceSets.getByName("main").runtimeClasspath
-    mainClass.set("io.github.evasim.Main")
-    args = listOf()
-    standardInput = System.`in`
-    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
 
 // Set the project version based on the git history.

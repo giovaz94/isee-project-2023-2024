@@ -10,7 +10,6 @@ import io.github.evasim.model.Blob
 import io.github.evasim.model.Entity
 import io.github.evasim.model.Food
 import io.github.evasim.model.at
-import io.github.evasim.model.origin
 import io.github.evasim.view.renderables.blobRenderable
 import io.github.evasim.view.renderables.foodRenderable
 import io.github.evasim.view.renderables.shapeRenderable
@@ -26,6 +25,7 @@ import javafx.scene.control.TextField
 import javafx.scene.input.ScrollEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
+import javafx.scene.paint.Color
 import java.net.URL
 import java.util.ResourceBundle
 
@@ -81,13 +81,23 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
 
     @Subscribe
     fun update(updatedWorldEvent: UpdatedWorld) {
+        if (simulationGroup.children.isEmpty()) {
+            with(shapeRenderable(Color.web("cyan", .2))) {
+                updatedWorldEvent.world.spawnZones.map { zone ->
+                    zone.placedShape.render().also { it.userData = zone.hashCode() }
+                }
+            }.forEach { update(it) }
+            with(shapeRenderable()) {
+                update(
+                    (updatedWorldEvent.world.shape at updatedWorldEvent.world.position).render().also {
+                        it.userData = updatedWorldEvent.world.hashCode()
+                    },
+                )
+            }
+        }
         updatedWorldEvent.world.foods.plus(updatedWorldEvent.world.blobs).forEach {
             update(it.updated())
         }
-        val newNode = with(shapeRenderable()) {
-            (updatedWorldEvent.world.shape at origin).render()
-        }.also { it.userData = updatedWorldEvent.world.hashCode() }
-        update(newNode)
     }
 
     @Subscribe

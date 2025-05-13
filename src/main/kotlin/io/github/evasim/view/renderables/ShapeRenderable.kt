@@ -2,6 +2,7 @@ package io.github.evasim.view.renderables
 
 import io.github.evasim.model.Circle
 import io.github.evasim.model.Cone
+import io.github.evasim.model.HollowCircle
 import io.github.evasim.model.Placed
 import io.github.evasim.model.Rectangle
 import io.github.evasim.model.Shape
@@ -26,8 +27,8 @@ internal fun shapeRenderable(background: Color = Color.TRANSPARENT) = Renderable
             stroke = Color.DARKGRAY
         }
         is Rectangle -> JFXRectangle(s.width, s.height).apply {
-            translateX = position.x
-            translateY = position.y
+            translateX = position.x - s.width / 2
+            translateY = position.y - s.height / 2
             fill = background
             stroke = Color.DARKGRAY
         }
@@ -51,6 +52,20 @@ internal fun shapeRenderable(background: Color = Color.TRANSPARENT) = Renderable
                 Stop(0.0, background),
                 Stop(1.0, Color.TRANSPARENT),
             )
+        }
+        is HollowCircle -> {
+            val outer = JFXCircle(s.outerRadius).apply {
+                centerX = position.x
+                centerY = position.y
+            }
+            val inner = JFXCircle(s.innerRadius).apply {
+                centerX = position.x
+                centerY = position.y
+            }
+            javafx.scene.shape.Shape.subtract(outer, inner).apply {
+                fill = background
+                stroke = Color.DARKGRAY
+            }
         }
     }
 }

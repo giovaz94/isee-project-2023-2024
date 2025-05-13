@@ -10,43 +10,27 @@ interface World {
     /**
      * Defines the overall structure or boundaries of the simulation world,
      * representing its shape relative to its local origin.
-     * The shape does not contain positional data within the world, as placement
-     * is determined separately.
      */
     val shape: Shape
 
     /**
+     * The position of the World in the 2D space.
+     */
+    val position: Position2D
+
+    /**
      * A sequence of all food items in the simulation world.
-     *
-     * The `foods` sequence provides access to every `Food` entity present in the simulation world.
-     * Each `Food` represents a collectable energy source for entities, such as `Blob`s. The sequence
-     * allows iterative access to all existing `Food` instances, supporting lazy processing and
-     * efficient memory usage for large simulations.
-     *
-     * This sequence is typically used to simulate interactions between entities and the available
-     * food in the environment, such as attempting to collect or consume it.
      */
     val foods: Sequence<Food>
 
     /**
      * A sequence of all blob entities in the simulation world.
-     *
-     * The `blobs` sequence provides access to every `Blob` present in the simulation world. Each `Blob`
-     * is an entity with physical properties such as position, velocity, health, and sight. Blobs have
-     * behaviors like responding to external forces, moving, and interacting with the environment or
-     * other entities. This sequence supports lazy evaluation, enabling efficient iteration over large
-     * numbers of blob instances.
-     *
-     * This sequence is primarily used for simulation updates, analysis, or interaction handling within
-     * the world, including movement computations, collision detection, or evaluating interactions such
-     * as pursuit or reproduction.
      */
     val blobs: Sequence<Blob>
 
     /**
      * Represents a sequence of spawn zones within the world simulation.
      * Spawn zones define specific areas where entities like food or blobs can appear or be generated.
-     *
      * Each spawn zone is characterized by a shape that determines its spatial boundaries.
      */
     val spawnZones: Sequence<SpawnZone>
@@ -78,50 +62,67 @@ interface World {
      * Provides companion object methods for managing and creating `World` instances.
      */
     companion object {
-        /**
-         * Creates a new instance of the `World` using the specified parameters.
-         *
-         * @param shape the shape defining the boundaries of the world.
-         * @param foods a sequence of food items present in the world.
-         * @param blobs a sequence of blobs present in the world.
-         * @param spawnZones a sequence of spawn zones within the*/
-        fun invoke(
-            shape: Shape,
-            foods: Sequence<Food>,
-            blobs: Sequence<Blob>,
-            spawnZones: Sequence<SpawnZone>,
-        ): World = WorldImpl(shape, foods, blobs, spawnZones)
 
         /**
-         * Creates an empty world with no entities, foods, blobs, or spawn zones.
-         *
-         * An empty world is defined by a given shape and contains no interactive elements.
-         * It provides a clean slate for initializing a simulation environment.
-         *
-         * @param shape The shape of the world to use for the empty instance.
-         * @return A new instance of the `World` interface with no entities.
+         * Configuration class for creating a new world instance.
+         * @param shape The shape of the world.
+         * @param spawnZones The spawn zones within the world.
+         * @param blobsAmount The total number of blobs in the world.
+         * @param hawkyBlobs The number of hawky blobs in the world.
+         * @param foodsAmount The number of food items in the world.
+         * @param position The position of the world in 2D space.
          */
-        fun empty(shape: Shape): World = WorldImpl(
-            shape = shape,
-            foods = emptySequence(),
-            blobs = emptySequence(),
-            spawnZones = emptySequence(),
+        data class Configuration(
+            val shape: Shape,
+            val spawnZones: Set<SpawnZone>,
+            val blobsAmount: Int,
+            val hawkyBlobs: Int,
+            val foodsAmount: Int = blobsAmount,
+            val position: Position2D = when (shape) {
+                is Rectangle -> Position2D(x = origin.x + shape.width / 2, y = origin.y + shape.height / 2)
+                is Circle -> Position2D(x = origin.x + shape.radius, y = origin.y + shape.radius)
+                else -> TODO()
+            },
         )
+
+        /**
+         * Creates a new world instance based on the provided [configuration].
+         */
+        fun fromConfiguration(configuration: Configuration): World = with(configuration) {
+            val blobsPerSpawnZone = blobsAmount / spawnZones.size
+            val foods = generateSequence { positionWithin(shape at position) }
+                .filter { pos -> spawnZones.none { pos in it.placedShape } }
+                .take(foodsAmount)
+                .map { Food.of(Circle(radius = 10.0), it, 2) }
+                .toSet()
+            val blobs = spawnZones
+                .flatMap { zone -> generateSequence { positionWithin(zone.placedShape) }.take(blobsPerSpawnZone) }
+                .mapIndexed { i, p -> Blob(Entity.Id("blob-$i"), if (i < hawkyBlobs) Hawk else Dove, p) }
+                .toSet()
+            WorldImpl(shape, position, foods, blobs, spawnZones)
+        }
     }
 }
 
 internal data class WorldImpl(
     override val shape: Shape,
-    override val foods: Sequence<Food>,
-    override val blobs: Sequence<Blob>,
-    override val spawnZones: Sequence<SpawnZone>,
+    override val position: Position2D,
+    private val worldFoods: Set<Food>,
+    private val worldBlobs: Set<Blob>,
+    private val worldSpawnZones: Set<SpawnZone>,
 ) : World {
 
-    override fun addFood(food: Food): World = copy(foods = foods + food)
+    override val foods: Sequence<Food> = worldFoods.asSequence()
 
-    override fun addBlob(blob: Blob): World = copy(blobs = blobs + blob)
+    override val blobs: Sequence<Blob> = worldBlobs.asSequence()
 
-    override fun addSpawnZone(spawnZone: SpawnZone): World = copy(spawnZones = spawnZones + spawnZone)
+    override val spawnZones: Sequence<SpawnZone> = worldSpawnZones.asSequence()
+
+    override fun addFood(food: Food): World = copy(worldFoods = worldFoods + food)
+
+    override fun addBlob(blob: Blob): World = copy(worldBlobs = worldBlobs + blob)
+
+    override fun addSpawnZone(spawnZone: SpawnZone): World = copy(worldSpawnZones = worldSpawnZones + spawnZone)
 
     override fun update(elapsed: Duration): World {
         blobs.forEach { it.update(elapsed) }

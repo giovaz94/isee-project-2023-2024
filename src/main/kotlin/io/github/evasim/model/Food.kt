@@ -48,11 +48,11 @@ interface Food : Entity {
     }
 }
 
-private class FoodImpl(
+private data class FoodImpl(
     override val id: Entity.Id,
     override val shape: Shape,
     override val position: Position2D,
-    numPieces: Int,
+    private val numPieces: Int,
 ) : Food {
 
     private val pieceSet = (1..numPieces).map { PieceImpl(energy = 1.0) }.toSet()
@@ -65,7 +65,7 @@ private class FoodImpl(
         .any { it.collectedBy.compareAndSet(null, blob) }
 
     override fun update(elapsedTime: Duration) {
-        position
+        // Do nothing
     }
 
     private class PieceImpl(override val energy: Energy) : Food.Piece {

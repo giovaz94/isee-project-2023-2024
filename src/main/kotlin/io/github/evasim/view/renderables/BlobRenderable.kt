@@ -3,6 +3,7 @@ package io.github.evasim.view.renderables
 import io.github.evasim.model.Blob
 import io.github.evasim.model.Dove
 import io.github.evasim.model.Hawk
+import io.github.evasim.model.at
 import io.github.evasim.view.Renderable
 import io.github.evasim.view.utils.resource
 import javafx.scene.Group
@@ -20,6 +21,9 @@ internal val blobRenderable = Renderable<Blob, Node> {
         is Hawk -> Image(hawkIcon.toExternalForm())
         is Dove -> Image(doveIcon.toExternalForm())
     }
+    val circle = with(shapeRenderable(background = Color.TRANSPARENT)) {
+        (shape at position).render()
+    }
     val imageView = ImageView(image).apply {
         fitWidth = ICON_DIMENSION
         fitHeight = ICON_DIMENSION
@@ -27,8 +31,8 @@ internal val blobRenderable = Renderable<Blob, Node> {
         translateX = position.x - ICON_DIMENSION / 2
         translateY = position.y - ICON_DIMENSION / 2
     }
-    val visionNode = with(shapeRenderable(background = Color.YELLOW)) {
+    val sightNode = with(shapeRenderable(background = Color.YELLOW)) {
         sight.visibilityArea.render()
     }
-    Group(imageView, visionNode)
+    Group(sightNode, circle, imageView)
 }
