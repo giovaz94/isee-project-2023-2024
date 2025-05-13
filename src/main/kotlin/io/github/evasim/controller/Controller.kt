@@ -1,16 +1,12 @@
 package io.github.evasim.controller
 
 import io.github.evasim.model.Circle
-import io.github.evasim.model.Direction
 import io.github.evasim.model.HollowCircle
 import io.github.evasim.model.Position2D
 import io.github.evasim.model.SpawnZone
 import io.github.evasim.model.World
 import io.github.evasim.model.World.Companion.Configuration
-import kotlin.concurrent.thread
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 typealias Domain = World
 
@@ -81,6 +77,11 @@ interface Controller {
      * @param event The event to be registered, represented as an `Event` object.
      */
     fun registerEvent(event: Event)
+
+    /**
+     * Renders the current state of the simulation or application.
+     */
+    fun render()
 }
 
 /** The simulation controller. */
@@ -92,27 +93,13 @@ object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
             spawnZones = setOf(
                 SpawnZone(HollowCircle(innerRadius = 800.0, outerRadius = 1_000.0), Position2D(1_000.0, 1_000.0)),
             ),
-            blobsAmount = 120,
-            hawkyBlobs = 60,
+            blobsAmount = 10,
+            hawkyBlobs = 1,
         ),
     )
 
-    init {
-        domain.blobs.forEach { it.applyForce(Direction.LEFT.times(100.0)) }
-        thread {
-            Thread.sleep(1.seconds.inWholeMilliseconds)
-            post(UpdatedWorld(domain))
-            val delta = 500.milliseconds
-            repeat(times = 5_000) {
-                updateDomain(delta)
-                Thread.sleep(delta.inWholeMilliseconds)
-            }
-        }
-    }
-
     override fun updateDomain(deltaTime: Duration) {
         domain = domain.update(deltaTime)
-        post(UpdatedWorld(domain))
     }
 
     override fun registerUserInput(input: UserInput) {
@@ -121,5 +108,9 @@ object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
 
     override fun registerEvent(event: Event) {
         events.add(event)
+    }
+
+    override fun render() {
+        post(UpdatedWorld(domain))
     }
 }

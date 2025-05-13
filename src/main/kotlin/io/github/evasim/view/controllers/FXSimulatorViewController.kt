@@ -5,14 +5,11 @@ import io.github.evasim.controller.EventSubscriber
 import io.github.evasim.controller.SimulatorController
 import io.github.evasim.controller.UpdatedEntity
 import io.github.evasim.controller.UpdatedWorld
-import io.github.evasim.controller.updated
 import io.github.evasim.model.Blob
 import io.github.evasim.model.Entity
 import io.github.evasim.model.Food
-import io.github.evasim.model.at
 import io.github.evasim.view.renderables.blobRenderable
 import io.github.evasim.view.renderables.foodRenderable
-import io.github.evasim.view.renderables.shapeRenderable
 import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
@@ -25,9 +22,8 @@ import javafx.scene.control.TextField
 import javafx.scene.input.ScrollEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
-import javafx.scene.paint.Color
 import java.net.URL
-import java.util.ResourceBundle
+import java.util.*
 
 @Suppress("detekt:style")
 internal class FXSimulatorViewController : Initializable, EventSubscriber {
@@ -81,40 +77,45 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
 
     @Subscribe
     fun update(updatedWorldEvent: UpdatedWorld) {
-        if (simulationGroup.children.isEmpty()) {
-            with(shapeRenderable(Color.web("cyan", .2))) {
-                updatedWorldEvent.world.spawnZones.map { zone ->
-                    zone.placedShape.render().also { it.userData = zone.hashCode() }
+//        if (simulationGroup.children.isEmpty()) {
+//            with(shapeRenderable(Color.web("cyan", .2))) {
+//                updatedWorldEvent.world.spawnZones.map { zone ->
+//                    zone.placedShape.render().also { it.userData = zone.hashCode() }
+//                }
+//            }.forEach { update(it) }
+//            with(shapeRenderable()) {
+//                update(
+//                    (updatedWorldEvent.world.shape at updatedWorldEvent.world.position).render().also {
+//                        it.userData = updatedWorldEvent.world.hashCode()
+//                    },
+//                )
+//            }
+//        }
+        val updatedNode = updatedWorldEvent.world.foods.toSet().plus(updatedWorldEvent.world.blobs.toSet())
+            .map { entity ->
+                when (entity) {
+                    is Food -> with(foodRenderable) { entity.render() }
+                    is Blob -> with(blobRenderable) { entity.render() }
+                    else -> error("Unsupported entity type: ${entity::class.simpleName}")
                 }
-            }.forEach { update(it) }
-            with(shapeRenderable()) {
-                update(
-                    (updatedWorldEvent.world.shape at updatedWorldEvent.world.position).render().also {
-                        it.userData = updatedWorldEvent.world.hashCode()
-                    },
-                )
-            }
-        }
-        updatedWorldEvent.world.foods.plus(updatedWorldEvent.world.blobs).forEach {
-            update(it.updated())
-        }
+            }.toSet()
+        update(updatedNode)
     }
 
     @Subscribe
     fun <E : Entity> update(updatedEntity: UpdatedEntity<E>) {
-        val newNode = when (val e = updatedEntity.entity) {
-            is Food -> with(foodRenderable) { e.render() }
-            is Blob -> with(blobRenderable) { e.render() }
-            else -> error("Unsupported entity type: ${e::class.simpleName}")
-        }.also { it.userData = updatedEntity.entity.id.value }
-        update(newNode)
+        error("To not be called")
+//        val newNode = when (val e = updatedEntity.entity) {
+//            is Food -> with(foodRenderable) { e.render() }
+//            is Blob -> with(blobRenderable) { e.render() }
+//            else -> error("Unsupported entity type: ${e::class.simpleName}")
+//        }
+//        update(newNode)
     }
 
-    private fun update(node: Node) = Platform.runLater {
-        with(simulationGroup.children) {
-            find { it.userData == node.userData }?.let { remove(it) }
-            add(node)
-        }
+    private fun update(nodes: Set<Node>) = Platform.runLater {
+        simulationGroup.children.clear()
+        simulationGroup.children.addAll(nodes)
     }
 
     private fun onStart() {

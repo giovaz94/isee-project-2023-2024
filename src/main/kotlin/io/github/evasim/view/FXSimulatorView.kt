@@ -7,7 +7,11 @@ import javafx.fxml.FXMLLoader
 import javafx.scene.Scene
 import javafx.stage.Stage
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.net.URL
+import kotlin.concurrent.thread
 
 /**
  * Represents the application context for the JavaFX-based simulator.
@@ -29,7 +33,7 @@ object FXAppContext {
 }
 
 /** JavaFX implementation of the simulator view. */
-class FXSimulatorView : Application(), Boundary {
+class FXSimulatorView(private val dispatcher: CoroutineDispatcher = Dispatchers.IO) : Application(), Boundary {
 
     override fun start(primaryStage: Stage) {
         val fxmlFile: URL = resource(LAYOUT_FILE)
@@ -44,7 +48,14 @@ class FXSimulatorView : Application(), Boundary {
         FXAppContext.viewReady.complete(this)
     }
 
-    override fun start() = launch()
+    override suspend fun start() {
+        withContext(dispatcher) {
+            thread {
+                launch(this@FXSimulatorView.javaClass)
+            }
+        }
+        FXAppContext.viewReady.await()
+    }
 
     private companion object {
         private const val LAYOUT_FILE = "ui/layouts/MainWindow.fxml"

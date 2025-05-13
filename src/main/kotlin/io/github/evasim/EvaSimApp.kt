@@ -1,6 +1,9 @@
 package io.github.evasim
 
+import io.github.evasim.controller.SimulatorController
+import io.github.evasim.engine.SimulationEngine
 import io.github.evasim.view.FXSimulatorView
+import kotlinx.coroutines.runBlocking
 import java.util.logging.Logger
 
 /** EvaSim Application Entry Point object. */
@@ -8,8 +11,9 @@ object EvaSimApp {
 
     /** Main method to start the EvaSim application. */
     @JvmStatic
-    fun main(args: Array<String>) {
+    fun main(args: Array<String>) = runBlocking {
         Logger.getLogger(javaClass.name).info("Starting EvaSim application...")
         FXSimulatorView().start()
+        SimulationEngine(SimulatorController).start()
     }
 }

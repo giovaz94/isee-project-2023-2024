@@ -1,13 +1,10 @@
 package io.github.evasim.view
 
-import io.kotest.assertions.fail
 import io.kotest.core.spec.style.FreeSpec
 import javafx.application.Platform
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
-import kotlin.time.Duration.Companion.seconds
 
 class UITest : FreeSpec({
 
@@ -26,20 +23,20 @@ class UITest : FreeSpec({
     }
 
     "JavaFX UI launches without errors" {
-        val view = FXSimulatorView()
-        val viewThread = thread(start = true) {
-            view.start() // this blocks until the view is closed
-        }
-        delay(2.seconds) // let the UI start
-        // Terminates the JavaFX application
-        Platform.runLater {
-            javafx.stage.Window.getWindows().filterIsInstance<javafx.stage.Stage>().forEach { it.close() }
-            Platform.exit()
-        }
-        viewThread.join(5.seconds.inWholeMilliseconds)
-        if (viewThread.isAlive) {
-            viewThread.interrupt()
-            fail("Test is stuck. The view thread did not terminate.")
+        runBlocking {
+            val view = FXSimulatorView()
+//            val viewThread = view.start()
+            view.start()
+            // Terminates the JavaFX application
+            Platform.runLater {
+                javafx.stage.Window.getWindows().filterIsInstance<javafx.stage.Stage>().forEach { it.close() }
+                Platform.exit()
+            }
+//            viewThread.join(5.seconds.inWholeMilliseconds)
+//            if (viewThread.isAlive) {
+//                viewThread.interrupt()
+//                fail("Test is stuck. The view thread did not terminate.")
+//            }
         }
     }
 })

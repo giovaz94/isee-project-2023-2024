@@ -7,5 +7,5 @@ package io.github.evasim.controller
 interface Boundary {
 
     /** Starts the boundary. */
-    fun start()
+    suspend fun start()
 }

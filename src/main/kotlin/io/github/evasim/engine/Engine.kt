@@ -1,11 +1,34 @@
 package io.github.evasim.engine
 
+import io.github.evasim.controller.Controller
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
+
 /**
  * Represents a contract for an engine that provides a sequence of operations
  * such as starting, stopping, handling input, processing events, updating state,
  * and rendering output.
  */
 interface Engine {
+
+    /**
+     * Defines the target number of frames per second that the engine aims to maintain
+     * during execution. This value can influence the smoothness and responsiveness
+     * of the engine's simulation and rendering processes.
+     */
+    val targetFps: Int
+
+    /**
+     * Provides access to the controller responsible for handling user inputs,
+     * managing events, updating domain state, and rendering within the engine.
+     *
+     * The `controller` acts as a central interface for coordinating input processing,
+     * event management, state updates, and rendering operations. It plays a key role
+     * in ensuring the engine's behavior aligns with the user's actions and the system's
+     * intended functionality.
+     */
+    val controller: Controller
+
     /**
      * Start the engine.
      */
@@ -49,7 +72,10 @@ interface Engine {
  * @property targetFps The target frames per second the engine aims to maintain.
  * @property timePerFrame The time allocated for each frame in nanoseconds.
  */
-class SimulationEngine(targetFps: Int = 60) : Engine {
+class SimulationEngine(
+    override val controller: Controller,
+    override val targetFps: Int = 30,
+) : Engine {
 
     private var running: Boolean = false
     private val timePerFrame = UPDATE_TIMEOUT / targetFps
@@ -60,7 +86,7 @@ class SimulationEngine(targetFps: Int = 60) : Engine {
         var lastTime = System.nanoTime()
         while (running) {
             val now = System.nanoTime()
-            val deltaTime = now - lastTime / UPDATE_TIMEOUT.toDouble()
+            val deltaTime = (now - lastTime) / UPDATE_TIMEOUT.toDouble()
             lastTime = now
 
             handleInput()
@@ -70,6 +96,7 @@ class SimulationEngine(targetFps: Int = 60) : Engine {
 
             val elapsedTime = System.nanoTime() - now
             val sleepTime = (timePerFrame - elapsedTime) / SECOND_TIMEOUT
+            println("Sleep for $sleepTime ms")
             if (sleepTime > 0) {
                 Thread.sleep(sleepTime)
             }
@@ -89,11 +116,11 @@ class SimulationEngine(targetFps: Int = 60) : Engine {
     }
 
     override fun update(deltaTime: Double) {
-        println("Delta time: $deltaTime")
+        controller.updateDomain(deltaTime.toDuration(DurationUnit.SECONDS))
     }
 
     override fun render() {
-        println("Rendering...")
+        controller.render()
     }
 
     /**
