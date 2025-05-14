@@ -74,7 +74,7 @@ interface Engine {
  */
 class SimulationEngine(
     override val controller: Controller,
-    override val targetFps: Int = 60,
+    override val targetFps: Int = 30,
 ) : Engine {
 
     private var running: Boolean = false
@@ -107,11 +107,11 @@ class SimulationEngine(
     }
 
     override fun handleInput() {
-        println("Handling input...")
+        // println("Handling input...")
     }
 
     override fun handleEvents() {
-        println("Handling events...")
+        // println("Handling events...")
     }
 
     override fun update(deltaTime: Double) {

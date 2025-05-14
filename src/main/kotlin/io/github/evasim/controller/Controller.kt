@@ -1,9 +1,12 @@
 package io.github.evasim.controller
 
+import io.github.evasim.agents.blobAgent
 import io.github.evasim.engine.Engine
 import io.github.evasim.engine.SimulationEngine
 import io.github.evasim.model.World
 import io.github.evasim.model.World.Companion.Configuration
+import it.unibo.jakta.agents.bdi.dsl.mas
+import it.unibo.jakta.agents.bdi.executionstrategies.ExecutionStrategy
 import kotlin.concurrent.thread
 import kotlin.time.Duration
 
@@ -97,6 +100,12 @@ object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
         thread {
             engine?.start()
         }
+        mas {
+            domain?.blobs?.forEach {
+                blobAgent(it.id.value, it.personality)
+            }
+            executionStrategy = ExecutionStrategy.oneThreadPerMas()
+        }.start()
     }
 
     @Synchronized

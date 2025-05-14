@@ -12,6 +12,5 @@ object EvaSimApp {
     fun main(args: Array<String>) = runBlocking {
         Logger.getLogger(javaClass.name).info("Starting EvaSim application...")
         FXSimulatorView().start()
-
     }
 }
