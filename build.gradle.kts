@@ -24,6 +24,7 @@ dependencies {
         implementation(kotlin.stdlib.jdk8)
         implementation(jason)
         implementation(javafx)
+        implementation(jakta)
         bundles.javafx.modules.get().forEach {
             implementation("${it.module.group}:${it.module.name}:${it.versionConstraint.requiredVersion}:${platform()}")
         }

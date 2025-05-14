@@ -1,11 +1,17 @@
 package io.github.evasim.view.controllers
 
 import com.google.common.eventbus.Subscribe
+import io.github.evasim.controller.Controller
 import io.github.evasim.controller.EventSubscriber
 import io.github.evasim.controller.SimulatorController
 import io.github.evasim.controller.UpdatedWorld
 import io.github.evasim.model.Blob
+import io.github.evasim.model.Circle
 import io.github.evasim.model.Food
+import io.github.evasim.model.HollowCircle
+import io.github.evasim.model.Position2D
+import io.github.evasim.model.SpawnZone
+import io.github.evasim.model.World
 import io.github.evasim.view.renderables.blobRenderable
 import io.github.evasim.view.renderables.foodRenderable
 import io.github.evasim.view.renderables.worldRenderable
@@ -96,7 +102,15 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
     }
 
     private fun onStart() {
-        // TODO: Start simulation logic
+        val config = World.Companion.Configuration(
+            shape = Circle(radius = 1_000.0),
+            spawnZones = setOf(
+                SpawnZone(HollowCircle(innerRadius = 800.0, outerRadius = 1_000.0), Position2D(1_000.0, 1_000.0))
+            ),
+            blobsAmount = 120,
+            hawkyBlobs = 60,
+        )
+        SimulatorController.start(config)
     }
 
     private fun onPause() {
@@ -104,6 +118,6 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
     }
 
     private fun onStop() {
-        // TODO: Stop simulation logic
+        SimulatorController.stop()
     }
 }

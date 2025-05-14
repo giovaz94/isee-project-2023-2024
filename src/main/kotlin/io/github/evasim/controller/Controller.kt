@@ -1,11 +1,10 @@
 package io.github.evasim.controller
 
-import io.github.evasim.model.Circle
-import io.github.evasim.model.HollowCircle
-import io.github.evasim.model.Position2D
-import io.github.evasim.model.SpawnZone
+import io.github.evasim.engine.Engine
+import io.github.evasim.engine.SimulationEngine
 import io.github.evasim.model.World
 import io.github.evasim.model.World.Companion.Configuration
+import kotlin.concurrent.thread
 import kotlin.time.Duration
 
 typealias Domain = World
@@ -14,7 +13,6 @@ typealias Domain = World
  * Encapsulates a user-provided character input for interaction within the application or system.
  * It serves as a lightweight wrapper for a `Char` value, ensuring a more structured and type-safe approach
  * when working with user inputs.
- * TODO: Consider dropping this in favor of more specific Event types sent from boundaries to controller.
  * @property input The character representing the user's input.
  */
 @JvmInline value class UserInput(val input: Char)
@@ -31,8 +29,6 @@ interface Controller {
      * This property provides a collection to store and manage user-generated inputs
      * such as keystrokes or actions for processing within a simulation or application flow.
      * It is initialized as an empty mutable list upon first access.
-     *
-     * TODO: drop in favor of event bus architecture (?)
      */
     val userInputs: MutableList<UserInput>
         get() = mutableListOf()
@@ -40,7 +36,6 @@ interface Controller {
     /**
      * A mutable list of events.
      * This property acts as a collection to store and manage events, enabling event-driven behavior.
-     * TODO: who process them?
      */
     val events: MutableList<Event>
         get() = mutableListOf()
@@ -63,6 +58,10 @@ interface Controller {
      */
     fun registerEvent(event: Event)
 
+    fun start(configuration: Configuration)
+
+    fun stop()
+
     /**
      * Renders the current state of the simulation or application.
      */
@@ -72,28 +71,44 @@ interface Controller {
 /** The simulation controller. */
 object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
 
-    private var domain: Domain = World.fromConfiguration(
-        Configuration(
-            shape = Circle(radius = 1_000.0),
-            spawnZones = setOf(
-                SpawnZone(HollowCircle(innerRadius = 800.0, outerRadius = 1_000.0), Position2D(1_000.0, 1_000.0)),
-            ),
-            blobsAmount = 120,
-            hawkyBlobs = 60,
-        ),
-    )
+    private var domain: Domain? = null
+    private var engine: Engine? = null
 
+    @Synchronized
     override fun updateDomain(deltaTime: Duration) {
-        domain = domain.update(deltaTime)
+        domain = domain?.update(deltaTime) ?: error("It is not possible to update a non-existing domain!")
     }
 
+    @Synchronized
     override fun registerUserInput(input: UserInput) {
         userInputs.add(input)
     }
 
+    @Synchronized
     override fun registerEvent(event: Event) {
         events.add(event)
     }
 
-    override fun render() = post(UpdatedWorld(domain))
+    @Synchronized
+    override fun start(configuration: Configuration) {
+        require(domain == null) { "A simulation is already running. Please, stop it first." }
+        domain = World.fromConfiguration(configuration)
+        engine = SimulationEngine(this)
+        thread {
+            engine?.start()
+        }
+    }
+
+    @Synchronized
+    override fun stop() {
+        requireNotNull(domain) { "Cannot stop a non-existing simulation!" }
+        domain = null
+        engine?.stop()
+    }
+
+    @Synchronized
+    override fun render() {
+        requireNotNull(domain) { "Cannot render a non-existing simulation!" }
+        post(UpdatedWorld(domain!!))
+    }
 }

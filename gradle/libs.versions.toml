@@ -4,6 +4,7 @@ kotlin = "2.1.21"
 kotest = "5.9.1"
 testfx = "4.0.18"
 coroutines = "1.10.2"
+jakta = "0.11.122"
 
 [libraries]
 google-guava = "com.google.guava:guava:33.4.8-jre"
@@ -14,6 +15,7 @@ javafx-graphics = { module = "org.openjfx:javafx-graphics", version.ref = "javaf
 javafx-controls = { module = "org.openjfx:javafx-controls", version.ref = "javafx" }
 javafx-fxml = { module = "org.openjfx:javafx-fxml", version.ref = "javafx" }
 javafx-swing = { module = "org.openjfx:javafx-swing", version.ref = "javafx" }
+jakta =  { module = "it.unibo.jakta:jakta-dsl", version.ref = "jakta" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotest-junit5-jvm = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
