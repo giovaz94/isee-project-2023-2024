@@ -1,6 +1,7 @@
 package io.github.evasim.controller
 
 import io.github.evasim.agents.blobAgent
+import io.github.evasim.agents.environment.SimulationEnvironment
 import io.github.evasim.engine.Engine
 import io.github.evasim.engine.SimulationEngine
 import io.github.evasim.model.World
@@ -61,8 +62,14 @@ interface Controller {
      */
     fun registerEvent(event: Event)
 
+    /**
+     * Starts the simulation with the given [configuration].
+     */
     fun start(configuration: Configuration)
 
+    /**
+     * Stops the current simulation.
+     */
     fun stop()
 
     /**
@@ -100,8 +107,10 @@ object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
         thread {
             engine?.start()
         }
+        // TODO: think if this is the right place where to start the agents, e.g., in the rounds manager.
         mas {
-            domain?.blobs?.forEach {
+            environment(SimulationEnvironment(domain!!))
+            domain!!.blobs.forEach {
                 blobAgent(it.id.value, it.personality)
             }
             executionStrategy = ExecutionStrategy.oneThreadPerMas()
@@ -117,7 +126,6 @@ object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
 
     @Synchronized
     override fun render() {
-        requireNotNull(domain) { "Cannot render a non-existing simulation!" }
-        post(UpdatedWorld(domain!!))
+        post(UpdatedWorld(domain ?: error("Cannot render a non-existing simulation!")))
     }
 }

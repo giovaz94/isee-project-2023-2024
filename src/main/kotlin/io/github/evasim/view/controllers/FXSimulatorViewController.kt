@@ -1,7 +1,6 @@
 package io.github.evasim.view.controllers
 
 import com.google.common.eventbus.Subscribe
-import io.github.evasim.controller.Controller
 import io.github.evasim.controller.EventSubscriber
 import io.github.evasim.controller.SimulatorController
 import io.github.evasim.controller.UpdatedWorld
@@ -105,7 +104,7 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
         val config = World.Companion.Configuration(
             shape = Circle(radius = 1_000.0),
             spawnZones = setOf(
-                SpawnZone(HollowCircle(innerRadius = 800.0, outerRadius = 1_000.0), Position2D(1_000.0, 1_000.0))
+                SpawnZone(HollowCircle(innerRadius = 800.0, outerRadius = 1_000.0), Position2D(1_000.0, 1_000.0)),
             ),
             blobsAmount = 120,
             hawkyBlobs = 60,

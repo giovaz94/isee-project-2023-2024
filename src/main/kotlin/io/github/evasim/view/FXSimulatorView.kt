@@ -49,12 +49,7 @@ class FXSimulatorView(private val dispatcher: CoroutineDispatcher = Dispatchers.
     }
 
     override suspend fun start() {
-        withContext(dispatcher) {
-            thread {
-                launch(this@FXSimulatorView.javaClass)
-            }
-        }
-        FXAppContext.viewReady.await()
+        launch(this@FXSimulatorView.javaClass)
     }
 
     private companion object {

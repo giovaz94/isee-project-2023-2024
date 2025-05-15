@@ -1,6 +1,7 @@
 package io.github.evasim.engine
 
 import io.github.evasim.controller.Controller
+import java.util.logging.Logger
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -65,39 +66,39 @@ interface Engine {
  * It runs at a targeted frames-per-second (FPS) and provides methods to handle user input,
  * process events, update simulation state, and render graphics.
  *
- * The class implements the Engine interface, ensuring methods for starting, stopping,
- * handling input, processing events, updating the simulation, and rendering are defined.
- *
- * @property running Indicates whether the simulation engine is currently running.
+ * @property controller The simulation controller instance.
  * @property targetFps The target frames per second the engine aims to maintain.
- * @property timePerFrame The time allocated for each frame in nanoseconds.
  */
 class SimulationEngine(
     override val controller: Controller,
-    override val targetFps: Int = 30,
+    override val targetFps: Int = 60,
 ) : Engine {
 
-    private var running: Boolean = false
+    private var running = false
     private val timePerFrame = UPDATE_TIMEOUT / targetFps
 
     override fun start() {
         running = true
-
         var lastTime = System.nanoTime()
         while (running) {
             val now = System.nanoTime()
             val deltaTime = (now - lastTime) / UPDATE_TIMEOUT.toDouble()
             lastTime = now
-
             handleInput()
             handleEvents()
             update(deltaTime)
             render()
-
             val elapsedTime = System.nanoTime() - now
             val sleepTime = (timePerFrame - elapsedTime) / SECOND_TIMEOUT
             if (sleepTime > 0) {
                 Thread.sleep(sleepTime)
+            } else {
+                LOGGER.warning {
+                    """
+                        Frame overrun detected: frame took ${elapsedTime / SECOND_TIMEOUT}ms, but taget frame time is ${timePerFrame / SECOND_TIMEOUT}ms.
+                        Loop cannot keep up with the target FPS of $targetFps -- consider optimizing heavy operations.
+                    """.trimIndent()
+                }
             }
         }
     }
@@ -107,11 +108,11 @@ class SimulationEngine(
     }
 
     override fun handleInput() {
-        // println("Handling input...")
+        // TODO: handling inputs
     }
 
     override fun handleEvents() {
-        // println("Handling events...")
+        // TODO: handling events
     }
 
     override fun update(deltaTime: Double) {
@@ -122,13 +123,8 @@ class SimulationEngine(
         controller.render()
     }
 
-    /**
-     * Contains constants used for timing configurations within the simulation engine.
-     *
-     * @property UPDATE_TIMEOUT Represents the total time in nanoseconds allocated for one update cycle.
-     * @property SECOND_TIMEOUT Represents the equivalent of one second in microseconds.
-     */
-    companion object {
+    private companion object {
+        private val LOGGER = Logger.getLogger(SimulationEngine::class.java.simpleName)
         private const val UPDATE_TIMEOUT = 1_000_000_000L
         private const val SECOND_TIMEOUT = 1_000_000
     }
