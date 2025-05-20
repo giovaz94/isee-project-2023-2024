@@ -1,6 +1,6 @@
 [versions]
 javafx = "22.0.2"
-kotlin = "2.1.20"
+kotlin = "2.1.21"
 kotest = "5.9.1"
 testfx = "4.0.18"
 coroutines = "1.7.3"
