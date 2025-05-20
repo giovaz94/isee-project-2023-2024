@@ -1,5 +1,6 @@
 package io.github.evasim.agents.environment
 
+import io.github.evasim.agents.Literals.my_position
 import io.github.evasim.model.World
 import it.unibo.jakta.agents.bdi.AgentID
 import it.unibo.jakta.agents.bdi.actions.ExternalAction
@@ -21,9 +22,11 @@ class SimulationEnvironment(private val world: World) : EnvironmentImpl(
 ) {
 
     override fun percept(): BeliefBase {
+        println("I'm perceiving the environment")
+        println(data)
         return BeliefBase.of(
             Belief.fromPerceptSource(
-                Struct.of("position", Numeric.of(10), Numeric.of(20))
+                Struct.of(my_position, Numeric.of(10), Numeric.of(20))
             )
         )
     }

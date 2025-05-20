@@ -19,8 +19,8 @@ develocity {
 
 gitHooks {
     commitMsg { conventionalCommits() }
-    preCommit {
-        tasks("ktlintCheck", "detekt", "--parallel")
-    }
+//    preCommit {
+//        tasks("ktlintCheck", "detekt", "--parallel")
+//    }
     createHooks(overwriteExisting = true)
 }

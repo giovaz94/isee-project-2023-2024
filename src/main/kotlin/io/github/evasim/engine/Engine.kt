@@ -71,7 +71,7 @@ interface Engine {
  */
 class SimulationEngine(
     override val controller: Controller,
-    override val targetFps: Int = 60,
+    override val targetFps: Int = 30,
 ) : Engine {
 
     private var running = false
