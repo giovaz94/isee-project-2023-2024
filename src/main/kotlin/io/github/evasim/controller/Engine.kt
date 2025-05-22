@@ -1,7 +1,6 @@
-package io.github.evasim.engine
+package io.github.evasim.controller
 
-import io.github.evasim.controller.Controller
-import java.util.logging.Logger
+import io.github.evasim.utils.logger
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -93,7 +92,7 @@ class SimulationEngine(
             if (sleepTime > 0) {
                 Thread.sleep(sleepTime)
             } else {
-                LOGGER.warning {
+                logger.warning {
                     """
                         Frame overrun detected: frame took ${elapsedTime / SECOND_TIMEOUT}ms, but taget frame time is ${timePerFrame / SECOND_TIMEOUT}ms.
                         Loop cannot keep up with the target FPS of $targetFps -- consider optimizing heavy operations.
@@ -124,7 +123,6 @@ class SimulationEngine(
     }
 
     private companion object {
-        private val LOGGER = Logger.getLogger(SimulationEngine::class.java.simpleName)
         private const val UPDATE_TIMEOUT = 1_000_000_000L
         private const val SECOND_TIMEOUT = 1_000_000
     }

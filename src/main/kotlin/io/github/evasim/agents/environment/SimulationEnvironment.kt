@@ -25,14 +25,9 @@ class SimulationEnvironment(private val world: World) : EnvironmentImpl(
     override fun percept(agent: Agent): BeliefBase {
         return BeliefBase.of(
             Belief.fromPerceptSource(
-                Struct.of(my_position, Numeric.of(integer = 10), Numeric.of(integer = 20))
-            )
+                Struct.of(my_position, Numeric.of(integer = 10), Numeric.of(integer = 20)),
+            ),
         )
-    }
-
-    override fun updateData(newData: Map<String, Any>): Environment {
-        println("Updating data in SimulationEnvironment with new data: $newData")
-        return super.updateData(newData)
     }
 
     override fun copy(

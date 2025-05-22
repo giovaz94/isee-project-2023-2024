@@ -1,7 +1,7 @@
 package io.github.evasim.view
 
 import io.github.evasim.controller.Boundary
-import io.github.evasim.view.utils.resource
+import io.github.evasim.utils.resource
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.scene.Scene
@@ -23,7 +23,7 @@ class FXSimulatorView : Application(), Boundary {
         }
     }
 
-    override suspend fun start() {
+    override fun launch() {
         launch(this@FXSimulatorView.javaClass)
     }
 

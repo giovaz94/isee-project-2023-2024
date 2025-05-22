@@ -7,6 +7,7 @@ internal object Literals {
     val print: String by OwnName
     val my_position: String by OwnName
     val personality: String by OwnName
+    val find_food: String by OwnName
 }
 
 private object OwnName {

@@ -2,8 +2,6 @@ package io.github.evasim.controller
 
 import io.github.evasim.agents.blobAgent
 import io.github.evasim.agents.environment.SimulationEnvironment
-import io.github.evasim.engine.Engine
-import io.github.evasim.engine.SimulationEngine
 import io.github.evasim.model.World
 import io.github.evasim.model.World.Companion.Configuration
 import it.unibo.jakta.agents.bdi.dsl.mas
@@ -101,21 +99,23 @@ object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
 
     @Synchronized
     override fun start(configuration: Configuration) {
-        require(domain == null) { "A simulation is already running. Please, stop it first." }
-        domain = World.fromConfiguration(configuration)
-        engine = SimulationEngine(this)
-        thread {
-            engine?.start()
-        }
-        // TODO: think if this is the right place where to start the agents, e.g., in the rounds manager.
-        mas {
-            environment(SimulationEnvironment(domain!!))
-            domain!!.blobs.forEach {
-                blobAgent(it.id.value, it.personality)
-            }
-            executionStrategy = ExecutionStrategy.oneThreadPerMas()
-        }.start()
+        require(domain == null && engine == null) { "A simulation is already running. Please, stop it first." }
+        SimulationEngine(this)
+            .also { engine = it }
+            .let { thread { it.start() } }
+        World.fromConfiguration(configuration)
+            .also { domain = it }
+            .let { startMas(it) }
     }
+
+    // TODO: think if this is the right place where to start the agents, e.g., in the rounds manager.
+    private fun startMas(domain: Domain) = mas {
+        environment(SimulationEnvironment(domain))
+        domain.blobs.forEach {
+            blobAgent(it.id.value, it.personality)
+        }
+        executionStrategy = ExecutionStrategy.oneThreadPerMas()
+    }.start()
 
     @Synchronized
     override fun stop() {

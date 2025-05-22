@@ -3,8 +3,8 @@ package io.github.evasim.view.renderables
 import io.github.evasim.model.Blob
 import io.github.evasim.model.Hawk
 import io.github.evasim.model.at
+import io.github.evasim.utils.resource
 import io.github.evasim.view.Renderable
-import io.github.evasim.view.utils.resource
 import javafx.scene.Group
 import javafx.scene.Node
 import javafx.scene.image.Image
