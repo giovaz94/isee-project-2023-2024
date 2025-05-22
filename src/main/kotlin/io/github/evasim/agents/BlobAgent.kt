@@ -3,6 +3,7 @@ package io.github.evasim.agents
 import io.github.evasim.model.Personality
 import it.unibo.jakta.agents.bdi.dsl.MasScope
 import io.github.evasim.agents.Literals.my_position
+import io.github.evasim.agents.Literals.personality
 import io.github.evasim.agents.Literals.print
 
 /**
@@ -10,7 +11,7 @@ import io.github.evasim.agents.Literals.print
  */
 fun MasScope.blobAgent(name: String, personality: Personality) = agent(name) {
     beliefs {
-        fact{ my_position(10, 20) }
+        fact { personality(personality.toString()) }
     }
     goals { achieve("findFood") }
     plans {
