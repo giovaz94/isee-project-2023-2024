@@ -3,7 +3,7 @@ javafx = "22.0.2"
 kotlin = "2.1.21"
 kotest = "5.9.1"
 testfx = "4.0.18"
-coroutines = "1.7.3"
+coroutines = "1.10.2"
 
 [libraries]
 google-guava = "com.google.guava:guava:33.4.8-jre"
