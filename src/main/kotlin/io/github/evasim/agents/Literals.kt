@@ -9,7 +9,10 @@ internal object Literals {
     val personality: String by OwnName
     val find_food: String by OwnName
     val food: String by OwnName
-    val stop_moving: String by OwnName
+    val move_towards: String by OwnName
+    val update_velocity: String by OwnName
+    val update_direction: String by OwnName
+    val reached_food: String by OwnName
 }
 
 private object OwnName {

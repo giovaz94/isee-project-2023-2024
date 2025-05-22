@@ -2,10 +2,13 @@ package io.github.evasim.agents
 
 import io.github.evasim.agents.Literals.find_food
 import io.github.evasim.agents.Literals.food
+import io.github.evasim.agents.Literals.move_towards
 import io.github.evasim.agents.Literals.personality
-import io.github.evasim.agents.Literals.stop_moving
+import io.github.evasim.agents.Literals.reached_food
+import io.github.evasim.agents.Literals.update_velocity
 import io.github.evasim.model.Personality
 import it.unibo.jakta.agents.bdi.dsl.MasScope
+import it.unibo.tuprolog.core.Numeric
 
 /**
  * Blob agent factory.
@@ -17,7 +20,10 @@ fun MasScope.blobAgent(agentName: String, personality: Personality) = agent(agen
     goals { achieve(find_food) }
     plans {
         +food(X, Y).fromPercept then {
-            execute(stop_moving)
+            execute(move_towards(X, Y))
+        }
+        +reached_food(X, Y).fromPercept then {
+            execute(update_velocity(Numeric.of(0.0), Numeric.of(0.0)))
         }
     }
 }
