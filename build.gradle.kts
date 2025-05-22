@@ -25,11 +25,11 @@ dependencies {
         implementation(jason)
         implementation(javafx)
         implementation(jakta)
+        implementation(bundles.coroutines)
+        implementation(google.guava)
         bundles.javafx.modules.get().forEach {
             implementation("${it.module.group}:${it.module.name}:${it.versionConstraint.requiredVersion}:${platform()}")
         }
-        implementation(bundles.coroutines)
-        implementation(google.guava)
         testImplementation(bundles.kotlin.testing)
         testImplementation(bundles.testfx)
     }

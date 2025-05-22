@@ -63,7 +63,7 @@ class SimulationEngine(
     override val targetFps: Int = 60,
 ) : Engine {
 
-    private var running = AtomicReference(false)
+    private val running = AtomicReference(false)
     private val timePerFrame = UPDATE_TIMEOUT / targetFps
 
     override fun start() {

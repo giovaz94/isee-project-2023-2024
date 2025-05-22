@@ -9,6 +9,9 @@ import it.unibo.jakta.agents.bdi.executionstrategies.ExecutionStrategy
 import kotlin.concurrent.thread
 import kotlin.time.Duration
 
+/**
+ * A type alias for the domain aggregate root of the simulation.
+ */
 typealias Domain = World
 
 /**
