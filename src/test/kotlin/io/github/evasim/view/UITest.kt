@@ -3,6 +3,7 @@ package io.github.evasim.view
 import io.kotest.assertions.fail
 import io.kotest.core.spec.style.FreeSpec
 import javafx.application.Platform
+import kotlinx.coroutines.delay
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -26,7 +27,10 @@ class UITest : FreeSpec({
 
     "JavaFX UI launches without errors" {
         val view = FXSimulatorView()
-        val viewThread = thread { view.launch() }
+        val viewThread = thread {
+            view.launch()
+        }
+        delay(2.seconds)
         // Terminates the JavaFX application
         Platform.runLater {
             javafx.stage.Window.getWindows().filterIsInstance<javafx.stage.Stage>().forEach { it.close() }

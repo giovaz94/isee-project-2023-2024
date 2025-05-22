@@ -79,8 +79,8 @@ interface Controller {
 /** The simulation controller. */
 object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
 
+    private val engine = SimulationEngine(this)
     private var domain: Domain? = null
-    private var engine: Engine? = null
 
     @Synchronized
     override fun updateDomain(deltaTime: Duration) {
@@ -99,10 +99,8 @@ object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
 
     @Synchronized
     override fun start(configuration: Configuration) {
-        require(domain == null && engine == null) { "A simulation is already running. Please, stop it first." }
-        SimulationEngine(this)
-            .also { engine = it }
-            .let { thread { it.start() } }
+        require(domain == null) { "A simulation is already running. Please, stop it first." }
+        thread { engine.start() }
         World.fromConfiguration(configuration)
             .also { domain = it }
             .let { startMas(it) }
@@ -121,7 +119,7 @@ object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
     override fun stop() {
         requireNotNull(domain) { "Cannot stop a non-existing simulation!" }
         domain = null
-        engine?.stop()
+        engine.stop()
     }
 
     @Synchronized

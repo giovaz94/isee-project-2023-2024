@@ -1,6 +1,7 @@
 package io.github.evasim.controller
 
 import io.github.evasim.utils.logger
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -17,17 +18,6 @@ interface Engine {
      * of the engine's simulation and rendering processes.
      */
     val targetFps: Int
-
-    /**
-     * Provides access to the controller responsible for handling user inputs,
-     * managing events, updating domain state, and rendering within the engine.
-     *
-     * The `controller` acts as a central interface for coordinating input processing,
-     * event management, state updates, and rendering operations. It plays a key role
-     * in ensuring the engine's behavior aligns with the user's actions and the system's
-     * intended functionality.
-     */
-    val controller: Controller
 
     /**
      * Start the engine.
@@ -69,17 +59,17 @@ interface Engine {
  * @property targetFps The target frames per second the engine aims to maintain.
  */
 class SimulationEngine(
-    override val controller: Controller,
-    override val targetFps: Int = 30,
+    private val controller: Controller,
+    override val targetFps: Int = 60,
 ) : Engine {
 
-    private var running = false
+    private var running = AtomicReference(false)
     private val timePerFrame = UPDATE_TIMEOUT / targetFps
 
     override fun start() {
-        running = true
+        running.set(true)
         var lastTime = System.nanoTime()
-        while (running) {
+        while (running.get()) {
             val now = System.nanoTime()
             val deltaTime = (now - lastTime) / UPDATE_TIMEOUT.toDouble()
             lastTime = now
@@ -103,7 +93,7 @@ class SimulationEngine(
     }
 
     override fun stop() {
-        running = false
+        running.set(false)
     }
 
     override fun handleInput() {
