@@ -1,7 +1,7 @@
 plugins {
     id("org.danilopianini.gradle-pre-commit-git-hooks") version "2.0.22"
     // For automizing gradle scans.
-    id("com.gradle.develocity") version "4.0"
+    id("com.gradle.develocity") version "4.0.1"
     // Provides a repository for downloading JVMs, provisioning them automatically if missing.
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
 }
