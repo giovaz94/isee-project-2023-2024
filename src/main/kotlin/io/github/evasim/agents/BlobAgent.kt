@@ -1,49 +1,39 @@
 package io.github.evasim.agents
 
 import io.github.evasim.agents.Literals.find_food
-import io.github.evasim.agents.Literals.my_position
+import io.github.evasim.agents.Literals.food
 import io.github.evasim.agents.Literals.personality
-import io.github.evasim.agents.Literals.print
+import io.github.evasim.agents.Literals.stop_moving
 import io.github.evasim.model.Personality
 import it.unibo.jakta.agents.bdi.dsl.MasScope
 
 /**
  * Blob agent factory.
  */
-fun MasScope.blobAgent(name: String, personality: Personality) = agent(name) {
+fun MasScope.blobAgent(agentName: String, personality: Personality) = agent(agentName) {
     beliefs {
         fact { personality(personality.toString()) }
     }
     goals { achieve(find_food) }
     plans {
-        +achieve(find_food) then {
-            execute(print("Hello, World. I'm the blob $name"))
-        }
-        +my_position(X, Y).fromPercept then {
-            execute(print("Blob at position", Pair(X, Y)))
+        +food(X, Y).fromPercept then {
+            execute(stop_moving)
         }
     }
 }
 
 /*
-Beliefs:
-========
+Goal
+====
++!find_food
+ |--> reazione dell'agente: in futuro può essere programmato un comportamento più intelligente
+      del semplice continuare a muoversi verso la direzione prestabilita iniziale per cercare di "spottare" il cibo
 
-my_position(X, Y)
-personality(Hawk / Dove)
-food(X, Y)
++!reach_food => scatenato quando il food è nel sight dell'agente
+ |--> reazione dell'agente deve "andare" verso il food
 
-Initial Goals:
-==============
-
-!findFood
-
-Plans:
-=====
-
-+!findFood <-
-    peek a random velocity
-
-+food(X, Y) <-
-    stop myself
+Belief
+======
++ food => viene aggiunto alla belief base quando il food è nel sight dell'agente
++ reached_food => viene aggiunto quando l'agente ha raggiunto il food
 */

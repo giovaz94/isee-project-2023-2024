@@ -97,7 +97,14 @@ interface World {
                 .toSet()
             val blobs = spawnZones
                 .flatMap { zone -> generateSequence { positionWithin(zone.placedShape) }.take(blobsPerSpawnZone) }
-                .mapIndexed { i, p -> Blob(Entity.Id("blob-$i"), if (i < hawkyBlobs) Hawk else Dove, p) }
+                .mapIndexed { i, p ->
+                    Blob(
+                        id = Entity.Id("blob-$i"),
+                        personality = if (i < hawkyBlobs) Hawk else Dove,
+                        position = p,
+                        velocity = (configuration.position - p).toVector2D().normalized()?.times(scalar = 20.0) ?: zero,
+                    )
+                }
                 .toSet()
             WorldImpl(shape, position, foods, blobs, spawnZones)
         }
