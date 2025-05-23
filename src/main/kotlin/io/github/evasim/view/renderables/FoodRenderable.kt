@@ -10,14 +10,14 @@ import javafx.scene.shape.Arc
 import javafx.scene.shape.ArcType
 import kotlin.math.max
 
-internal val foodRenderable = Renderable<Food, Node> {
+internal val foodRenderable = Renderable<Food, Node> { food ->
     val root = Group()
-    when (val s = this.shape) {
+    when (val s = food.shape) {
         is Circle -> {
-            val angleStep = 360.0 / max(1, pieces.size)
-            pieces.forEachIndexed { i, piece ->
+            val angleStep = 360.0 / max(1, food.pieces.size)
+            food.pieces.forEachIndexed { i, piece ->
                 val startAngle = i * angleStep
-                val arc = Arc(position.x, position.y, s.radius, s.radius, startAngle, angleStep).apply {
+                val arc = Arc(food.position.x, food.position.y, s.radius, s.radius, startAngle, angleStep).apply {
                     type = ArcType.ROUND
                     fill = piece.collectedBy()?.let { Color.LIGHTBLUE } ?: Color.LIGHTGREEN
                     stroke = Color.DARKGRAY

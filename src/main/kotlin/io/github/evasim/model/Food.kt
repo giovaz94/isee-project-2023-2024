@@ -64,10 +64,6 @@ private data class FoodImpl(
     override fun attemptCollecting(blob: Blob): Boolean = pieceSet
         .any { it.collectedBy.compareAndSet(null, blob) }
 
-    override fun update(elapsedTime: Duration) {
-        // Do nothing
-    }
-
     private class PieceImpl(override val energy: Energy) : Food.Piece {
         var collectedBy: AtomicReference<Blob?> = AtomicReference(null)
 

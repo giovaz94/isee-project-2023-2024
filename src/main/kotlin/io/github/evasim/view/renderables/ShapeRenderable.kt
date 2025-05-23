@@ -18,24 +18,24 @@ import kotlin.math.atan2
 import javafx.scene.shape.Circle as JFXCircle
 import javafx.scene.shape.Rectangle as JFXRectangle
 
-internal fun shapeRenderable(background: Color = Color.TRANSPARENT) = Renderable<Placed<Shape>, Node> {
-    when (val s = shape) {
+internal fun shapeRenderable(background: Color = Color.TRANSPARENT) = Renderable<Placed<Shape>, Node> { place ->
+    when (val s = place.shape) {
         is Circle -> JFXCircle(s.radius).apply {
-            translateX = position.x
-            translateY = position.y
+            translateX = place.position.x
+            translateY = place.position.y
             fill = background
             stroke = Color.DARKGRAY
         }
         is Rectangle -> JFXRectangle(s.width, s.height).apply {
-            translateX = position.x - s.width / 2
-            translateY = position.y - s.height / 2
+            translateX = place.position.x - s.width / 2
+            translateY = place.position.y - s.height / 2
             fill = background
             stroke = Color.DARKGRAY
         }
         is Cone -> Arc().apply {
-            val degreeDirection = Math.toDegrees(atan2(-(direction?.y ?: 0.0), direction?.x ?: 0.0))
-            centerX = position.x
-            centerY = position.y
+            val degreeDirection = Math.toDegrees(atan2(-(place.direction?.y ?: 0.0), place.direction?.x ?: 0.0))
+            centerX = place.position.x
+            centerY = place.position.y
             radiusX = s.radius
             radiusY = s.radius
             startAngle = degreeDirection - s.fovDegrees.value / 2
@@ -44,8 +44,8 @@ internal fun shapeRenderable(background: Color = Color.TRANSPARENT) = Renderable
             fill = RadialGradient(
                 0.0,
                 0.0,
-                position.x,
-                position.y,
+                place.position.x,
+                place.position.y,
                 s.radius,
                 false,
                 CycleMethod.NO_CYCLE,
@@ -55,12 +55,12 @@ internal fun shapeRenderable(background: Color = Color.TRANSPARENT) = Renderable
         }
         is HollowCircle -> {
             val outer = JFXCircle(s.outerRadius).apply {
-                centerX = position.x
-                centerY = position.y
+                centerX = place.position.x
+                centerY = place.position.y
             }
             val inner = JFXCircle(s.innerRadius).apply {
-                centerX = position.x
-                centerY = position.y
+                centerX = place.position.x
+                centerY = place.position.y
             }
             javafx.scene.shape.Shape.subtract(outer, inner).apply {
                 fill = background

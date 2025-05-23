@@ -195,7 +195,7 @@ private data class Versor2DImpl(val vector: Vector2D) : Versor2D, Vector2D by ve
 }
 
 /** Converts a 2D position in a 2D vector. */
-fun Position2D.toVector2D(): Vector2D = Vector2D(x, y)
+fun Position2D.asVector2D(): Vector2D = Vector2D(x, y)
 
 /** The origin of the coordinate system. */
 val origin: Position2D = Position2D(0.0, 0.0)

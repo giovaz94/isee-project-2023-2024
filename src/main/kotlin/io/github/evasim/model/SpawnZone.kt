@@ -23,7 +23,7 @@ interface SpawnZone {
     /**
      * The shape of the spawn zone placed in world coordinates.
      */
-    val placedShape: Placed<Shape>
+    val place: Placed<Shape>
         get() = shape at position
 
     /** SpawnZone factory methods. */

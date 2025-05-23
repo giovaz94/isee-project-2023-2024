@@ -8,7 +8,10 @@ import kotlin.random.Random
 
 /**
  * A shape in a two-dimensional space relative whose coordinates are **local**, i.e., relative to the origin.
+ * Its "central" position is always at the origin (0, 0).
  * A `Shape` does not know where it is placed in the world. To place it use a [Placed] instead.
+ * @see [Placed]
+ * @see [at]
  */
 sealed interface Shape {
 
@@ -47,7 +50,7 @@ data class Rectangle(val width: Double, val height: Double) : Shape {
 data class Cone(val radius: Double, val fovDegrees: Degrees) : Shape {
     override fun locallyContains(p2D: Position2D, direction: Direction?): Boolean {
         requireNotNull(direction) { "Cannot verify if a position is inside the cone without direction." }
-        val toPoint = p2D.toVector2D().normalized() ?: return true
+        val toPoint = p2D.asVector2D().normalized() ?: return true
         val cosAngle = direction.dot(toPoint)
         val cosHalfFOV = cos(Math.toRadians(fovDegrees.value / 2.0))
         return Circle(radius).locallyContains(p2D) && cosAngle >= cosHalfFOV

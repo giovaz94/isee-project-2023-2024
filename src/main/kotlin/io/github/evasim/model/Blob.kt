@@ -36,6 +36,9 @@ interface Blob : Entity {
     /** Updates the blob velocity with the given vector. */
     fun updateVelocity(newVelocity: Vector2D)
 
+    /** Updates the blob internal position based on the current velocity and elapsed time. */
+    fun update(elapsedTime: Duration)
+
     /** Returns whether the blob is alive. Dual to [isDead]. */
     fun isAlive(): Boolean
 
@@ -59,7 +62,7 @@ interface Blob : Entity {
             personality: Personality,
             position: Position2D,
             shape: Shape = Circle(radius = 20.0),
-            velocity: Vector2D = Vector2D(x = 20.0, y = 20.0),
+            velocity: Vector2D = Vector2D.ZERO,
             defaultDirection: Direction = Direction.DOWN,
             sightShape: Shape = Cone(radius = 75.0, fovDegrees = Degrees(value = 90.0)),
             health: Health = Health(min = 0.0, max = 2.0),

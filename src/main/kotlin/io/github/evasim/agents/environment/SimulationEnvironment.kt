@@ -10,7 +10,7 @@ import io.github.evasim.agents.actions.UpdateVelocity
 import io.github.evasim.model.Position2D
 import io.github.evasim.model.Vector2D
 import io.github.evasim.model.World
-import io.github.evasim.model.toVector2D
+import io.github.evasim.model.asVector2D
 import io.github.evasim.model.zero
 import it.unibo.jakta.agents.bdi.Agent
 import it.unibo.jakta.agents.bdi.AgentID
@@ -29,10 +29,7 @@ import kotlin.let
  * Simulation agent environment.
  */
 class SimulationEnvironment(private val world: World) : EnvironmentImpl(
-    externalActions = mapOf(
-        update_velocity to UpdateVelocity,
-        move_towards to MoveTowards,
-    ),
+    externalActions = mapOf(update_velocity to UpdateVelocity, move_towards to MoveTowards),
     perception = Perception.empty(),
 ) {
 
@@ -67,7 +64,7 @@ class SimulationEnvironment(private val world: World) : EnvironmentImpl(
             val (agentID, tx, ty) = newData[move_towards] as Triple<String, Double, Double>
             world.blobs.find { it.id.value == agentID }?.let { blob ->
                 val target = Position2D(tx, ty)
-                val direction = (target - blob.position).toVector2D().normalized() ?: zero
+                val direction = (target - blob.position).asVector2D().normalized() ?: zero
                 blob.updateVelocity(direction * blob.velocity.magnitude())
             }
         }

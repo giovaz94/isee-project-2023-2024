@@ -11,6 +11,7 @@ import io.github.evasim.model.HollowCircle
 import io.github.evasim.model.Position2D
 import io.github.evasim.model.SpawnZone
 import io.github.evasim.model.World
+import io.github.evasim.model.origin
 import io.github.evasim.view.renderables.blobRenderable
 import io.github.evasim.view.renderables.foodRenderable
 import io.github.evasim.view.renderables.worldRenderable
@@ -81,14 +82,12 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
 
     @Subscribe
     fun update(updatedWorldEvent: UpdatedWorld) {
-        val worldNode = with(worldRenderable) {
-            updatedWorldEvent.world.render()
-        }
+        val worldNode = worldRenderable.render(updatedWorldEvent.world)
         val updatedNodes = updatedWorldEvent.world.foods.toSet().plus(updatedWorldEvent.world.blobs.toSet())
             .map { entity ->
                 when (entity) {
-                    is Food -> with(foodRenderable) { entity.render() }
-                    is Blob -> with(blobRenderable) { entity.render() }
+                    is Food -> foodRenderable.render(entity)
+                    is Blob -> blobRenderable.render(entity)
                     else -> error("Unsupported entity type: ${entity::class.simpleName}")
                 }
             }.toSet()
@@ -104,7 +103,7 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
         val config = World.Companion.Configuration(
             shape = Circle(radius = 1_000.0),
             spawnZones = setOf(
-                SpawnZone(HollowCircle(innerRadius = 800.0, outerRadius = 1_000.0), Position2D(1_000.0, 1_000.0)),
+                SpawnZone(HollowCircle(innerRadius = 800.0, outerRadius = 1_000.0), origin),
             ),
             blobsAmount = 120,
             hawkyBlobs = 60,

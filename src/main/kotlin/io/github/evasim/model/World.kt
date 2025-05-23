@@ -14,11 +14,6 @@ interface World {
     val shape: Shape
 
     /**
-     * The position of the World in the 2D space.
-     */
-    val position: Position2D
-
-    /**
      * A sequence of all food items in the simulation world.
      */
     val foods: Sequence<Food>
@@ -65,12 +60,11 @@ interface World {
 
         /**
          * Configuration class for creating a new world instance.
-         * @param shape The shape of the world.
+         * @param shape The shape of the world positioned at the origin, i.e., (0, 0).
          * @param spawnZones The spawn zones within the world.
          * @param blobsAmount The total number of blobs in the world.
          * @param hawkyBlobs The number of hawky blobs in the world.
          * @param foodsAmount The number of food items in the world.
-         * @param position The position of the world in 2D space.
          */
         data class Configuration(
             val shape: Shape,
@@ -78,11 +72,6 @@ interface World {
             val blobsAmount: Int,
             val hawkyBlobs: Int,
             val foodsAmount: Int = blobsAmount,
-            val position: Position2D = when (shape) {
-                is Rectangle -> Position2D(x = origin.x + shape.width / 2, y = origin.y + shape.height / 2)
-                is Circle -> Position2D(x = origin.x + shape.radius, y = origin.y + shape.radius)
-                else -> TODO()
-            },
         )
 
         /**
@@ -90,30 +79,29 @@ interface World {
          */
         fun fromConfiguration(configuration: Configuration): World = with(configuration) {
             val blobsPerSpawnZone = blobsAmount / spawnZones.size
-            val foods = generateSequence { positionWithin(shape at position) }
-                .filter { pos -> spawnZones.none { pos in it.placedShape } }
+            val foods = generateSequence { positionWithin(shape at origin) }
+                .filter { pos -> spawnZones.none { pos in it.place } }
                 .take(foodsAmount)
-                .map { Food.of(Circle(radius = 10.0), it, 2) }
+                .map { Food.of(Circle(radius = 10.0), it, pieces = 2) }
                 .toSet()
             val blobs = spawnZones
-                .flatMap { zone -> generateSequence { positionWithin(zone.placedShape) }.take(blobsPerSpawnZone) }
+                .flatMap { zone -> generateSequence { positionWithin(zone.place) }.take(blobsPerSpawnZone) }
                 .mapIndexed { i, p ->
                     Blob(
                         id = Entity.Id("blob-$i"),
                         personality = if (i < hawkyBlobs) Hawk else Dove,
                         position = p,
-                        velocity = (configuration.position - p).toVector2D().normalized()?.times(scalar = 20.0) ?: zero,
+                        velocity = (origin - p).asVector2D().normalized()?.let { it * 20.0 } ?: zero,
                     )
                 }
                 .toSet()
-            WorldImpl(shape, position, foods, blobs, spawnZones)
+            WorldImpl(shape, foods, blobs, spawnZones)
         }
     }
 }
 
 internal data class WorldImpl(
     override val shape: Shape,
-    override val position: Position2D,
     private val worldFoods: Set<Food>,
     private val worldBlobs: Set<Blob>,
     private val worldSpawnZones: Set<SpawnZone>,
