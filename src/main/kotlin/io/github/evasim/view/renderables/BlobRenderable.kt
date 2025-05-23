@@ -24,5 +24,5 @@ internal val blobRenderable = Renderable<Blob, Node> { blob ->
         translateY = blob.position.y - ICON_DIMENSION / 2
     }
     val sightNode = shapeRenderable(background = Color.YELLOW).render(blob.sight.visibilityArea)
-    Group(sightNode, /*circleNode,*/ imageView)
+    Group(sightNode, imageView)
 }

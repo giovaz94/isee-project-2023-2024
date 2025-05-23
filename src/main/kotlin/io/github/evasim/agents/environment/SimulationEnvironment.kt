@@ -7,11 +7,15 @@ import io.github.evasim.agents.Literals.reached_food
 import io.github.evasim.agents.Literals.update_velocity
 import io.github.evasim.agents.actions.MoveTowards
 import io.github.evasim.agents.actions.UpdateVelocity
+import io.github.evasim.model.Blob
 import io.github.evasim.model.Position2D
 import io.github.evasim.model.Vector2D
 import io.github.evasim.model.World
 import io.github.evasim.model.asVector2D
+import io.github.evasim.model.distanceTo
 import io.github.evasim.model.zero
+import io.github.evasim.utils.Logic.asBelief
+import io.github.evasim.utils.Logic.invoke
 import it.unibo.jakta.agents.bdi.Agent
 import it.unibo.jakta.agents.bdi.AgentID
 import it.unibo.jakta.agents.bdi.actions.ExternalAction
@@ -21,9 +25,6 @@ import it.unibo.jakta.agents.bdi.environment.Environment
 import it.unibo.jakta.agents.bdi.environment.impl.EnvironmentImpl
 import it.unibo.jakta.agents.bdi.messages.MessageQueue
 import it.unibo.jakta.agents.bdi.perception.Perception
-import it.unibo.tuprolog.core.Numeric
-import it.unibo.tuprolog.core.Struct
-import kotlin.let
 
 /**
  * Simulation agent environment.
@@ -34,24 +35,23 @@ class SimulationEnvironment(private val world: World) : EnvironmentImpl(
 ) {
 
     override fun percept(agent: Agent): BeliefBase = world.blobs.find { it.id.value == agent.name }?.let { blob ->
-        val foodsBeliefs = world.foods.filter { it in blob.sight }.map {
-            Belief.fromPerceptSource(
-                Struct.of(food, Numeric.of(it.position.x), Numeric.of(it.position.y)),
-            )
-        }
-        val collidingBeliefs = world.foods.filter { blob collidingWith it }.map {
-            Belief.fromPerceptSource(
-                Struct.of(reached_food, Numeric.of(it.position.x), Numeric.of(it.position.y)),
-            )
-        }
         BeliefBase.of(
-            Belief.fromPerceptSource(
-                Struct.of(my_position, Numeric.of(blob.position.x), Numeric.of(blob.position.y)),
-            ),
-            *foodsBeliefs.toSet().toTypedArray(),
-            *collidingBeliefs.toSet().toTypedArray(),
+            my_position(blob.position).asBelief(),
+            *setOfNotNull(surroundingFreeFoods(blob)).toTypedArray(),
+            *collidingFoods(blob).toTypedArray(),
         )
     } ?: BeliefBase.empty()
+
+    private fun surroundingFreeFoods(blob: Blob): Belief? = world.foods
+        .filter { it in blob.sight }
+        .filter { it.hasUncollectedPieces() }
+        .minByOrNull { blob.distanceTo(it) }
+        ?.let { food(it.position).asBelief() }
+
+    private fun collidingFoods(blob: Blob): Set<Belief> = world.foods
+        .filter { blob collidingWith it }
+        .map { reached_food(it.position).asBelief() }
+        .toSet()
 
     @Suppress("UNCHECKED_CAST")
     override fun updateData(newData: Map<String, Any>): Environment {
@@ -59,7 +59,6 @@ class SimulationEnvironment(private val world: World) : EnvironmentImpl(
             val (agentID, vx, vy) = newData[update_velocity] as Triple<String, Double, Double>
             world.blobs.find { it.id.value == agentID }?.updateVelocity(Vector2D(vx, vy))
         }
-
         if (move_towards in newData) {
             val (agentID, tx, ty) = newData[move_towards] as Triple<String, Double, Double>
             world.blobs.find { it.id.value == agentID }?.let { blob ->
@@ -68,7 +67,6 @@ class SimulationEnvironment(private val world: World) : EnvironmentImpl(
                 blob.updateVelocity(direction * blob.velocity.magnitude())
             }
         }
-
         return SimulationEnvironment(world)
     }
 

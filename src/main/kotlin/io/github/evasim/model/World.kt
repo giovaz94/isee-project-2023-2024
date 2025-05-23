@@ -91,7 +91,7 @@ interface World {
                         id = Entity.Id("blob-$i"),
                         personality = if (i < hawkyBlobs) Hawk else Dove,
                         position = p,
-                        velocity = (origin - p).asVector2D().normalized()?.let { it * 20.0 } ?: zero,
+                        velocity = (origin - p).asVector2D().normalized()?.times(scalar = 20.0) ?: zero,
                     )
                 }
                 .toSet()

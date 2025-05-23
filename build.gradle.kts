@@ -46,6 +46,7 @@ sourceSets {
 kotlin {
     compilerOptions {
         allWarningsAsErrors = true
+        freeCompilerArgs.add("-Xcontext-parameters")
     }
 }
 

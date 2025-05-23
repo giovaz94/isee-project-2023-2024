@@ -2,7 +2,6 @@ package io.github.evasim.model
 
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.time.Duration
 
 /** A type alias for the energy amount. */
 typealias Energy = Double
@@ -24,6 +23,9 @@ interface Food : Entity {
 
     /** The set of pieces that make up this food item. */
     val pieces: Set<Piece>
+
+    /** @return true if this food item has at least one uncollected piece, false otherwise. */
+    fun hasUncollectedPieces(): Boolean = pieces.any { it.collectedBy() == null }
 
     /** Attempts to collect this food item by the given blob, returning true if successful or false otherwise. */
     fun attemptCollecting(blob: Blob): Boolean

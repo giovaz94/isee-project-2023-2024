@@ -4,6 +4,7 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 /** A pose in a two-dimensional space, represented as a pair of [Position2D] and [Vector2D]. */
 typealias Pose = Pair<Position2D, Vector2D>
@@ -196,6 +197,9 @@ private data class Versor2DImpl(val vector: Vector2D) : Versor2D, Vector2D by ve
 
 /** Converts a 2D position in a 2D vector. */
 fun Position2D.asVector2D(): Vector2D = Vector2D(x, y)
+
+/** Computes the distance between two entities. */
+fun Entity.distanceTo(other: Entity): Double = (position - other.position).let { d -> sqrt(d.x * d.x + d.y * d.y) }
 
 /** The origin of the coordinate system. */
 val origin: Position2D = Position2D(0.0, 0.0)
