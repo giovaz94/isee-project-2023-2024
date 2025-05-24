@@ -9,56 +9,111 @@ import io.github.evasim.model.Food
 import io.github.evasim.view.renderables.blobRenderable
 import io.github.evasim.view.renderables.foodRenderable
 import io.github.evasim.view.renderables.worldRenderable
+import javafx.animation.Interpolator
+import javafx.animation.ParallelTransition
+import javafx.animation.ScaleTransition
+import javafx.animation.TranslateTransition
 import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.geometry.Point2D
 import javafx.scene.Cursor
 import javafx.scene.Node
+import javafx.scene.control.Button
 import javafx.scene.input.ScrollEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
+import javafx.util.Duration
 import java.net.URL
-import java.util.ResourceBundle
+import java.util.*
+import kotlin.math.abs
 
 @Suppress("detekt:VarCouldBeVal")
 internal class SimulationPaneController : Initializable, EventSubscriber {
     @FXML private lateinit var simulationPane: AnchorPane
 
+    @FXML private lateinit var centerViewButton: Button
+
     private val simulationGroup = Pane()
 
-    private var scale = 1.0
+    private var scale = DEFAULT_SCALE
 
-    private var lastMousePoint = Point2D(0.0, 0.0)
+    private var lastMousePoint = Point2D.ZERO
 
-    private var translation = Point2D(0.0, 0.0)
+    private var defaultTranslation = Point2D.ZERO
+
+    private var translation = Point2D.ZERO
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         SimulatorController.register(this)
+        setupPane()
+        setupZoomAndPan()
+    }
+
+    private fun setupPane() {
         simulationPane.children.add(simulationGroup)
         AnchorPane.setTopAnchor(simulationGroup, 0.0)
         AnchorPane.setLeftAnchor(simulationGroup, 0.0)
         AnchorPane.setRightAnchor(simulationGroup, 0.0)
         AnchorPane.setBottomAnchor(simulationGroup, 0.0)
-        simulationPane.addEventFilter(ScrollEvent.SCROLL) { event ->
+        simulationPane.widthProperty().addListener { centerCoordinates() }
+        simulationPane.heightProperty().addListener { centerCoordinates() }
+        Platform.runLater { centerCoordinates() }
+    }
+
+    private fun setupZoomAndPan() = simulationPane.apply {
+        addEventFilter(ScrollEvent.SCROLL) { event ->
             scale *= if (event.deltaY > 0) scale + SCALE_DELTA else scale - SCALE_DELTA
             simulationGroup.scaleX = scale
             simulationGroup.scaleY = scale
             event.consume()
         }
-        simulationPane.setOnMousePressed {
+        setOnMousePressed {
             lastMousePoint = Point2D(it.sceneX, it.sceneY)
-            simulationPane.cursor = Cursor.CLOSED_HAND
+            cursor = Cursor.CLOSED_HAND
         }
-        simulationPane.setOnMouseDragged { event ->
+        setOnMouseDragged { event ->
             translation = translation.add(Point2D(event.sceneX, event.sceneY).subtract(lastMousePoint))
             simulationGroup.translateX = translation.x
             simulationGroup.translateY = translation.y
             lastMousePoint = Point2D(event.sceneX, event.sceneY)
         }
-        simulationPane.setOnMouseReleased {
-            simulationPane.cursor = Cursor.DEFAULT
+        setOnMouseReleased { cursor = Cursor.DEFAULT }
+        centerViewButton.setOnAction { centerView() }
+    }
+
+    private fun centerView() {
+        scale = DEFAULT_SCALE
+        translation = defaultTranslation
+        ParallelTransition(
+            ScaleTransition(Duration.millis(TRANSITION_DURATION_MS), simulationGroup).apply {
+                toX = DEFAULT_SCALE
+                toY = DEFAULT_SCALE
+                interpolator = Interpolator.EASE_OUT
+            },
+            TranslateTransition(Duration.millis(TRANSITION_DURATION_MS), simulationGroup).apply {
+                toX = defaultTranslation.x
+                toY = defaultTranslation.y
+                interpolator = Interpolator.EASE_OUT
+            },
+        ).play()
+    }
+
+    private fun centerCoordinates() {
+        val centerX = simulationPane.width / 2.0
+        val centerY = simulationPane.height / 2.0
+        defaultTranslation = Point2D(centerX, centerY)
+        if (translation == Point2D(0.0, 0.0) || isDefaultPosition()) {
+            translation = defaultTranslation
+            simulationGroup.translateX = translation.x
+            simulationGroup.translateY = translation.y
         }
+    }
+
+    private fun isDefaultPosition(): Boolean {
+        val tolerance = 1.0
+        return abs(translation.x - defaultTranslation.x) < tolerance &&
+            abs(translation.y - defaultTranslation.y) < tolerance
     }
 
     @Subscribe
@@ -82,5 +137,7 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
 
     private companion object {
         private const val SCALE_DELTA = 0.1
+        private const val DEFAULT_SCALE = 1.0
+        private const val TRANSITION_DURATION_MS = 300.0
     }
 }
