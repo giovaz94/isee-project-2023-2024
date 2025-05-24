@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:id="simulationPane"
+            styleClass="simulation-pane"
+            fx:controller="io.github.evasim.view.controllers.SimulationPaneController">
+    <!-- Simulation Content -->
+</AnchorPane>

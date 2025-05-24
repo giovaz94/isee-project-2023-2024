@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:id="controlsPanel" spacing="16.0" alignment="TOP_CENTER"
+      styleClass="controls-panel"
+      fx:controller="io.github.evasim.view.controllers.ControlsPaneController">
+    <!-- Panel header with toggle button -->
+    <HBox spacing="8.0" alignment="CENTER_RIGHT" styleClass="panel-header">
+        <Label text="Controls" styleClass="controls-title"/>
+        <Button fx:id="toggleButton" styleClass="toggle-button" text="⟩"
+                minWidth="24.0" minHeight="24.0" maxWidth="24.0" maxHeight="24.0"/>
+    </HBox>
+    <!-- Collapsible content -->
+    <VBox fx:id="controlsContent" spacing="16.0" styleClass="controls-content">
+        <!-- Simulation controls -->
+        <VBox spacing="8.0">
+            <Label text="Simulation" styleClass="controls-section"/>
+            <HBox spacing="8.0" alignment="CENTER_RIGHT">
+                <Button fx:id="startButton" text="Start" styleClass="control-button"/>
+                <Button fx:id="pauseButton" text="Pause" styleClass="control-button"/>
+                <Button fx:id="stopButton" text="Stop" styleClass="control-button"/>
+            </HBox>
+        </VBox>
+        <!-- Separator line -->
+        <Line endX="200" stroke="#e5e5e7" strokeWidth="0.5"/>
+        <!-- Parameters section -->
+        <VBox spacing="12.0">
+            <Label text="Parameters" styleClass="controls-section"/>
+            <VBox spacing="8.0">
+                <Label text="Blob Speed" styleClass="parameter-label"/>
+                <Slider fx:id="blobSpeedSlider" min="0.1" max="5.0" value="1.0"
+                        blockIncrement="0.1" styleClass="parameter-slider"/>
+            </VBox>
+            <VBox spacing="8.0">
+                <Label text="Food Amount" styleClass="parameter-label"/>
+                <TextField fx:id="foodAmountField" promptText="e.g. 20"
+                           styleClass="parameter-field"/>
+            </VBox>
+        </VBox>
+    </VBox>
+</VBox>

@@ -5,12 +5,7 @@ import io.github.evasim.controller.EventSubscriber
 import io.github.evasim.controller.SimulatorController
 import io.github.evasim.controller.UpdatedWorld
 import io.github.evasim.model.Blob
-import io.github.evasim.model.Circle
 import io.github.evasim.model.Food
-import io.github.evasim.model.HollowCircle
-import io.github.evasim.model.SpawnZone
-import io.github.evasim.model.World
-import io.github.evasim.model.origin
 import io.github.evasim.view.renderables.blobRenderable
 import io.github.evasim.view.renderables.foodRenderable
 import io.github.evasim.view.renderables.worldRenderable
@@ -20,32 +15,22 @@ import javafx.fxml.Initializable
 import javafx.geometry.Point2D
 import javafx.scene.Cursor
 import javafx.scene.Node
-import javafx.scene.control.Button
-import javafx.scene.control.Slider
-import javafx.scene.control.TextField
 import javafx.scene.input.ScrollEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
 import java.net.URL
-import java.util.*
+import java.util.ResourceBundle
 
-@Suppress("detekt:style")
-internal class FXSimulatorViewController : Initializable, EventSubscriber {
+@Suppress("detekt:VarCouldBeVal")
+internal class SimulationPaneController : Initializable, EventSubscriber {
     @FXML private lateinit var simulationPane: AnchorPane
 
-    @FXML private lateinit var startButton: Button
-
-    @FXML private lateinit var pauseButton: Button
-
-    @FXML private lateinit var stopButton: Button
-
-    @FXML private lateinit var blobSpeedSlider: Slider
-
-    @FXML private lateinit var foodAmountField: TextField
-
     private val simulationGroup = Pane()
+
     private var scale = 1.0
+
     private var lastMousePoint = Point2D(0.0, 0.0)
+
     private var translation = Point2D(0.0, 0.0)
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
@@ -56,7 +41,7 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
         AnchorPane.setRightAnchor(simulationGroup, 0.0)
         AnchorPane.setBottomAnchor(simulationGroup, 0.0)
         simulationPane.addEventFilter(ScrollEvent.SCROLL) { event ->
-            scale *= if (event.deltaY > 0) 1.1 else 0.9
+            scale *= if (event.deltaY > 0) scale + SCALE_DELTA else scale - SCALE_DELTA
             simulationGroup.scaleX = scale
             simulationGroup.scaleY = scale
             event.consume()
@@ -74,9 +59,6 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
         simulationPane.setOnMouseReleased {
             simulationPane.cursor = Cursor.DEFAULT
         }
-        startButton.setOnAction { onStart() }
-        pauseButton.setOnAction { onPause() }
-        stopButton.setOnAction { onStop() }
     }
 
     @Subscribe
@@ -98,23 +80,7 @@ internal class FXSimulatorViewController : Initializable, EventSubscriber {
         simulationGroup.children.addAll(nodes)
     }
 
-    private fun onStart() {
-        val config = World.Companion.Configuration(
-            shape = Circle(radius = 1_000.0),
-            spawnZones = setOf(
-                SpawnZone(HollowCircle(innerRadius = 900.0, outerRadius = 1_000.0), origin),
-            ),
-            blobsAmount = 120,
-            hawkyBlobs = 60,
-        )
-        SimulatorController.start(config)
-    }
-
-    private fun onPause() {
-        // TODO: Pause simulation logic
-    }
-
-    private fun onStop() {
-        SimulatorController.stop()
+    private companion object {
+        private const val SCALE_DELTA = 0.1
     }
 }

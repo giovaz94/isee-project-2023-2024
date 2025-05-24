@@ -19,6 +19,7 @@ class FXSimulatorView : Application(), Boundary {
             title = "EvaSim Simulator"
             scene = Scene(fxmlLoader.load())
             scene.stylesheets.add(styleFile.toExternalForm())
+            isMaximized = true
             show()
         }
     }
@@ -28,7 +29,7 @@ class FXSimulatorView : Application(), Boundary {
     }
 
     private companion object {
-        private const val LAYOUT_FILE = "ui/layouts/MainWindow.fxml"
+        private const val LAYOUT_FILE = "ui/layouts/Main.fxml"
         private const val STYLE_FILE = "ui/css/style.css"
     }
 }

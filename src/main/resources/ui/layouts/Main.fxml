@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml" prefWidth="1400.0" prefHeight="700.0">
+    <!-- Full-screen simulation pane -->
+    <fx:include fx:id="simulationView" source="SimulationPane.fxml"
+                AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+                AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
+    <!-- Controls panel overlay on the right -->
+    <fx:include fx:id="controlsView" source="ControlsPane.fxml"
+                AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="20.0"/>
+</AnchorPane>
