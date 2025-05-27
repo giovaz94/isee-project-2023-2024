@@ -83,6 +83,46 @@ data class Placed<S : Shape>(val shape: S, var position: Position2D, var directi
     }
 }
 
+/** Check if a [Placed] collides with a container [Shape]. */
+infix fun Placed<out Shape>.collidesWith(shape: Shape): Boolean {
+    return !this.isFullyContainedIn(shape)
+}
+
+/** Check if a [Placed] is entirely contained in a [Shape]. */
+fun Placed<out Shape>.isFullyContainedIn(other: Shape): Boolean {
+    return when (val shape = this.shape) {
+        is Rectangle -> {
+            val corners = listOf(
+                Position2D(-shape.halfWidth, -shape.halfHeight),
+                Position2D(shape.halfWidth, -shape.halfHeight),
+                Position2D(-shape.halfWidth, shape.halfHeight),
+                Position2D(shape.halfWidth, shape.halfHeight),
+            ).map { it + this.position }
+
+            corners.all { other.locallyContains(it) }
+        }
+        is Circle -> {
+            val directions = listOf(
+                Position2D(1.0, 0.0),
+                Position2D(-1.0, 0.0),
+                Position2D(0.0, 1.0),
+                Position2D(0.0, -1.0),
+                Position2D(1.0, 1.0),
+                Position2D(-1.0, 1.0),
+                Position2D(1.0, -1.0),
+                Position2D(-1.0, -1.0),
+            )
+
+            directions.map { dir ->
+                val norm = dir.asVector2D().normalized() ?: zero
+                val testPoint = this.position + norm * shape.radius
+                testPoint
+            }.all { other.locallyContains(it) }
+        }
+        else -> error("Not implemented for ${shape::class.simpleName}")
+    }
+}
+
 internal infix fun Placed<Circle>.circleIntersect(other: Placed<Circle>): Boolean {
     val extendedCircle = Circle(this.shape.radius + other.shape.radius)
     return extendedCircle.locallyContains(other.position - this.position)

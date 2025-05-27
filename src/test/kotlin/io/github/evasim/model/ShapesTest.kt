@@ -52,4 +52,60 @@ class ShapesTest : FreeSpec({
         val rectangle2 = Placed(Rectangle(width = 6.0, height = 6.0), Position2D(3.0, 7.0))
         rectangle1.rectIntersect(rectangle2) shouldBe true
     }
+
+    "Circle fully inside larger circle should be contained and not collide" {
+        val inner = Placed(Circle(radius = 2.0), Position2D(0.0, 0.0))
+        val outer = Circle(radius = 5.0)
+
+        inner.isFullyContainedIn(outer) shouldBe true
+        (inner collidesWith outer) shouldBe false
+    }
+
+    "Circle partially outside larger circle should not be contained and should collide" {
+        val inner = Placed(Circle(radius = 2.0), Position2D(4.0, 0.0))
+        val outer = Circle(radius = 5.0)
+
+        inner.isFullyContainedIn(outer) shouldBe false
+        (inner collidesWith outer) shouldBe true
+    }
+
+    "Rectangle fully inside larger rectangle should be contained and not collide" {
+        val inner = Placed(Rectangle(width = 4.0, height = 4.0), Position2D(0.0, 0.0))
+        val outer = Rectangle(width = 10.0, height = 10.0)
+
+        inner.isFullyContainedIn(outer) shouldBe true
+        (inner collidesWith outer) shouldBe false
+    }
+
+    "Rectangle partially outside larger rectangle should not be contained and should collide" {
+        val inner = Placed(Rectangle(width = 4.0, height = 4.0), Position2D(4.0, 4.0))
+        val outer = Rectangle(width = 10.0, height = 10.0)
+
+        inner.isFullyContainedIn(outer) shouldBe false
+        (inner collidesWith outer) shouldBe true
+    }
+
+    "Rectangle corner just touching edge should not be fully contained and should collide" {
+        val inner = Placed(Rectangle(width = 2.0, height = 2.0), Position2D(4.0, 4.0))
+        val outer = Rectangle(width = 8.0, height = 8.0)
+
+        inner.isFullyContainedIn(outer) shouldBe false
+        (inner collidesWith outer) shouldBe true
+    }
+
+    "Circle just touching the inside edge of a rectangle should be considered contained" {
+        val inner = Placed(Circle(radius = 2.0), Position2D(0.0, 0.0))
+        val outer = Rectangle(width = 4.0, height = 4.0)
+
+        inner.isFullyContainedIn(outer) shouldBe true
+        (inner collidesWith outer) shouldBe false
+    }
+
+    "Circle whose tip exceeds rectangle should not be contained and should collide" {
+        val inner = Placed(Circle(radius = 3.0), Position2D(0.0, 0.0))
+        val outer = Rectangle(width = 4.0, height = 4.0)
+
+        inner.isFullyContainedIn(outer) shouldBe false
+        (inner collidesWith outer) shouldBe true
+    }
 })
