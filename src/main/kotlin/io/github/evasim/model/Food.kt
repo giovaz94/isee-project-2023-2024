@@ -67,7 +67,7 @@ private data class FoodImpl(
         .any { it.collectedBy.compareAndSet(null, blob) }
 
     private class PieceImpl(override val energy: Energy) : Food.Piece {
-        var collectedBy: AtomicReference<Blob?> = AtomicReference(null)
+        val collectedBy: AtomicReference<Blob?> = AtomicReference(null)
 
         override fun collectedBy(): Blob? = collectedBy.get()
     }

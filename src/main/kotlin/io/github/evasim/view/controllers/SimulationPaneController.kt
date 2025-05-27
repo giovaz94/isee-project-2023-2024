@@ -63,7 +63,7 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
 
     private fun setupZoomAndPan() = simulationPane.apply {
         addEventFilter(ScrollEvent.SCROLL) { event ->
-            scale *= if (event.deltaY > 0) scale + SCALE_DELTA else scale - SCALE_DELTA
+            if (event.deltaY > 0) scale *= SCALE_DELTA else scale /= SCALE_DELTA
             simulationGroup.scaleX = scale
             simulationGroup.scaleY = scale
             event.consume()
@@ -136,7 +136,7 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
     }
 
     private companion object {
-        private const val SCALE_DELTA = 0.1
+        private const val SCALE_DELTA = 0.8
         private const val DEFAULT_SCALE = 1.0
         private const val TRANSITION_DURATION_MS = 300.0
     }

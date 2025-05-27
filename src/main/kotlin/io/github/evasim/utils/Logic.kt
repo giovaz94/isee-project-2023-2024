@@ -4,8 +4,10 @@ import io.github.evasim.model.Position2D
 import io.github.evasim.model.Vector2D
 import io.github.evasim.model.asVector2D
 import it.unibo.jakta.agents.bdi.beliefs.Belief
+import it.unibo.tuprolog.core.Atom
 import it.unibo.tuprolog.core.Real
 import it.unibo.tuprolog.core.Struct
+import it.unibo.tuprolog.core.Term
 
 /** Utility functions for logic programming in the BDI Jakta framework. */
 object Logic {
@@ -25,6 +27,12 @@ object Logic {
     /** Builds a [Struct] from the given [Vector2D]. */
     operator fun String.invoke(v: Vector2D): Struct = Struct.of(this, Real.of(v.x), Real.of(v.y))
 
+    /** Builds a [Struct] from the given [String]. */
+    operator fun String.invoke(s: String): Struct = Struct.of(this, Atom.of(s))
+
     /** Builds a [Belief] from the given [Struct]. */
     fun Struct.asBelief(): Belief = Belief.fromPerceptSource(this)
+
+    /** A term representing the self source annotation in logic programming. */
+    val selfSource: Term = "source"("self")
 }

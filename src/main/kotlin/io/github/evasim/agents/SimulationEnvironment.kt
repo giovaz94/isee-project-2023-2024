@@ -1,12 +1,5 @@
-package io.github.evasim.agents.environment
+package io.github.evasim.agents
 
-import io.github.evasim.agents.Literals.food
-import io.github.evasim.agents.Literals.move_towards
-import io.github.evasim.agents.Literals.my_position
-import io.github.evasim.agents.Literals.reached_food
-import io.github.evasim.agents.Literals.update_velocity
-import io.github.evasim.agents.actions.MoveTowards
-import io.github.evasim.agents.actions.UpdateVelocity
 import io.github.evasim.model.Blob
 import io.github.evasim.model.Position2D
 import io.github.evasim.model.Vector2D
@@ -30,27 +23,31 @@ import it.unibo.jakta.agents.bdi.perception.Perception
  * Simulation agent environment.
  */
 class SimulationEnvironment(private val world: World) : EnvironmentImpl(
-    externalActions = mapOf(update_velocity to UpdateVelocity, move_towards to MoveTowards),
+    externalActions = mapOf(
+        update_velocity to UpdateVelocity,
+        move_towards to MoveTowards,
+        collect_food to CollectFood,
+    ),
     perception = Perception.empty(),
 ) {
 
     override fun percept(agent: Agent): BeliefBase = world.blobs.find { it.id.value == agent.name }?.let { blob ->
         BeliefBase.of(
             my_position(blob.position).asBelief(),
-            *setOfNotNull(surroundingFreeFoods(blob)).toTypedArray(),
-            *collidingFoods(blob).toTypedArray(),
+            *setOfNotNull(foodsSurrounding(blob)).toTypedArray(),
+            *foodsCollidingWith(blob).toTypedArray(),
         )
     } ?: BeliefBase.empty()
 
-    private fun surroundingFreeFoods(blob: Blob): Belief? = world.foods
+    private fun foodsSurrounding(blob: Blob): Belief? = world.foods
         .filter { it in blob.sight }
         .filter { it.hasUncollectedPieces() }
         .minByOrNull { blob.distanceTo(it) }
         ?.let { food(it.position).asBelief() }
 
-    private fun collidingFoods(blob: Blob): Set<Belief> = world.foods
+    private fun foodsCollidingWith(blob: Blob): Set<Belief> = world.foods
         .filter { blob collidingWith it }
-        .map { reached_food(it.position).asBelief() }
+        .map { reached_food(it.id.value).asBelief() }
         .toSet()
 
     @Suppress("UNCHECKED_CAST")
@@ -65,6 +62,14 @@ class SimulationEnvironment(private val world: World) : EnvironmentImpl(
                 val target = Position2D(tx, ty)
                 val direction = (target - blob.position).asVector2D().normalized() ?: zero
                 blob.updateVelocity(direction * blob.velocity.magnitude())
+            }
+        }
+        if (collect_food in newData) {
+            val (agentID, foodID) = newData[collect_food] as Pair<String, String>
+            world.blobs.find { it.id.value == agentID }?.let { blob ->
+                world.foods.find { it.id.value == foodID }?.let { food ->
+                    food.attemptCollecting(blob)
+                }
             }
         }
         return SimulationEnvironment(world)

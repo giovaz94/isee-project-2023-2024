@@ -19,7 +19,7 @@ internal val foodRenderable = Renderable<Food, Node> { food ->
                 val startAngle = i * angleStep
                 val arc = Arc(food.position.x, food.position.y, s.radius, s.radius, startAngle, angleStep).apply {
                     type = ArcType.ROUND
-                    fill = piece.collectedBy()?.let { Color.LIGHTBLUE } ?: Color.LIGHTGREEN
+                    fill = piece.collectedBy()?.let { Color.LIGHTSALMON } ?: Color.LIGHTGREEN
                     stroke = Color.DARKGRAY
                     strokeWidth = 1.0
                 }

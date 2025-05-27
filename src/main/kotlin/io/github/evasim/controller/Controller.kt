@@ -1,7 +1,7 @@
 package io.github.evasim.controller
 
+import io.github.evasim.agents.SimulationEnvironment
 import io.github.evasim.agents.blobAgent
-import io.github.evasim.agents.environment.SimulationEnvironment
 import io.github.evasim.model.World
 import io.github.evasim.model.World.Companion.Configuration
 import it.unibo.jakta.agents.bdi.dsl.mas
@@ -112,9 +112,7 @@ object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
     // TODO: think if this is the right place where to start the agents, e.g., in the rounds manager.
     private fun startMas(domain: Domain) = mas {
         environment(SimulationEnvironment(domain))
-        domain.blobs.forEach {
-            blobAgent(it.id.value, it.personality)
-        }
+        domain.blobs.forEach { blobAgent(it) }
         executionStrategy = ExecutionStrategy.oneThreadPerMas()
     }.start()
 

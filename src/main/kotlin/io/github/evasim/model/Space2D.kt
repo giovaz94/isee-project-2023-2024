@@ -169,15 +169,10 @@ interface Versor2D : Vector2D {
         val DOWN = Versor2D(x = 0.0, y = -1.0)
 
         /** Creates a [Versor2D] from an angle in degrees. */
-        fun fromAngle(degrees: Degrees): Versor2D {
-            val radians = Math.toRadians(degrees.value)
-            return Versor2D(cos(radians), sin(radians))
-        }
+        fun fromAngle(degrees: Degrees): Versor2D = fromAngle(Radians(Math.toRadians(degrees.value)))
 
         /** Creates a [Versor2D] from an angle in radians. */
-        fun fromAngle(radians: Radians): Versor2D {
-            return Versor2D(cos(radians.value), sin(radians.value))
-        }
+        fun fromAngle(radians: Radians): Versor2D = Versor2D(cos(radians.value), sin(radians.value))
     }
 }
 

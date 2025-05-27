@@ -1,8 +1,5 @@
-package io.github.evasim.agents.actions
+package io.github.evasim.agents
 
-import io.github.evasim.agents.Literals.move_towards
-import io.github.evasim.agents.Literals.update_direction
-import io.github.evasim.agents.Literals.update_velocity
 import it.unibo.jakta.agents.bdi.actions.ExternalRequest
 import it.unibo.jakta.agents.bdi.actions.impl.AbstractExternalAction
 
@@ -22,10 +19,16 @@ internal object UpdateVelocity : AbstractExternalAction(update_velocity, 2) {
     }
 }
 
-internal object UpdateDirection : AbstractExternalAction(update_direction, 2) {
+internal object UpdateDirection : AbstractExternalAction(update_direction, 1) {
     override fun action(request: ExternalRequest) {
-        val vx = request.arguments[0].castToReal().value.toDouble()
-        val vy = request.arguments[1].castToReal().value.toDouble()
-        updateData(update_direction to Triple(request.sender, vx, vy))
+        val degrees = request.arguments[0].castToReal().value.toDouble()
+        updateData(update_direction to Pair(request.sender, degrees))
+    }
+}
+
+internal object CollectFood : AbstractExternalAction(collect_food, 1) {
+    override fun action(request: ExternalRequest) {
+        val foodId = request.arguments[0].castToAtom().value
+        updateData(collect_food to Pair(request.sender, foodId))
     }
 }
