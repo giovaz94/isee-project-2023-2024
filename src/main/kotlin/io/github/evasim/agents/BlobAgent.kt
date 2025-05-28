@@ -9,7 +9,6 @@ import it.unibo.jakta.agents.bdi.dsl.MasScope
  */
 fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     beliefs {
-        fact { current_position(blob.position.x, blob.position.y) }
         fact { personality(atomOf(blob.personality.toString())) }
     }
     plans {
