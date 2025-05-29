@@ -26,7 +26,10 @@
   "packageRules": [
     {
       "description": "CI updates must be tagged as `ci`",
-      "matchPaths": [".github/workflows/*.yml", ".github/workflows/*.yaml"],
+      "matchFileNames": [
+        ".github/workflows/*.yml",
+        ".github/workflows/*.yaml"
+      ],
       "semanticCommitType": "ci"
     },
     {
