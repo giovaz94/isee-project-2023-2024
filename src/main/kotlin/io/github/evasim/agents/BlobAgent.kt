@@ -49,6 +49,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
             achieve(move)
             achieve(find_food)
         }
+        +achieve(find_food) onlyIf { status("reached"(`_`, `_`)).fromSelf }
 
         +achieve(change_direction) then {
             execute(random(X, -1.0, 1.0))
@@ -63,7 +64,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
             achieve(move)
             achieve(move_on(M))
         }
-        +achieve(move_on(N)) onlyIf { N greaterThan 0 and (not(status("exploring").fromSelf)) }
+        +achieve(move_on(N)) onlyIf { N greaterThan 0 and not(status("exploring").fromSelf) }
 
         +achieve(move) onlyIf { direction(X, Y).fromSelf and speed(S).fromSelf } then {
             execute(update(X, Y, S))
@@ -73,10 +74,9 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         +food(X, Y).fromPercept then {
             update(status("targeting"(X, Y)).fromSelf)
         }
-//        +reached_food(F).fromPercept then {
-//            execute(update_velocity(0.0, 0.0))
-//            execute(collect_food(F))
-//        }
+        +reached_food(X, Y).fromPercept then {
+            update(status("reached"(X, Y)).fromSelf)
+        }
     }
     timeDistribution {
         Time.real(value = 50) // milliseconds
