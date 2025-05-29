@@ -3,6 +3,7 @@ package io.github.evasim.view.controllers
 import com.google.common.eventbus.Subscribe
 import io.github.evasim.controller.EventSubscriber
 import io.github.evasim.controller.SimulatorController
+import io.github.evasim.controller.UpdatedBlob
 import io.github.evasim.controller.UpdatedWorld
 import io.github.evasim.model.Blob
 import io.github.evasim.model.Food
@@ -72,11 +73,11 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
             lastMousePoint = Point2D(it.sceneX, it.sceneY)
             cursor = Cursor.CLOSED_HAND
         }
-        setOnMouseDragged { event ->
-            translation = translation.add(Point2D(event.sceneX, event.sceneY).subtract(lastMousePoint))
+        setOnMouseDragged {
+            translation = translation.add(Point2D(it.sceneX, it.sceneY).subtract(lastMousePoint))
             simulationGroup.translateX = translation.x
             simulationGroup.translateY = translation.y
-            lastMousePoint = Point2D(event.sceneX, event.sceneY)
+            lastMousePoint = Point2D(it.sceneX, it.sceneY)
         }
         setOnMouseReleased { cursor = Cursor.DEFAULT }
         centerViewButton.setOnAction { centerView() }
@@ -118,16 +119,28 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
 
     @Subscribe
     fun update(updatedWorldEvent: UpdatedWorld) {
+        SimulatorController.domain?.register(this) ?: error("Cannot register observers on the domain!")
         val worldNode = worldRenderable.render(updatedWorldEvent.world)
         val updatedNodes = updatedWorldEvent.world.foods.toSet().plus(updatedWorldEvent.world.blobs.toSet())
             .map { entity ->
-                when (entity) {
+                val newNode = when (entity) {
                     is Food -> foodRenderable.render(entity)
                     is Blob -> blobRenderable.render(entity)
                     else -> error("Unsupported entity type: ${entity::class.simpleName}")
                 }
-            }.toSet()
+                newNode.apply { userData = entity.id }
+            }
+            .toSet()
         update(updatedNodes + worldNode)
+    }
+
+    @Subscribe
+    fun update(updatedBlob: UpdatedBlob) = Platform.runLater {
+        simulationGroup.children.find { it.userData == updatedBlob.blob.id }?.let { toBeRemoved ->
+            simulationGroup.children.remove(toBeRemoved)
+            val newNode = blobRenderable.render(updatedBlob.blob).apply { userData = updatedBlob.blob.id }
+            simulationGroup.children.add(newNode)
+        }
     }
 
     private fun update(nodes: Set<Node>) = Platform.runLater {

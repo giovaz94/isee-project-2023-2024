@@ -51,6 +51,9 @@ interface Blob : Entity {
     /** Returns whether the blob can reproduce based on its current health. */
     fun canReproduce(): Boolean
 
+    /** Creates a copy of this blob with the same properties. */
+    fun clone(): Blob
+
     /** The blob's factory methods. */
     companion object {
         /**
@@ -163,4 +166,6 @@ private data class BlobImpl(
     override fun isHungry(): Boolean = health.let { it.current < it.max }
 
     override fun canReproduce(): Boolean = health.let { it.current == it.max }
+
+    override fun clone(): Blob = copy()
 }

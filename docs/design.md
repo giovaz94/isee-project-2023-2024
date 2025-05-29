@@ -194,19 +194,20 @@ status(exploring).
 +!move_on(N) : N > 0 & (obstacle(X, Y) | not(status(exploring))) <- true.
   
 // TODO: obstacle avoidance. How to deal with multiple obstacles?
-+!change_direction : not(obstacle(_, _)) <-
++!change_direction : not(obstacle)) <-
   random(X, -1, 1);
   random(Y, -1, 1);
   -+direction(X, Y).
   
-+!change_direction : obstacle(X, Y) <-
-  ...
++!change_direction : obstacle() & direction(X, Y) <-
+  // TODO...
+  -+direction(-X, -Y); // Reverse direction when an obstacle is detected
 
 +!move : direction(X, Y) & speed(V) <-
-  !update_position(X, Y, V);
+  !update_position(X, Y, V); // External action
   
 +!collect_food : food(F) <- 
-  collect_food(F, IsCollected);
+  collect_food(F, IsCollected); // External action
   if (IsCollected) {
     -+status(contending(F));
     !contention;
@@ -215,10 +216,10 @@ status(exploring).
     !find_food;
   }
   
-+target_food(F) <- 
++target_food(F) <- // Belief added from the environment
   status(targeting(F)).
   
-+food(F) : status(targeting(F)) <- 
++food(F) : status(targeting(F)) <- // Belief added from the environment
   status(reached(F)).
 
 !contention : status(contending(F)) <-

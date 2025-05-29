@@ -7,7 +7,6 @@ import it.unibo.jakta.agents.bdi.beliefs.Belief
 import it.unibo.tuprolog.core.Atom
 import it.unibo.tuprolog.core.Real
 import it.unibo.tuprolog.core.Struct
-import it.unibo.tuprolog.core.Term
 
 /** Utility functions for logic programming in the BDI Jakta framework. */
 object Logic {
@@ -32,7 +31,4 @@ object Logic {
 
     /** Builds a [Belief] from the given [Struct]. */
     fun Struct.asBelief(): Belief = Belief.fromPerceptSource(this)
-
-    /** A term representing the self source annotation in logic programming. */
-    val selfSource: Term = "source"("self")
 }

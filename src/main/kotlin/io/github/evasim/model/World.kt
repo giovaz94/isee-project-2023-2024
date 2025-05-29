@@ -1,61 +1,58 @@
 package io.github.evasim.model
 
+import io.github.evasim.controller.EventBusPublisher
+import io.github.evasim.controller.EventPublisher
+import io.github.evasim.controller.UpdatedBlob
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.time.Duration
 
 /**
  * Represents the simulation world that encompasses all entities, foods, and blobs
  * and defines the overall structure and behavior of the environment.
  */
-interface World {
+interface World : EventPublisher {
+
     /**
      * Defines the overall structure or boundaries of the simulation world,
      * representing its shape relative to its local origin.
      */
     val shape: Shape
 
-    /**
-     * A sequence of all food items in the simulation world.
-     */
+    /** A sequence of all food items in the simulation world. */
     val foods: Sequence<Food>
 
-    /**
-     * A sequence of all blob entities in the simulation world.
-     */
+    /** A sequence of all blob entities in the simulation world. */
     val blobs: Sequence<Blob>
 
     /**
-     * Represents a sequence of spawn zones within the world simulation.
-     * Spawn zones define specific areas where entities like food or blobs can appear or be generated.
+     * Represents the sequence of [SpawnZone] within the world simulation, where blobs can be generated.
      * Each spawn zone is characterized by a shape that determines its spatial boundaries.
      */
     val spawnZones: Sequence<SpawnZone>
 
-    /**
-     * Adds a new food item to the world and returns an updated world instance.
-     */
-    fun addFood(food: Food): World
+    /** Adds the given [food] item to this world. */
+    fun addFood(food: Food)
 
-    /**
-     * Adds a new blob to the world and returns an updated world instance.
-     */
-    fun addBlob(blob: Blob): World
+    /** Removes the specified [food] item from this world. */
+    fun removeFood(food: Food)
 
-    /**
-     * Adds a new spawn zone to the world and returns an updated world instance.
-     */
-    fun addSpawnZone(spawnZone: SpawnZone): World
+    /** Adds a new blob to this world. */
+    fun addBlob(blob: Blob)
+
+    /** Retrieves an entity by its [id], returning a possibly nullable type. */
+    operator fun get(id: Entity.Id): Entity?
+
+    /** Adds a new spawn zone to this world. */
+    fun addSpawnZone(spawnZone: SpawnZone)
 
     /**
      * Updates the state of the world based on the given elapsed time.
-     *
      * @param elapsed The duration of time that has passed since the last update.
-     * @return A new instance of the world with the updated state.
      */
-    fun update(elapsed: Duration): World
+    fun update(blobId: Entity.Id, elapsed: Duration)
 
-    /**
-     * Provides companion object methods for managing and creating `World` instances.
-     */
+    /** Provides companion object methods for managing and creating `World` instances. */
     companion object {
 
         /**
@@ -83,44 +80,55 @@ interface World {
                 .filter { pos -> spawnZones.none { pos in it.place } }
                 .take(foodsAmount)
                 .map { Food.of(Circle(radius = 10.0), it, pieces = 2) }
-                .toSet()
+                .associateBy { it.id }
+                .toMap(ConcurrentHashMap())
             val blobs = spawnZones
                 .flatMap { zone -> generateSequence { positionWithin(zone.place) }.take(blobsPerSpawnZone) }
                 .mapIndexed { i, p ->
-                    Blob(
-                        id = Entity.Id("blob-$i"),
-                        personality = if (i < hawkyBlobs) Hawk else Dove,
-                        position = p,
-                        velocity = (origin - p).asVector2D().normalized()?.times(scalar = 20.0) ?: zero,
-                    )
+                    Blob(id = Entity.Id("blob-$i"), personality = if (i < hawkyBlobs) Hawk else Dove, position = p)
                 }
-                .toSet()
-            WorldImpl(shape, foods, blobs, spawnZones)
+                .associateBy { it.id }
+                .toMap(ConcurrentHashMap())
+            WorldImpl(shape, foods, blobs, CopyOnWriteArraySet(spawnZones))
         }
     }
 }
 
-internal data class WorldImpl(
+private data class WorldImpl(
     override val shape: Shape,
-    private val worldFoods: Set<Food>,
-    private val worldBlobs: Set<Blob>,
-    private val worldSpawnZones: Set<SpawnZone>,
-) : World {
+    private val worldFoods: ConcurrentHashMap<Entity.Id, Food>,
+    private val worldBlobs: ConcurrentHashMap<Entity.Id, Blob>,
+    private val worldSpawnZones: CopyOnWriteArraySet<SpawnZone>,
+) : World, EventBusPublisher() {
 
-    override val foods: Sequence<Food> = worldFoods.asSequence()
+    override val foods: Sequence<Food> = worldFoods.values.asSequence()
 
-    override val blobs: Sequence<Blob> = worldBlobs.asSequence()
+    override val blobs: Sequence<Blob> = worldBlobs.values.asSequence()
 
     override val spawnZones: Sequence<SpawnZone> = worldSpawnZones.asSequence()
 
-    override fun addFood(food: Food): World = copy(worldFoods = worldFoods + food)
+    override fun addFood(food: Food) {
+        worldFoods[food.id] = food
+    }
 
-    override fun addBlob(blob: Blob): World = copy(worldBlobs = worldBlobs + blob)
+    override fun removeFood(food: Food) {
+        worldFoods.remove(food.id)
+    }
 
-    override fun addSpawnZone(spawnZone: SpawnZone): World = copy(worldSpawnZones = worldSpawnZones + spawnZone)
+    override fun addBlob(blob: Blob) {
+        worldBlobs[blob.id] = blob
+    }
 
-    override fun update(elapsed: Duration): World {
-        blobs.forEach { it.update(elapsed) }
-        return this
+    override fun addSpawnZone(spawnZone: SpawnZone) {
+        worldSpawnZones.add(spawnZone)
+    }
+
+    override fun get(id: Entity.Id): Entity? = worldBlobs[id] ?: worldFoods[id]
+
+    override fun update(blobId: Entity.Id, elapsed: Duration) {
+        worldBlobs[blobId]?.let { blob ->
+            blob.update(elapsed)
+            post(UpdatedBlob(blob.clone()))
+        }
     }
 }
