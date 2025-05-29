@@ -32,7 +32,7 @@ class SimulationEnvironment(private val world: World) : EnvironmentImpl(
         BeliefBase.of(
             position(blob.position).asBelief(),
             *setOfNotNull(foodsSurrounding(blob)).toTypedArray(),
-            // *foodsCollidingWith(blob).toTypedArray(),
+            *foodsCollidingWith(blob).toTypedArray(),
         )
     } ?: BeliefBase.empty()
 
@@ -42,10 +42,10 @@ class SimulationEnvironment(private val world: World) : EnvironmentImpl(
         .minByOrNull { blob.distanceTo(it) }
         ?.let { food(it.position).asBelief() }
 
-//    private fun foodsCollidingWith(blob: Blob): Set<Belief> = world.foods
-//        .filter { blob collidingWith it }
-//        .map { reached_food(it.id.value).asBelief() }
-//        .toSet()
+    private fun foodsCollidingWith(blob: Blob): Set<Belief> = world.foods
+        .filter { blob collidingWith it }
+        .map { reached_food(it.position).asBelief() }
+        .toSet()
 
     @Suppress("UNCHECKED_CAST")
     override fun updateData(newData: Map<String, Any>): Environment {
