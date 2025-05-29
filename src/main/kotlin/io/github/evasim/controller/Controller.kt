@@ -28,6 +28,9 @@ typealias Domain = World
  */
 interface Controller {
 
+    /** The current domain instance. If not already started, it will be `null`. */
+    val domain: Domain?
+
     /**
      * A mutable list of user inputs in the form of `UserInput` objects.
      *
@@ -82,49 +85,53 @@ interface Controller {
 /** The simulation controller. */
 object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
 
-    private val engine = SimulationEngine(this)
-    private var domain: Domain? = null
+    // private val engine = SimulationEngine(this)
+    override var domain: World? = null
 
     @Synchronized
     override fun updateDomain(deltaTime: Duration) {
-        domain = domain?.update(deltaTime) ?: error("It is not possible to update a non-existing domain!")
+        TODO()
+        // domain?.update(deltaTime) ?: error("It is not possible to update a non-existing domain!")
     }
 
     @Synchronized
     override fun registerUserInput(input: UserInput) {
-        userInputs.add(input)
+        TODO()
+        // userInputs.add(input)
     }
 
     @Synchronized
     override fun registerEvent(event: Event) {
-        events.add(event)
+        TODO()
+        // events.add(event)
     }
 
     @Synchronized
     override fun start(configuration: Configuration) {
         require(domain == null) { "A simulation is already running. Please, stop it first." }
-        thread { engine.start() }
+        // thread { engine.start() }
         World.fromConfiguration(configuration)
             .also { domain = it }
             .let { startMas(it) }
+        post(UpdatedWorld(domain ?: error("Cannot render a non-existing simulation!")))
     }
 
     // TODO: think if this is the right place where to start the agents, e.g., in the rounds manager.
     private fun startMas(domain: Domain) = mas {
         environment(SimulationEnvironment(domain))
         domain.blobs.forEach { blobAgent(it) }
-        executionStrategy = ExecutionStrategy.oneThreadPerMas()
-    }.start()
+        executionStrategy = ExecutionStrategy.discreteTimeExecution()
+    }.let { thread { it.start() } }
 
     @Synchronized
     override fun stop() {
         requireNotNull(domain) { "Cannot stop a non-existing simulation!" }
         domain = null
-        engine.stop()
+        // engine.stop()
     }
 
     @Synchronized
     override fun render() {
-        post(UpdatedWorld(domain ?: error("Cannot render a non-existing simulation!")))
+        TODO()
     }
 }
