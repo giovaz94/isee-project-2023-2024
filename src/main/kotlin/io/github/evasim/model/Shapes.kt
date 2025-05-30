@@ -1,7 +1,8 @@
 package io.github.evasim.model
 
-import kotlin.math.PI
+import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.PI
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -119,6 +120,34 @@ fun Placed<out Shape>.isFullyContainedIn(other: Shape): Boolean {
                 testPoint
             }.all { other.locallyContains(it) }
         }
+
+        is Cone -> {
+            val direction = this.direction
+                ?: error("Direction must be specified for a placed Cone.")
+
+            val fovRad = Math.toRadians(shape.fovDegrees.value)
+            val halfFov = fovRad / 2.0
+            val baseAngle = atan2(direction.y, direction.x)
+            val radius = shape.radius
+            val apex = this.position
+
+            val angles = listOf(
+                baseAngle - halfFov,
+                baseAngle + halfFov,
+                baseAngle,
+            )
+
+            val arcPoints = angles.map { angle ->
+                Position2D(
+                    x = apex.x + radius * cos(angle),
+                    y = apex.y + radius * sin(angle),
+                )
+            }
+
+            val allPoints = listOf(apex) + arcPoints
+            allPoints.all { other.locallyContains(it) }
+        }
+
         else -> error("Not implemented for ${shape::class.simpleName}")
     }
 }

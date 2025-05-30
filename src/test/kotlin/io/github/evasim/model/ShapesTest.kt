@@ -108,4 +108,52 @@ class ShapesTest : FreeSpec({
         inner.isFullyContainedIn(outer) shouldBe false
         (inner collidesWith outer) shouldBe true
     }
+
+    "Cone fully inside circle should be contained and not collide" {
+        val cone = Placed(Cone(radius = 2.0, fovDegrees = Degrees(90.0)), Position2D(0.0, 0.0), Direction.RIGHT)
+        val circle = Circle(radius = 5.0)
+
+        cone.isFullyContainedIn(circle) shouldBe true
+        (cone collidesWith circle) shouldBe false
+    }
+
+    "Cone partially outside circle should not be contained and should collide" {
+        val cone = Placed(Cone(radius = 4.5, fovDegrees = Degrees(120.0)), Position2D(3.0, 0.0), Direction.RIGHT)
+        val circle = Circle(radius = 5.0)
+
+        cone.isFullyContainedIn(circle) shouldBe false
+        (cone collidesWith circle) shouldBe true
+    }
+
+    "Cone fully inside rectangle should be contained and not collide" {
+        val cone = Placed(Cone(radius = 3.0, fovDegrees = Degrees(60.0)), Position2D(0.0, 0.0), Direction.UP)
+        val rectangle = Rectangle(width = 10.0, height = 10.0)
+
+        cone.isFullyContainedIn(rectangle) shouldBe true
+        (cone collidesWith rectangle) shouldBe false
+    }
+
+    "Cone partially outside rectangle should not be contained and should collide" {
+        val cone = Placed(Cone(radius = 5.0, fovDegrees = Degrees(90.0)), Position2D(4.0, 4.0), Direction.UP)
+        val rectangle = Rectangle(width = 8.0, height = 8.0)
+
+        cone.isFullyContainedIn(rectangle) shouldBe false
+        (cone collidesWith rectangle) shouldBe true
+    }
+
+    "Cone fully inside hollow circle should be contained and not collide" {
+        val cone = Placed(Cone(radius = 2.0, fovDegrees = Degrees(45.0)), Position2D(0.0, 0.0), Direction.RIGHT)
+        val hollow = HollowCircle(innerRadius = 0.0, outerRadius = 5.0)
+
+        cone.isFullyContainedIn(hollow) shouldBe true
+        (cone collidesWith hollow) shouldBe false
+    }
+
+    "Cone touching hollow circle inner radius should not be contained and should collide" {
+        val cone = Placed(Cone(radius = 2.0, fovDegrees = Degrees(180.0)), Position2D(0.0, 0.0), Direction.RIGHT)
+        val hollow = HollowCircle(innerRadius = 2.0, outerRadius = 5.0)
+
+        cone.isFullyContainedIn(hollow) shouldBe false
+        (cone collidesWith hollow) shouldBe true
+    }
 })
