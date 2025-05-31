@@ -22,7 +22,7 @@ dependencies {
     with(libs) {
         implementation(kotlin.stdlib)
         implementation(kotlin.stdlib.jdk8)
-        implementation(jason)
+        // implementation(jason)
         implementation(javafx)
         implementation(jakta)
         implementation(bundles.coroutines)

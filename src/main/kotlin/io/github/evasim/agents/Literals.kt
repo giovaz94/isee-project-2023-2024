@@ -26,6 +26,10 @@ internal val find_food by OwnName
 
 internal val collect_food by OwnName
 
+internal val collect by OwnName
+
+internal val collected_food by OwnName
+
 internal val contention by OwnName
 
 internal val go_home by OwnName
@@ -41,3 +45,9 @@ internal val food by OwnName
 internal val reached_food by OwnName
 
 internal val waypoint_direction by OwnName
+
+internal val exploring by OwnName
+
+internal val targeting by OwnName
+
+internal val reached by OwnName
