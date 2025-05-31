@@ -5,6 +5,7 @@ import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 /** A pose in a two-dimensional space, represented as a pair of [Position2D] and [Vector2D]. */
 typealias Pose = Pair<Position2D, Vector2D>
@@ -79,6 +80,9 @@ interface Vector2D {
     /** Divides the coordinates of this vector by a scalar. */
     operator fun div(scalar: Double): Vector2D
 
+    /** Return the inverse of the [Vector2D] */
+    operator fun unaryMinus(): Vector2D
+
     /** Computes the magnitude of this vector. */
     fun magnitude(): Double
 
@@ -90,6 +94,9 @@ interface Vector2D {
 
     /** Returns whether this vector is a zero vector (both components are zero). */
     fun isZero(): Boolean
+
+    /** Inverts and randomly rotates this vector within the given angle range (in degrees). */
+    fun invertedWithRandomAngle(minDegrees: Double, maxDegrees: Double): Vector2D
 
     /** Useful factory methods. */
     companion object {
@@ -109,7 +116,24 @@ private data class Vector2DImpl(override val x: Double, override val y: Double) 
     override operator fun minus(v2D: Vector2D): Vector2D = Vector2D(x - v2D.x, y - v2D.y)
     override operator fun times(scalar: Double): Vector2D = Vector2D(x * scalar, y * scalar)
     override operator fun div(scalar: Double): Vector2D = Vector2D(x / scalar, y / scalar)
+    override operator fun unaryMinus() : Vector2D = Vector2D(-x, -y)
     override fun isZero(): Boolean = x == 0.0 && y == 0.0
+    override fun invertedWithRandomAngle(minDegrees: Double, maxDegrees: Double): Vector2D {
+        require(minDegrees <= maxDegrees) { "minDegrees must be <= maxDegrees" }
+
+        val inverted = -this
+        val randomAngleDegrees = Random.nextDouble(minDegrees, maxDegrees)
+        val randomAngleRadians = Math.toRadians(randomAngleDegrees)
+
+        val cosA = cos(randomAngleRadians)
+        val sinA = sin(randomAngleRadians)
+
+        val rotatedX = inverted.x * cosA - inverted.y * sinA
+        val rotatedY = inverted.x * sinA + inverted.y * cosA
+
+        return Vector2D(rotatedX, rotatedY)
+    }
+
     override fun magnitude(): Double = hypot(x, y)
     override fun normalized(): Versor2D? = takeUnless { it.isZero() }?.let { Versor2D.from(it / it.magnitude()) }
     override infix fun dot(v2D: Vector2D): Double = x * v2D.x + y * v2D.y

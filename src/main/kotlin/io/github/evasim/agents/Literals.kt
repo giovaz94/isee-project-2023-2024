@@ -51,3 +51,7 @@ internal val exploring by OwnName
 internal val targeting by OwnName
 
 internal val reached by OwnName
+
+internal val bounce by OwnName
+
+internal val inverse_direction by OwnName

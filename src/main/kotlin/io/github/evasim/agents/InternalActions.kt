@@ -42,3 +42,23 @@ internal object WaypointDirection : AbstractInternalAction(waypoint_direction, a
         )
     }
 }
+
+internal object InverseDirection: AbstractInternalAction(inverse_direction, arity = 4) {
+    override fun action(request: InternalRequest) {
+        val ox = request.arguments[0].castToReal().value.toDouble()
+        val oy = request.arguments[1].castToReal().value.toDouble()
+        val ix = request.arguments[2].castToVar()
+        val iy = request.arguments[3].castToVar()
+
+        val vector = Vector2D(ox, oy)
+        val inverseVector = vector.invertedWithRandomAngle(-45.0, 45.0)
+
+        addResults(
+            Substitution.unifier(
+                ix to Real.of(inverseVector.x),
+                iy to Real.of(inverseVector.y),
+            )
+        )
+
+    }
+}

@@ -1,5 +1,6 @@
 package io.github.evasim.agents
 
+
 import io.github.evasim.model.Blob
 import io.github.evasim.model.Entity
 import io.github.evasim.model.Food
@@ -40,6 +41,7 @@ class SimulationEnvironment(
             position(blob.position).asBelief(),
             *setOfNotNull(foodsSurrounding(blob), collectedFood(blob)).toTypedArray(),
             *foodsCollidingWith(blob).toTypedArray(),
+            *blobBounce(blob).toTypedArray()
         )
     } ?: BeliefBase.empty()
 
@@ -53,6 +55,13 @@ class SimulationEnvironment(
         .filter { blob collidingWith it }
         .map { reached_food(it.id.value).asBelief() }
         .toSet()
+
+    private fun blobBounce(blob: Blob): Set<Belief> =
+        blob.sight.visibilityArea
+            .takeIf { it.collidesWith(world.shape) }
+            ?.let { setOf(bounce(blob.direction).asBelief()) }
+            ?: emptySet()
+
 
     @Suppress("UNCHECKED_CAST")
     private fun collectedFood(blob: Blob): Belief? = (data["collectedFood"] as? Map<Blob, Pair<Food, Boolean>>)?.let {
