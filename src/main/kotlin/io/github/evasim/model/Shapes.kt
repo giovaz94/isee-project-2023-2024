@@ -1,8 +1,8 @@
 package io.github.evasim.model
 
+import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
-import kotlin.math.PI
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -93,14 +93,12 @@ infix fun Placed<out Shape>.collidesWith(shape: Shape): Boolean {
 fun Placed<out Shape>.isFullyContainedIn(other: Shape): Boolean {
     return when (val shape = this.shape) {
         is Rectangle -> {
-            val corners = listOf(
+            listOf(
                 Position2D(-shape.halfWidth, -shape.halfHeight),
                 Position2D(shape.halfWidth, -shape.halfHeight),
                 Position2D(-shape.halfWidth, shape.halfHeight),
                 Position2D(shape.halfWidth, shape.halfHeight),
-            ).map { it + this.position }
-
-            corners.all { other.locallyContains(it) }
+            ).map { it + this.position }.all { other.locallyContains(it) }
         }
         is Circle -> {
             val directions = listOf(
@@ -113,41 +111,29 @@ fun Placed<out Shape>.isFullyContainedIn(other: Shape): Boolean {
                 Position2D(1.0, -1.0),
                 Position2D(-1.0, -1.0),
             )
-
             directions.map { dir ->
                 val norm = dir.asVector2D().normalized() ?: zero
                 val testPoint = this.position + norm * shape.radius
                 testPoint
             }.all { other.locallyContains(it) }
         }
-
         is Cone -> {
-            val direction = this.direction
-                ?: error("Direction must be specified for a placed Cone.")
-
+            val direction = this.direction ?: error("Direction must be specified for a placed Cone.")
             val fovRad = Math.toRadians(shape.fovDegrees.value)
             val halfFov = fovRad / 2.0
             val baseAngle = atan2(direction.y, direction.x)
             val radius = shape.radius
             val apex = this.position
-
-            val angles = listOf(
-                baseAngle - halfFov,
-                baseAngle + halfFov,
-                baseAngle,
-            )
-
+            val angles = listOf(baseAngle - halfFov, baseAngle + halfFov, baseAngle)
             val arcPoints = angles.map { angle ->
                 Position2D(
                     x = apex.x + radius * cos(angle),
                     y = apex.y + radius * sin(angle),
                 )
             }
-
             val allPoints = listOf(apex) + arcPoints
             allPoints.all { other.locallyContains(it) }
         }
-
         else -> error("Not implemented for ${shape::class.simpleName}")
     }
 }

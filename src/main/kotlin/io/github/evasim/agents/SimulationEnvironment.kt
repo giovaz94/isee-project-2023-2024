@@ -56,8 +56,8 @@ class SimulationEnvironment(
 
     @Suppress("UNCHECKED_CAST")
     private fun collectedFood(blob: Blob): Belief? = (data["collectedFood"] as? Map<Blob, Pair<Food, Boolean>>)?.let {
-        it[blob]?.let {
-            Struct.of(collected_food, Atom.of(it.first.id.value), Atom.of(it.second.toString())).asBelief()
+        it[blob]?.let { (food, response) ->
+            Struct.of(collected_food, Atom.of(food.id.value), Atom.of(response.toString())).asBelief()
         }
     }
 
