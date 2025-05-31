@@ -3,7 +3,6 @@ package io.github.evasim.agents
 import io.github.evasim.model.Blob
 import it.unibo.jakta.agents.bdi.dsl.MasScope
 import it.unibo.jakta.agents.fsm.time.Time
-import it.unibo.tuprolog.core.Var
 
 private const val MIN_STEPS = 20
 private const val MAX_STEPS = 50
@@ -13,19 +12,16 @@ private const val MAX_STEPS = 50
  */
 fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     beliefs {
-        fact { direction(0.0, 0.0) }
-        fact { speed(10.0) }
-        fact { status("exploring") }
+        fact { direction(tupleOf(0.0, 0.0)) }
+        fact { speed(5.0) }
+        fact { status(exploring) }
     }
     actions {
         action(Random)
         action(WaypointDirection)
     }
-    goals {
-        achieve(round)
-    }
+    goals { achieve(round) }
     plans {
-        // GOALS
         +achieve(round) then {
             achieve(find_food)
             achieve(collect_food)
@@ -33,49 +29,53 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
             achieve(go_home)
         }
 
-        +achieve(find_food) onlyIf { status("exploring").fromSelf } then {
+        +achieve(find_food) onlyIf { status(exploring).fromSelf } then {
             achieve(change_direction)
             execute(random(N, MIN_STEPS, MAX_STEPS))
             achieve(move_on(N))
             achieve(find_food)
         }
-        +achieve(find_food) onlyIf {
-            status("targeting"(T, Q)).fromSelf and position(X, Y).fromPercept
-        } then {
-            val dirX = Var.of("DirX")
-            val dirY = Var.of("DirY")
-            execute(waypoint_direction(X, Y, T, Q, dirX, dirY))
-            update(direction(dirX, dirY).fromSelf)
+        +achieve(find_food) onlyIf { status(targeting(T)).fromSelf and position(P).fromPercept } then {
+            execute(waypoint_direction(P, T, D))
+            update(direction(D).fromSelf)
             achieve(move)
             achieve(find_food)
         }
-        +achieve(find_food) onlyIf { status("reached"(`_`, `_`)).fromSelf }
+        +achieve(find_food) onlyIf { status(reached(`_`)).fromSelf }
 
         +achieve(change_direction) then {
             execute(random(X, -1.0, 1.0))
             execute(random(Y, -1.0, 1.0))
-            update(direction(X, Y).fromSelf)
+            update(direction(tupleOf(X, Y)).fromSelf)
         }
 
         +achieve(move_on(0))
-        +achieve(move_on(N)) onlyIf {
-            N greaterThan 0 and (M `is` N - 1) and status("exploring").fromSelf
-        } then {
+        +achieve(move_on(N)) onlyIf { N greaterThan 0 and status(exploring).fromSelf and (M `is` N - 1) } then {
             achieve(move)
             achieve(move_on(M))
         }
-        +achieve(move_on(N)) onlyIf { N greaterThan 0 and not(status("exploring").fromSelf) }
+        +achieve(move_on(N)) onlyIf { N greaterThan 0 and not(status(exploring).fromSelf) }
 
-        +achieve(move) onlyIf { direction(X, Y).fromSelf and speed(S).fromSelf } then {
-            execute(update(X, Y, S))
+        +achieve(move) onlyIf { direction(D).fromSelf and speed(S).fromSelf } then {
+            execute(update(D, S))
+        }
+
+        +achieve(collect_food) onlyIf { status(reached(F)).fromSelf } then {
+            execute(collect(F))
         }
 
         // ENVIRONMENT PERCEPTIONS
-        +food(X, Y).fromPercept then {
-            update(status("targeting"(X, Y)).fromSelf)
+        +food(P).fromPercept then {
+            update(status(targeting(P)).fromSelf)
         }
-        +reached_food(X, Y).fromPercept then {
-            update(status("reached"(X, Y)).fromSelf)
+        +reached_food(F).fromPercept then {
+            update(status(reached(F)).fromSelf)
+        }
+//        +collected_food("none").fromPercept onlyIf { status(reached(`_`)).fromSelf } then {
+//            execute(print("::(( I've not collected any food"))
+//        }
+        +collected_food(F, R).fromPercept then {
+            execute(print("Collected food? ", Pair(F, R)))
         }
     }
     timeDistribution {
@@ -144,7 +144,7 @@ status(exploring).
 +target_food(F) <- // Belief added from the environment
   status(targeting(F)).
 
-+reached_food(F) : status(targeting(F)) <- // Belief added from the environment
++reached_food(F) <- // Belief added from the environment
   status(reached(F)).
 
 !contention : status(contending(F)) <-
