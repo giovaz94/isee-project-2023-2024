@@ -32,10 +32,10 @@ class SimulationEnvironment(
     externalActions: Map<String, ExternalAction> = mapOf(update to Update, collect to CollectFood),
     messageBoxes: Map<AgentID, MessageQueue> = emptyMap(),
     perception: Perception = Perception.empty(),
-    data: Map<String, Any> = mapOf("collectedFood" to emptyMap<Blob, Pair<Food, Boolean>>()),
+    data: Map<String, Any> = mapOf("collectedFood" to mutableMapOf<Blob, Pair<Food, Boolean>>()),
 ) : EnvironmentImpl(externalActions, agentIDs, messageBoxes, perception, data) {
 
-    override fun percept(agent: Agent): BeliefBase = (world[Entity.Id(agent.name)] as? Blob)?.let { blob ->
+    override fun percept(agent: Agent): BeliefBase = world.findBlob(Entity.Id(agent.name))?.let { blob ->
         BeliefBase.of(
             position(blob.position).asBelief(),
             *setOfNotNull(foodsSurrounding(blob), collectedFood(blob)).toTypedArray(),
@@ -63,26 +63,24 @@ class SimulationEnvironment(
 
     @Suppress("UNCHECKED_CAST")
     override fun updateData(newData: Map<String, Any>): Environment {
-        val newCollectedFoods = mutableMapOf<Blob, Pair<Food, Boolean>>()
+        val collectedFoods = data["collectedFood"] as? MutableMap<Blob, Pair<Food, Boolean>> ?: mutableMapOf()
         if (update in newData) {
             val (agentID, velocity, elapsedTime) = newData["update"] as Triple<String, Vector2D, Time>
             val blobId = Entity.Id(agentID)
-            (world[blobId] as? Blob)?.updateVelocity(velocity)
-            world.update(Entity.Id(agentID), (elapsedTime as SimulatedTime).value.milliseconds)
+            world.findBlob(blobId)?.updateVelocity(velocity)
+            world.update(blobId, (elapsedTime as SimulatedTime).value.milliseconds)
         }
         if (collect in newData) {
             val (agentID, foodID) = newData[collect] as Pair<String, String>
-            (world[Entity.Id(agentID)] as? Blob)?.let { blob ->
-                (world[Entity.Id(foodID)] as? Food)?.let { food ->
+            world.findBlob(Entity.Id(agentID))?.let { blob ->
+                world.findFood(Entity.Id(foodID))?.let { food ->
                     food.attemptCollecting(blob).also {
-                        newCollectedFoods[blob] = Pair(food, it)
+                        collectedFoods[blob] = Pair(food, it)
                     }
                 }
             }
         }
-        val oldData = data["collectedFood"] as? Map<Blob, Pair<Food, Boolean>> ?: emptyMap()
-        val newData = oldData + newCollectedFoods
-        return copy(data = mapOf("collectedFood" to newData))
+        return copy(data = data)
     }
 
     override fun copy(
