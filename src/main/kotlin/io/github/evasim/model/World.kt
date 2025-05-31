@@ -40,8 +40,11 @@ interface World : EventPublisher {
     /** Adds a new blob to this world. */
     fun addBlob(blob: Blob)
 
-    /** Retrieves an entity by its [id], returning a possibly nullable type. */
-    operator fun get(id: Entity.Id): Entity?
+    /** Finds the blob with the specified [id] in this world, or returns null if not found. */
+    fun findBlob(id: Entity.Id): Blob?
+
+    /** Finds the food item with the specified [id] in this world, or returns null if not found. */
+    fun findFood(id: Entity.Id): Food?
 
     /** Adds a new spawn zone to this world. */
     fun addSpawnZone(spawnZone: SpawnZone)
@@ -119,11 +122,13 @@ private data class WorldImpl(
         worldBlobs[blob.id] = blob
     }
 
+    override fun findBlob(id: Entity.Id): Blob? = worldBlobs[id]
+
+    override fun findFood(id: Entity.Id): Food? = worldFoods[id]
+
     override fun addSpawnZone(spawnZone: SpawnZone) {
         worldSpawnZones.add(spawnZone)
     }
-
-    override fun get(id: Entity.Id): Entity? = worldBlobs[id] ?: worldFoods[id]
 
     override fun update(blobId: Entity.Id, elapsed: Duration) {
         worldBlobs[blobId]?.let { blob ->
