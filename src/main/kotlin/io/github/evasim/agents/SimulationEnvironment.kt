@@ -1,12 +1,7 @@
 package io.github.evasim.agents
 
 
-import io.github.evasim.model.Blob
-import io.github.evasim.model.Entity
-import io.github.evasim.model.Food
-import io.github.evasim.model.Vector2D
-import io.github.evasim.model.World
-import io.github.evasim.model.distanceTo
+import io.github.evasim.model.*
 import io.github.evasim.utils.Logic.asBelief
 import io.github.evasim.utils.Logic.invoke
 import it.unibo.jakta.agents.bdi.Agent

@@ -3,6 +3,7 @@ package io.github.evasim.agents
 import io.github.evasim.model.Blob
 import it.unibo.jakta.agents.bdi.dsl.MasScope
 import it.unibo.jakta.agents.fsm.time.Time
+import it.unibo.tuprolog.core.Var
 
 private const val MIN_STEPS = 20
 private const val MAX_STEPS = 50
@@ -79,12 +80,11 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
             execute(print("Collected food? ", Pair(F, R)))
         }
 
-        +bounce(X, Y).fromPercept then {
-            val invX = Var.of("DirX")
-            val invY = Var.of("DirY")
-            execute(inverse_direction(X, Y, invX, invY))
-            update(direction(invX, invY).fromSelf)
-            execute(print("Inversed to", listOf(invX, invY)))
+        +bounce(D).fromPercept then {
+            val invD= Var.of("DirX")
+            execute(inverse_direction(D, invD))
+            execute(print("inversed", invD))
+            update(direction(invD).fromSelf)
         }
     }
     timeDistribution {
