@@ -80,7 +80,7 @@ interface Vector2D {
     /** Divides the coordinates of this vector by a scalar. */
     operator fun div(scalar: Double): Vector2D
 
-    /** Return the inverse of the [Vector2D] */
+    /** Return the inverse of the [Vector2D]. */
     operator fun unaryMinus(): Vector2D
 
     /** Computes the magnitude of this vector. */
@@ -116,7 +116,7 @@ private data class Vector2DImpl(override val x: Double, override val y: Double) 
     override operator fun minus(v2D: Vector2D): Vector2D = Vector2D(x - v2D.x, y - v2D.y)
     override operator fun times(scalar: Double): Vector2D = Vector2D(x * scalar, y * scalar)
     override operator fun div(scalar: Double): Vector2D = Vector2D(x / scalar, y / scalar)
-    override operator fun unaryMinus() : Vector2D = Vector2D(-x, -y)
+    override operator fun unaryMinus(): Vector2D = Vector2D(-x, -y)
     override fun isZero(): Boolean = x == 0.0 && y == 0.0
     override fun invertedWithRandomAngle(minDegrees: Double, maxDegrees: Double): Vector2D {
         require(minDegrees <= maxDegrees) { "minDegrees must be <= maxDegrees" }

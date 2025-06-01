@@ -1,7 +1,12 @@
 package io.github.evasim.agents
 
-
-import io.github.evasim.model.*
+import io.github.evasim.model.Blob
+import io.github.evasim.model.Entity
+import io.github.evasim.model.Food
+import io.github.evasim.model.Vector2D
+import io.github.evasim.model.World
+import io.github.evasim.model.collidesWith
+import io.github.evasim.model.distanceTo
 import io.github.evasim.utils.Logic.asBelief
 import io.github.evasim.utils.Logic.invoke
 import it.unibo.jakta.agents.bdi.Agent
@@ -36,7 +41,7 @@ class SimulationEnvironment(
             position(blob.position).asBelief(),
             *setOfNotNull(foodsSurrounding(blob), collectedFood(blob)).toTypedArray(),
             *foodsCollidingWith(blob).toTypedArray(),
-            *blobBounce(blob).toTypedArray()
+            *blobBounce(blob).toTypedArray(),
         )
     } ?: BeliefBase.empty()
 
@@ -52,12 +57,10 @@ class SimulationEnvironment(
         .map { reached_food(it.id.value).asBelief() }
         .toSet()
 
-    private fun blobBounce(blob: Blob): Set<Belief> =
-        blob.sight.visibilityArea
-            .takeIf { it.collidesWith(world.shape) }
-            ?.let { setOf(bounce(blob.direction).asBelief()) }
-            ?: emptySet()
-
+    private fun blobBounce(blob: Blob): Set<Belief> = blob.sight.visibilityArea
+        .takeIf { it collidesWith world.shape }
+        ?.let { setOf(bounce(blob.direction).asBelief()) }
+        .orEmpty()
 
     @Suppress("UNCHECKED_CAST")
     private fun collectedFood(blob: Blob): Belief? = (data["collectedFood"] as? Map<Blob, Pair<Food, Boolean>>)?.let {

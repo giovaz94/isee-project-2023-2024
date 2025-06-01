@@ -83,7 +83,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         }
 
         +bounce(D).fromPercept then {
-            val invD= Var.of("DirX")
+            val invD = Var.of("DirX")
             execute(inverse_direction(D, invD))
             execute(print("inversed", invD))
             update(direction(invD).fromSelf)

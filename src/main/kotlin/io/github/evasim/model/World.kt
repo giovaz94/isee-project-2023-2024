@@ -71,7 +71,7 @@ interface World : EventPublisher {
             val spawnZones: Set<SpawnZone>,
             val blobsAmount: Int,
             val hawkyBlobs: Int,
-            val foodsAmount: Int = blobsAmount,
+            val foodsAmount: Int = blobsAmount / 2,
         )
 
         /**
