@@ -73,11 +73,13 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         +reached_food(F).fromPercept then {
             update(status(reached(F)).fromSelf)
         }
-//        +collected_food("none").fromPercept onlyIf { status(reached(`_`)).fromSelf } then {
-//            execute(print("::(( I've not collected any food"))
-//        }
-        +collected_food(F, R).fromPercept then {
-            execute(print("Collected food? ", Pair(F, R)))
+        +collected_food(F, "false").fromPercept onlyIf { status(reached(F)).fromSelf } then {
+            execute(print("I could not collect food ", F))
+            update(status(exploring).fromSelf)
+            achieve(find_food)
+        }
+        +collected_food(F, "true").fromPercept onlyIf { status(reached(F)).fromSelf } then {
+            execute(print("I've successfully collected food ", F))
         }
 
         +bounce(D).fromPercept then {

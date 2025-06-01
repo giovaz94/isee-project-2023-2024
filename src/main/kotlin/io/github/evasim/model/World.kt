@@ -79,10 +79,13 @@ interface World : EventPublisher {
          */
         fun fromConfiguration(configuration: Configuration): World = with(configuration) {
             val blobsPerSpawnZone = blobsAmount / spawnZones.size
+            val acceptedFoods = mutableSetOf<Placed<Circle>>()
             val foods = generateSequence { positionWithin(shape at origin) }
                 .filter { pos -> spawnZones.none { pos in it.place } }
+                .map { Circle(radius = 10.0) at it }
+                .filter { c -> if (acceptedFoods.none { it circleIntersect c }) acceptedFoods.add(c) else false }
                 .take(foodsAmount)
-                .map { Food.of(Circle(radius = 10.0), it, pieces = 2) }
+                .map { Food.of(it.shape, it.position, pieces = 2) }
                 .associateBy { it.id }
                 .toMap(ConcurrentHashMap())
             val blobs = spawnZones

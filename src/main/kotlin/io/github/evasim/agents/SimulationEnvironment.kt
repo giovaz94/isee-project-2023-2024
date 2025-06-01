@@ -47,6 +47,7 @@ class SimulationEnvironment(
         ?.let { food(it.position).asBelief() }
 
     private fun foodsCollidingWith(blob: Blob): Set<Belief> = world.foods
+        .filter { it.hasUncollectedPieces() }
         .filter { blob collidingWith it }
         .map { reached_food(it.id.value).asBelief() }
         .toSet()
