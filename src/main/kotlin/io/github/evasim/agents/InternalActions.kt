@@ -43,7 +43,7 @@ internal object WaypointDirection : AbstractInternalAction(waypoint_direction, a
     }
 }
 
-internal object InverseDirection : AbstractInternalAction(inverse_direction, arity = 2) {
+internal object InverseDirection: AbstractInternalAction(inverse_direction, arity = 2) {
     override fun action(request: InternalRequest) {
         val oldDirection = request.arguments[0].castToTuple().castToVector2D()
         val newDirection = request.arguments[1].castToVar()
@@ -51,7 +51,8 @@ internal object InverseDirection : AbstractInternalAction(inverse_direction, ari
         addResults(
             Substitution.unifier(
                 newDirection to Tuple.of(Real.of(inverseVector.x), Real.of(inverseVector.y)),
-            ),
+            )
         )
+
     }
 }
