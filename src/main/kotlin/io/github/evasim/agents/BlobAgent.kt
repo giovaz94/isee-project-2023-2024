@@ -22,13 +22,11 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         action(WaypointDirection)
         action(InverseDirection)
     }
-    goals { achieve(round) }
+    goals { achieve(forage) }
     plans {
-        +achieve(round) then {
+        +achieve(forage) then {
             achieve(find_food)
             achieve(collect_food)
-//            achieve(contention)
-//            achieve(go_home)
         }
 
         +achieve(find_food) onlyIf { status(exploring).fromSelf } then {
@@ -78,7 +76,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         }
         +collected_food(F, "false").fromPercept onlyIf { status(reached(F)).fromSelf } then {
             update(status(exploring).fromSelf)
-            achieve(round)
+            achieve(forage)
         }
         +collected_food(F, "true").fromPercept onlyIf { status(reached(F)).fromSelf } then {
             execute(print("Successfully collected ", F))

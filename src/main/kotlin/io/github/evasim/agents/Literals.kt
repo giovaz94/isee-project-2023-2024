@@ -13,7 +13,7 @@ internal val speed by OwnName
 
 internal val move by OwnName
 
-internal val round by OwnName
+internal val forage by OwnName
 
 internal val status by OwnName
 
