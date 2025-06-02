@@ -82,9 +82,7 @@ class SimulationEnvironment(
             val (agentID, foodID) = newData[collect] as Pair<String, String>
             world.findBlob(Entity.Id(agentID))?.let { blob ->
                 world.findFood(Entity.Id(foodID))?.let { food ->
-                    food.attemptCollecting(blob).also {
-                        collectedFoods[blob] = Pair(food, it)
-                    }
+                    collectedFoods[blob] = Pair(food, world.collect(food.id, blob.id))
                 }
             }
         }

@@ -3,6 +3,7 @@ package io.github.evasim.model
 import io.github.evasim.controller.EventBusPublisher
 import io.github.evasim.controller.EventPublisher
 import io.github.evasim.controller.UpdatedBlob
+import io.github.evasim.controller.UpdatedFood
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.time.Duration
@@ -54,6 +55,12 @@ interface World : EventPublisher {
      * @param elapsed The duration of time that has passed since the last update.
      */
     fun update(blobId: Entity.Id, elapsed: Duration)
+
+    /**
+     * Attempts to collect the food item with the specified [foodId] by the blob with the specified [blobId].
+     * Returns true if the collection was successful, false otherwise.
+     */
+    fun collect(foodId: Entity.Id, blobId: Entity.Id): Boolean
 
     /** Provides companion object methods for managing and creating `World` instances. */
     companion object {
@@ -139,4 +146,15 @@ private data class WorldImpl(
             post(UpdatedBlob(blob.clone()))
         }
     }
+
+    override fun collect(foodId: Entity.Id, blobId: Entity.Id): Boolean = worldFoods[foodId]?.let { food ->
+        worldBlobs[blobId]?.let { blob ->
+            if (food.attemptCollecting(blob)) {
+                post(UpdatedFood(food))
+                true
+            } else {
+                false
+            }
+        } ?: false
+    } ?: false
 }

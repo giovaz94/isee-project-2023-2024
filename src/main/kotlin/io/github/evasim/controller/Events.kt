@@ -2,6 +2,7 @@ package io.github.evasim.controller
 
 import com.google.common.eventbus.EventBus
 import io.github.evasim.model.Blob
+import io.github.evasim.model.Food
 import io.github.evasim.model.World
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -47,6 +48,9 @@ open class EventBusPublisher : EventPublisher {
 
 /** A [blob] update event. */
 data class UpdatedBlob(val blob: Blob) : Event
+
+/** A [food] update event. */
+data class UpdatedFood(val food: Food) : Event
 
 /** A [world] update event. */
 data class UpdatedWorld(val world: World) : Event

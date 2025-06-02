@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe
 import io.github.evasim.controller.EventSubscriber
 import io.github.evasim.controller.SimulatorController
 import io.github.evasim.controller.UpdatedBlob
+import io.github.evasim.controller.UpdatedFood
 import io.github.evasim.controller.UpdatedWorld
 import io.github.evasim.model.Blob
 import io.github.evasim.model.Food
@@ -138,6 +139,15 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
         simulationGroup.children.find { it.userData == updatedBlob.blob.id }?.let { toBeRemoved ->
             simulationGroup.children.remove(toBeRemoved)
             val newNode = blobRenderable.render(updatedBlob.blob).apply { userData = updatedBlob.blob.id }
+            simulationGroup.children.add(newNode)
+        }
+    }
+
+    @Subscribe
+    fun update(updatedFood: UpdatedFood) = Platform.runLater {
+        simulationGroup.children.find { it.userData == updatedFood.food.id }?.let { toBeRemoved ->
+            simulationGroup.children.remove(toBeRemoved)
+            val newNode = foodRenderable.render(updatedFood.food).apply { userData = updatedFood.food.id }
             simulationGroup.children.add(newNode)
         }
     }
