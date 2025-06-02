@@ -6,6 +6,7 @@ import io.github.evasim.utils.resource
 import io.github.evasim.view.Renderable
 import javafx.scene.Group
 import javafx.scene.Node
+import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.paint.Color
@@ -23,6 +24,12 @@ internal val blobRenderable = Renderable<Blob, Node> { blob ->
         translateX = blob.position.x - ICON_DIMENSION / 2
         translateY = blob.position.y - ICON_DIMENSION / 2
     }
-    val sightNode = shapeRenderable(background = Color.YELLOW).render(blob.sight.visibilityArea)
-    Group(sightNode, imageView)
+    val sightNode = shapeRenderable(background = Color.YELLOW)
+        .render(blob.sight.visibilityArea)
+        .apply { opacity = 0.5 }
+    val nameLabel = Label(blob.id.value).apply {
+        translateX = blob.position.x
+        translateY = blob.position.y - ICON_DIMENSION / 2 - 10
+    }
+    Group(sightNode, imageView, nameLabel)
 }

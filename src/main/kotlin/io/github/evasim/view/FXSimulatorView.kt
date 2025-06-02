@@ -6,13 +6,12 @@ import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.scene.Scene
 import javafx.stage.Stage
-import java.net.URL
 
 /** JavaFX implementation of the simulator view. */
 class FXSimulatorView : Application(), Boundary {
 
     override fun start(primaryStage: Stage) {
-        val fxmlFile: URL = resource(LAYOUT_FILE)
+        val fxmlFile = resource(LAYOUT_FILE)
         val styleFile = resource(STYLE_FILE)
         val fxmlLoader = FXMLLoader(fxmlFile)
         primaryStage.apply {

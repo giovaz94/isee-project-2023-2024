@@ -54,10 +54,10 @@ internal class ControlsPaneController : Initializable {
         val config = World.Companion.Configuration(
             shape = Circle(radius = 1_000.0),
             spawnZones = setOf(
-                SpawnZone(HollowCircle(innerRadius = 900.0, outerRadius = 1_000.0), origin),
+                SpawnZone(HollowCircle(innerRadius = 800.0, outerRadius = 1_000.0), origin),
             ),
-            blobsAmount = 120,
-            hawkyBlobs = 60,
+            blobsAmount = 100,
+            hawkyBlobs = 50,
         )
         SimulatorController.start(config)
     }

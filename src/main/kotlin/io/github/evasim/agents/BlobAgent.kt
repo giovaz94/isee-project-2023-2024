@@ -14,7 +14,7 @@ private const val MAX_STEPS = 50
 fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     beliefs {
         fact { direction(tupleOf(0.0, 0.0)) }
-        fact { speed(5.0) }
+        fact { speed(10.0) }
         fact { status(exploring) }
     }
     actions {
@@ -32,18 +32,22 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         }
 
         +achieve(find_food) onlyIf { status(exploring).fromSelf } then {
+            execute(print(">> Looking for food..."))
             achieve(change_direction)
             execute(random(N, MIN_STEPS, MAX_STEPS))
             achieve(move_on(N))
             achieve(find_food)
         }
         +achieve(find_food) onlyIf { status(targeting(T)).fromSelf and position(P).fromPercept } then {
+            execute(print(">> Targeting food ", T))
             execute(waypoint_direction(P, T, D))
             update(direction(D).fromSelf)
             achieve(move)
             achieve(find_food)
         }
-        +achieve(find_food) onlyIf { status(reached(`_`)).fromSelf }
+        +achieve(find_food) onlyIf { status(reached(`_`)).fromSelf } then {
+            execute(print(">> Reached food, now collecting..."))
+        }
 
         +achieve(change_direction) then {
             execute(random(X, -1.0, 1.0))
@@ -63,6 +67,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         }
 
         +achieve(collect_food) onlyIf { status(reached(F)).fromSelf } then {
+            execute(print(">> Collecting food ", F))
             execute(collect(F))
         }
 
@@ -70,7 +75,10 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         +food(P).fromPercept then {
             update(status(targeting(P)).fromSelf)
         }
-        +reached_food(F).fromPercept then {
+        -food(P).fromPercept then {
+            update(status(exploring).fromSelf)
+        }
+        +reached_food(F).fromPercept onlyIf { status(targeting(P)).fromSelf } then {
             update(status(reached(F)).fromSelf)
         }
         +collected_food(F, "false").fromPercept onlyIf { status(reached(F)).fromSelf } then {
@@ -79,13 +87,11 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
             achieve(find_food)
         }
         +collected_food(F, "true").fromPercept onlyIf { status(reached(F)).fromSelf } then {
-            execute(print("I've successfully collected food ", F))
+            execute(print("Successfully collected ", F))
         }
-
         +bounce(D).fromPercept then {
             val invD = Var.of("DirX")
             execute(inverse_direction(D, invD))
-            execute(print("inversed", invD))
             update(direction(invD).fromSelf)
         }
     }
