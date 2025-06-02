@@ -27,27 +27,23 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         +achieve(round) then {
             achieve(find_food)
             achieve(collect_food)
-            achieve(contention)
-            achieve(go_home)
+//            achieve(contention)
+//            achieve(go_home)
         }
 
         +achieve(find_food) onlyIf { status(exploring).fromSelf } then {
-            execute(print(">> Looking for food..."))
             achieve(change_direction)
             execute(random(N, MIN_STEPS, MAX_STEPS))
             achieve(move_on(N))
             achieve(find_food)
         }
         +achieve(find_food) onlyIf { status(targeting(T)).fromSelf and position(P).fromPercept } then {
-            execute(print(">> Targeting food ", T))
             execute(waypoint_direction(P, T, D))
             update(direction(D).fromSelf)
             achieve(move)
             achieve(find_food)
         }
-        +achieve(find_food) onlyIf { status(reached(`_`)).fromSelf } then {
-            execute(print(">> Reached food, now collecting..."))
-        }
+        +achieve(find_food) onlyIf { status(reached(`_`)).fromSelf }
 
         +achieve(change_direction) then {
             execute(random(X, -1.0, 1.0))
@@ -67,24 +63,22 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         }
 
         +achieve(collect_food) onlyIf { status(reached(F)).fromSelf } then {
-            execute(print(">> Collecting food ", F))
             execute(collect(F))
         }
 
         // ENVIRONMENT PERCEPTIONS
-        +food(P).fromPercept then {
+        +food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
             update(status(targeting(P)).fromSelf)
         }
-        -food(P).fromPercept then {
+        -food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
             update(status(exploring).fromSelf)
         }
-        +reached_food(F).fromPercept onlyIf { status(targeting(P)).fromSelf } then {
+        +reached_food(F).fromPercept then {
             update(status(reached(F)).fromSelf)
         }
         +collected_food(F, "false").fromPercept onlyIf { status(reached(F)).fromSelf } then {
-            execute(print("I could not collect food ", F))
             update(status(exploring).fromSelf)
-            achieve(find_food)
+            achieve(round)
         }
         +collected_food(F, "true").fromPercept onlyIf { status(reached(F)).fromSelf } then {
             execute(print("Successfully collected ", F))
