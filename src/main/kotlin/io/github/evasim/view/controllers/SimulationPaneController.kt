@@ -119,7 +119,6 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
 
     @Subscribe
     fun update(updatedWorldEvent: UpdatedWorld) {
-        SimulatorController.domain?.register(this) ?: error("Cannot register observers on the domain!")
         val worldNode = worldRenderable.render(updatedWorldEvent.world)
         val updatedNodes = updatedWorldEvent.world.foods.toSet().plus(updatedWorldEvent.world.blobs.toSet())
             .map { entity ->

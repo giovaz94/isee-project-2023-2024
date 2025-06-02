@@ -19,9 +19,6 @@ typealias Domain = World
  */
 interface Controller : EventPublisher {
 
-    /** The current domain instance. If not already started, it will be `null`. */
-    val domain: Domain?
-
     /**
      * Starts the simulation with the given [configuration].
      */
@@ -34,16 +31,18 @@ interface Controller : EventPublisher {
 }
 
 /** The simulation controller. */
-object SimulatorController : Controller, EventSubscriber, EventBusPublisher() {
+object SimulatorController : Controller, EventBusPublisher() {
 
-    override var domain: World? = null
+    private var domain: World? = null
 
     @Synchronized
     override fun start(configuration: Configuration) {
         require(domain == null) { "A simulation is already running. Please, stop it first." }
-        World.fromConfiguration(configuration)
-            .also { domain = it }
-            .let { startMas(it) }
+        World.fromConfiguration(configuration).also { world ->
+            domain = world
+            startMas(world)
+            subscribers.forEach { world.register(it) }
+        }
         post(UpdatedWorld(domain ?: error("Cannot render a non-existing simulation!")))
     }
 

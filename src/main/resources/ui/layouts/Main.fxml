@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml" prefWidth="1400.0" prefHeight="700.0">
+<AnchorPane xmlns:fx="http://javafx.com/fxml" prefWidth="1400.0" prefHeight="700.0"
+            fx:controller="io.github.evasim.view.controllers.MainController">
     <!-- Full-screen simulation pane -->
     <fx:include fx:id="simulationView" source="SimulationPane.fxml"
                 AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"

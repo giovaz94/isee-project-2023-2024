@@ -3,6 +3,7 @@ package io.github.evasim.controller
 import com.google.common.eventbus.EventBus
 import io.github.evasim.model.Blob
 import io.github.evasim.model.World
+import java.util.concurrent.CopyOnWriteArraySet
 
 /** A notable event in the simulation to be published towards subscribers. */
 sealed interface Event
@@ -27,12 +28,21 @@ interface EventPublisher {
 open class EventBusPublisher : EventPublisher {
 
     private val eventBus = EventBus()
+    protected val subscribers = CopyOnWriteArraySet<EventSubscriber>()
 
     override fun post(event: Event) = eventBus.post(event)
 
-    override fun register(subscriber: EventSubscriber) = eventBus.register(subscriber)
+    override fun register(subscriber: EventSubscriber) {
+        if (subscribers.add(subscriber)) {
+            eventBus.register(subscriber)
+        }
+    }
 
-    override fun unregister(subscriber: EventSubscriber) = eventBus.unregister(subscriber)
+    override fun unregister(subscriber: EventSubscriber) {
+        if (subscribers.remove(subscriber)) {
+            eventBus.unregister(subscriber)
+        }
+    }
 }
 
 /** A [blob] update event. */
