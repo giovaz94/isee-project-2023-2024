@@ -12,6 +12,7 @@ internal class MainController : Initializable {
 
     @FXML private lateinit var controlsViewController: ControlsPaneController
 
-    override fun initialize(p0: URL?, p1: ResourceBundle?) {
+    override fun initialize(location: URL?, resources: ResourceBundle?) {
+        controlsViewController.simulationPaneController = simulationViewController
     }
 }

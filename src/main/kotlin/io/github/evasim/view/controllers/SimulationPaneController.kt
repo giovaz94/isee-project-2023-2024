@@ -7,7 +7,9 @@ import io.github.evasim.controller.UpdatedBlob
 import io.github.evasim.controller.UpdatedFood
 import io.github.evasim.controller.UpdatedWorld
 import io.github.evasim.model.Blob
+import io.github.evasim.model.Entity
 import io.github.evasim.model.Food
+import io.github.evasim.view.renderables.BlobRenderableConfig
 import io.github.evasim.view.renderables.blobRenderable
 import io.github.evasim.view.renderables.foodRenderable
 import io.github.evasim.view.renderables.worldRenderable
@@ -37,14 +39,11 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
     @FXML private lateinit var centerViewButton: Button
 
     private val simulationGroup = Pane()
-
     private var scale = DEFAULT_SCALE
-
     private var lastMousePoint = Point2D.ZERO
-
     private var defaultTranslation = Point2D.ZERO
-
     private var translation = Point2D.ZERO
+    private var showBlobNames = false
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         SimulatorController.register(this)
@@ -118,44 +117,42 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
             abs(translation.y - defaultTranslation.y) < tolerance
     }
 
+    internal fun toggleShowBlobNames() {
+        showBlobNames = !showBlobNames
+    }
+
     @Subscribe
     fun update(updatedWorldEvent: UpdatedWorld) {
         val worldNode = worldRenderable.render(updatedWorldEvent.world)
         val updatedNodes = updatedWorldEvent.world.foods.toSet().plus(updatedWorldEvent.world.blobs.toSet())
-            .map { entity ->
-                val newNode = when (entity) {
-                    is Food -> foodRenderable.render(entity)
-                    is Blob -> blobRenderable.render(entity)
-                    else -> error("Unsupported entity type: ${entity::class.simpleName}")
-                }
-                newNode.apply { userData = entity.id }
-            }
+            .map { it.render() }
             .toSet()
         update(updatedNodes + worldNode)
-    }
-
-    @Subscribe
-    fun update(updatedBlob: UpdatedBlob) = Platform.runLater {
-        simulationGroup.children.find { it.userData == updatedBlob.blob.id }?.let { toBeRemoved ->
-            simulationGroup.children.remove(toBeRemoved)
-            val newNode = blobRenderable.render(updatedBlob.blob).apply { userData = updatedBlob.blob.id }
-            simulationGroup.children.add(newNode)
-        }
-    }
-
-    @Subscribe
-    fun update(updatedFood: UpdatedFood) = Platform.runLater {
-        simulationGroup.children.find { it.userData == updatedFood.food.id }?.let { toBeRemoved ->
-            simulationGroup.children.remove(toBeRemoved)
-            val newNode = foodRenderable.render(updatedFood.food).apply { userData = updatedFood.food.id }
-            simulationGroup.children.add(newNode)
-        }
     }
 
     private fun update(nodes: Set<Node>) = Platform.runLater {
         simulationGroup.children.clear()
         simulationGroup.children.addAll(nodes)
     }
+
+    @Subscribe
+    fun update(updatedBlob: UpdatedBlob) = updateEntity(updatedBlob.blob)
+
+    @Subscribe
+    fun update(updatedFood: UpdatedFood) = updateEntity(updatedFood.food)
+
+    private fun updateEntity(entity: Entity) = Platform.runLater {
+        simulationGroup.children.find { it.userData == entity.id }?.let { toBeRemoved ->
+            simulationGroup.children.remove(toBeRemoved)
+            simulationGroup.children.add(entity.render())
+        }
+    }
+
+    private fun Entity.render(): Node = when (this) {
+        is Food -> foodRenderable.render(this)
+        is Blob -> blobRenderable.render(this, BlobRenderableConfig(showBlobNames))
+        else -> error("Unsupported entity type: ${this::class.simpleName}")
+    }.also { it.userData = id }
 
     private companion object {
         private const val SCALE_DELTA = 0.8

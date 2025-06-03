@@ -135,7 +135,7 @@ private data class WorldImpl(
 
     override fun register(subscriber: EventSubscriber): Boolean = super.register(subscriber).also {
         if (it) {
-            (foods + blobs).forEach { it.register(subscriber) }
+            (foods + blobs).forEach { e -> e.register(subscriber) }
             post(UpdatedWorld(this))
         }
     }

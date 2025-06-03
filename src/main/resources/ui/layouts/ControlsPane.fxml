@@ -12,7 +12,7 @@
                 minWidth="24.0" minHeight="24.0" maxWidth="24.0" maxHeight="24.0"/>
     </HBox>
     <!-- Collapsible content -->
-    <VBox fx:id="controlsContent" spacing="16.0" styleClass="controls-content">
+    <VBox spacing="16.0" styleClass="controls-content">
         <!-- Simulation controls -->
         <VBox spacing="8.0">
             <Label text="Simulation" styleClass="controls-section"/>
@@ -27,16 +27,7 @@
         <!-- Parameters section -->
         <VBox spacing="12.0">
             <Label text="Parameters" styleClass="controls-section"/>
-            <VBox spacing="8.0">
-                <Label text="Blob Speed" styleClass="parameter-label"/>
-                <Slider fx:id="blobSpeedSlider" min="0.1" max="5.0" value="1.0"
-                        blockIncrement="0.1" styleClass="parameter-slider"/>
-            </VBox>
-            <VBox spacing="8.0">
-                <Label text="Food Amount" styleClass="parameter-label"/>
-                <TextField fx:id="foodAmountField" promptText="e.g. 20"
-                           styleClass="parameter-field"/>
-            </VBox>
+            <CheckBox fx:id="showBlobNamesCheckBox" text="Show blob name labels"/>
         </VBox>
     </VBox>
 </VBox>

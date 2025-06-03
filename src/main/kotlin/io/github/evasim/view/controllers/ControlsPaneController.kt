@@ -9,6 +9,7 @@ import io.github.evasim.model.origin
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.Button
+import javafx.scene.control.CheckBox
 import javafx.scene.layout.VBox
 import java.net.URL
 import java.util.*
@@ -25,10 +26,9 @@ internal class ControlsPaneController : Initializable {
 
     @FXML private lateinit var stopButton: Button
 
-//    @FXML private lateinit var blobSpeedSlider: Slider
-//
-//    @FXML private lateinit var foodAmountField: TextField
+    @FXML private lateinit var showBlobNamesCheckBox: CheckBox
 
+    internal var simulationPaneController: SimulationPaneController? = null
     private var isCollapsed = false
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
@@ -37,6 +37,7 @@ internal class ControlsPaneController : Initializable {
         startButton.setOnAction { onStart() }
         pauseButton.setOnAction { onPause() }
         stopButton.setOnAction { onStop() }
+        showBlobNamesCheckBox.setOnAction { simulationPaneController?.toggleShowBlobNames() }
     }
 
     private fun toggleControlsPane() {
