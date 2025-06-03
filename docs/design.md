@@ -2,7 +2,28 @@
 
 ## Goals of the project
 
+> The goal of the project is to simulate an environment using a BDI Agent framework in which we have agents simulating two types of creatures, doves and hawks, that compete for survival based on their behaviors, observing how the evolution of the species unfolds.
+
 ## Requirements Analysis
+
+- The simulation is composed of a sequence of days / rounds;
+- Food is spawned casually inside the map;
+- Food pieces come in pairs and each one of them can be further split in half.
+- Survival and reproduction rules:
+  - eating one piece of food lets a creature survive to the next day and eating two piece of food allows a blob to both survive and reproduce;
+  - a creature of one kind always reproduce itself (if they’re able to do it) in another creature of the same kind
+  - each creature continues to search for food until they have reached the capacity to reproduce themselves. If the day is over or they have eaten enough food to reproduce they return home.
+- Contention rules:
+  - if a single entity tries to pick up a pair of food it will succeed if no other entities are also trying to take the same pair.
+  - if another entity is trying to take the same pair of food the following scenarios applies, depending on the other creature:
+    - If both are doves they share the food, each taking a piece of food;
+    - If one is a dove and one is a hawk, then the hawk shares half of a food piece with the dove and then it immediately steals the other before the dove can take it;
+    - If both are hawks then they fight over the food both gaining a piece of it. But, since fighting requires energy they consume all the benefits from eating the food, acquiring 0 food.
+  - If two entities are competing over a pair of food and a third tries to join then the latter notices the other two and gives up taking that food.
+- Movements:
+  - Creatures explore the map using random movements.
+  - They have a limited sight of the environment that they’re exploring. If they find a piece of food they proceed to move towards it.
+
 
 ## Design
 
