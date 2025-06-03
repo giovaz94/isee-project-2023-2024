@@ -43,7 +43,6 @@ object SimulatorController : Controller, EventBusPublisher() {
             startMas(world)
             subscribers.forEach { world.register(it) }
         }
-        post(UpdatedWorld(domain ?: error("Cannot render a non-existing simulation!")))
     }
 
     // TODO: think if this is the right place where to start the agents, e.g., in the rounds manager.

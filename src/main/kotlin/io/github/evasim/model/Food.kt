@@ -1,5 +1,8 @@
 package io.github.evasim.model
 
+import io.github.evasim.controller.EventBusPublisher
+import io.github.evasim.controller.EventPublisher
+import io.github.evasim.controller.UpdatedFood
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicReference
 
@@ -7,7 +10,7 @@ import java.util.concurrent.atomic.AtomicReference
 typealias Energy = Double
 
 /** A collectable food item in the simulation. */
-interface Food : Entity {
+interface Food : Entity, EventPublisher {
 
     /** The smallest food unit that can be collected. */
     interface Piece {
@@ -50,14 +53,16 @@ interface Food : Entity {
     }
 }
 
-private data class FoodImpl(
+@ConsistentCopyVisibility
+private data class FoodImpl private constructor(
     override val id: Entity.Id,
     override val shape: Shape,
     override val position: Position2D,
-    private val numPieces: Int,
-) : Food {
+    private val pieceSet: Set<PieceImpl>,
+) : Food, EventBusPublisher() {
 
-    private val pieceSet = (1..numPieces).map { PieceImpl(energy = 1.0) }.toSet()
+    constructor(id: Entity.Id, shape: Shape, position: Position2D, numPieces: Int) :
+        this(id, shape, position, pieceSet = (1..numPieces).map { PieceImpl(energy = 1.0) }.toSet())
 
     override val totalEnergy: Energy = pieceSet.sumOf { it.energy }
 
@@ -65,6 +70,7 @@ private data class FoodImpl(
 
     override fun attemptCollecting(blob: Blob): Boolean = pieceSet
         .any { it.collectedBy.compareAndSet(null, blob) }
+        .also { if (it) post(UpdatedFood(copy())) }
 
     private class PieceImpl(override val energy: Energy) : Food.Piece {
         val collectedBy: AtomicReference<Blob?> = AtomicReference(null)

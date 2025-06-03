@@ -2,11 +2,10 @@ package io.github.evasim.model
 
 import io.github.evasim.controller.EventBusPublisher
 import io.github.evasim.controller.EventPublisher
-import io.github.evasim.controller.UpdatedBlob
-import io.github.evasim.controller.UpdatedFood
+import io.github.evasim.controller.EventSubscriber
+import io.github.evasim.controller.UpdatedWorld
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
-import kotlin.time.Duration
 
 /**
  * Represents the simulation world that encompasses all entities, foods, and blobs
@@ -41,26 +40,17 @@ interface World : EventPublisher {
     /** Adds a new blob to this world. */
     fun addBlob(blob: Blob)
 
+    /** Finds the blob with the specified stringified [id] in this world, or returns null if not found. */
+    fun findBlob(id: String): Blob?
+
     /** Finds the blob with the specified [id] in this world, or returns null if not found. */
     fun findBlob(id: Entity.Id): Blob?
 
+    /** Finds the food with the specified stringified [id] in this world, or returns null if not found. */
+    fun findFood(id: String): Food?
+
     /** Finds the food item with the specified [id] in this world, or returns null if not found. */
     fun findFood(id: Entity.Id): Food?
-
-    /** Adds a new spawn zone to this world. */
-    fun addSpawnZone(spawnZone: SpawnZone)
-
-    /**
-     * Updates the state of the world based on the given elapsed time.
-     * @param elapsed The duration of time that has passed since the last update.
-     */
-    fun update(blobId: Entity.Id, elapsed: Duration)
-
-    /**
-     * Attempts to collect the food item with the specified [foodId] by the blob with the specified [blobId].
-     * Returns true if the collection was successful, false otherwise.
-     */
-    fun collect(foodId: Entity.Id, blobId: Entity.Id): Boolean
 
     /** Provides companion object methods for managing and creating `World` instances. */
     companion object {
@@ -122,39 +112,35 @@ private data class WorldImpl(
 
     override fun addFood(food: Food) {
         worldFoods[food.id] = food
+        subscribers.forEach { food.register(it) }
     }
 
     override fun removeFood(food: Food) {
         worldFoods.remove(food.id)
+        subscribers.forEach { food.unregister(it) }
     }
 
     override fun addBlob(blob: Blob) {
         worldBlobs[blob.id] = blob
+        subscribers.forEach { blob.register(it) }
     }
+
+    override fun findBlob(id: String): Blob? = findBlob(Entity.Id(id))
 
     override fun findBlob(id: Entity.Id): Blob? = worldBlobs[id]
 
+    override fun findFood(id: String): Food? = findFood(Entity.Id(id))
+
     override fun findFood(id: Entity.Id): Food? = worldFoods[id]
 
-    override fun addSpawnZone(spawnZone: SpawnZone) {
-        worldSpawnZones.add(spawnZone)
-    }
-
-    override fun update(blobId: Entity.Id, elapsed: Duration) {
-        worldBlobs[blobId]?.let { blob ->
-            blob.update(elapsed)
-            post(UpdatedBlob(blob.clone()))
+    override fun register(subscriber: EventSubscriber): Boolean = super.register(subscriber).also {
+        if (it) {
+            (foods + blobs).forEach { it.register(subscriber) }
+            post(UpdatedWorld(this))
         }
     }
 
-    override fun collect(foodId: Entity.Id, blobId: Entity.Id): Boolean = worldFoods[foodId]?.let { food ->
-        worldBlobs[blobId]?.let { blob ->
-            if (food.attemptCollecting(blob)) {
-                post(UpdatedFood(food))
-                true
-            } else {
-                false
-            }
-        } ?: false
-    } ?: false
+    override fun unregister(subscriber: EventSubscriber): Boolean = super.unregister(subscriber).also {
+        if (it) (foods + blobs).forEach { e -> e.unregister(subscriber) }
+    }
 }

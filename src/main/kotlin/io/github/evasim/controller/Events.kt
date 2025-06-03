@@ -19,10 +19,10 @@ interface EventPublisher {
     fun post(event: Event)
 
     /** Registers the given [subscriber] to receive events. */
-    fun register(subscriber: EventSubscriber)
+    fun register(subscriber: EventSubscriber): Boolean
 
     /** Unregisters the given [subscriber] from receiving events. */
-    fun unregister(subscriber: EventSubscriber)
+    fun unregister(subscriber: EventSubscriber): Boolean
 }
 
 /** An [EventPublisher] leveraging Google Guava's [EventBus]. */
@@ -33,17 +33,11 @@ open class EventBusPublisher : EventPublisher {
 
     override fun post(event: Event) = eventBus.post(event)
 
-    override fun register(subscriber: EventSubscriber) {
-        if (subscribers.add(subscriber)) {
-            eventBus.register(subscriber)
-        }
-    }
+    override fun register(subscriber: EventSubscriber) =
+        subscribers.add(subscriber).also { if (it) eventBus.register(subscriber) }
 
-    override fun unregister(subscriber: EventSubscriber) {
-        if (subscribers.remove(subscriber)) {
-            eventBus.unregister(subscriber)
-        }
-    }
+    override fun unregister(subscriber: EventSubscriber) =
+        subscribers.remove(subscriber).also { if (it) eventBus.unregister(subscriber) }
 }
 
 /** A [blob] update event. */

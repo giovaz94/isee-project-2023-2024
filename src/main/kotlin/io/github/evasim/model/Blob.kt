@@ -1,12 +1,15 @@
 package io.github.evasim.model
 
+import io.github.evasim.controller.EventBusPublisher
+import io.github.evasim.controller.EventPublisher
+import io.github.evasim.controller.UpdatedBlob
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 
 /** A blob in the simulation. */
-interface Blob : Entity {
+interface Blob : Entity, EventPublisher {
 
     /** The blob initial position in the simulation. */
     val initialPosition: Position2D
@@ -50,9 +53,6 @@ interface Blob : Entity {
 
     /** Returns whether the blob can reproduce based on its current health. */
     fun canReproduce(): Boolean
-
-    /** Creates a copy of this blob with the same properties. */
-    fun clone(): Blob
 
     /** The blob's factory methods. */
     companion object {
@@ -133,7 +133,7 @@ private data class BlobImpl(
     override val defaultDirection: Direction,
     override val sight: Sight,
     override val health: Health,
-) : Blob {
+) : Blob, EventBusPublisher() {
 
     override val initialPosition: Position2D = currentPosition
 
@@ -157,6 +157,7 @@ private data class BlobImpl(
         currentPosition = position
         currentVelocity = velocity
         sight.update(position, velocity.normalized() ?: defaultDirection)
+        post(UpdatedBlob(copy()))
     }
 
     override fun isDead(): Boolean = !isAlive()
@@ -166,6 +167,4 @@ private data class BlobImpl(
     override fun isHungry(): Boolean = health.let { it.current < it.max }
 
     override fun canReproduce(): Boolean = health.let { it.current == it.max }
-
-    override fun clone(): Blob = copy()
 }

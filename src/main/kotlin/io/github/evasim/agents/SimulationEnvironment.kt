@@ -1,7 +1,6 @@
 package io.github.evasim.agents
 
 import io.github.evasim.model.Blob
-import io.github.evasim.model.Entity
 import io.github.evasim.model.Food
 import io.github.evasim.model.Vector2D
 import io.github.evasim.model.World
@@ -36,7 +35,7 @@ class SimulationEnvironment(
     data: Map<String, Any> = mapOf("collectedFood" to mutableMapOf<Blob, Pair<Food, Boolean>>()),
 ) : EnvironmentImpl(externalActions, agentIDs, messageBoxes, perception, data) {
 
-    override fun percept(agent: Agent): BeliefBase = world.findBlob(Entity.Id(agent.name))?.let { blob ->
+    override fun percept(agent: Agent): BeliefBase = world.findBlob(agent.name)?.let { blob ->
         BeliefBase.of(
             position(blob.position).asBelief(),
             *setOfNotNull(foodsSurrounding(blob), collectedFood(blob)).toTypedArray(),
@@ -74,15 +73,16 @@ class SimulationEnvironment(
         val collectedFoods = data["collectedFood"] as? MutableMap<Blob, Pair<Food, Boolean>> ?: mutableMapOf()
         if (update in newData) {
             val (agentID, velocity, elapsedTime) = newData["update"] as Triple<String, Vector2D, Time>
-            val blobId = Entity.Id(agentID)
-            world.findBlob(blobId)?.updateVelocity(velocity)
-            world.update(blobId, (elapsedTime as SimulatedTime).value.milliseconds)
+            world.findBlob(agentID)?.let { blob ->
+                blob.updateVelocity(velocity)
+                blob.update((elapsedTime as SimulatedTime).value.milliseconds)
+            }
         }
         if (collect in newData) {
             val (agentID, foodID) = newData[collect] as Pair<String, String>
-            world.findBlob(Entity.Id(agentID))?.let { blob ->
-                world.findFood(Entity.Id(foodID))?.let { food ->
-                    collectedFoods[blob] = Pair(food, world.collect(food.id, blob.id))
+            world.findBlob(agentID)?.let { blob ->
+                world.findFood(foodID)?.let { food ->
+                    collectedFoods[blob] = food to food.attemptCollecting(blob)
                 }
             }
         }
