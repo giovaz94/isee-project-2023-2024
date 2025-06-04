@@ -1,9 +1,5 @@
 package io.github.evasim.model
 
-import io.github.evasim.controller.EventBusPublisher
-import io.github.evasim.controller.EventPublisher
-import io.github.evasim.controller.EventSubscriber
-import io.github.evasim.controller.UpdatedWorld
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
 

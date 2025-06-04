@@ -1,8 +1,5 @@
 package io.github.evasim.model
 
-import io.github.evasim.controller.EventBusPublisher
-import io.github.evasim.controller.EventPublisher
-import io.github.evasim.controller.UpdatedFood
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicReference
 

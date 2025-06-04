@@ -1,14 +1,14 @@
 package io.github.evasim.view.controllers
 
 import com.google.common.eventbus.Subscribe
-import io.github.evasim.controller.EventSubscriber
 import io.github.evasim.controller.SimulatorController
-import io.github.evasim.controller.UpdatedBlob
-import io.github.evasim.controller.UpdatedFood
-import io.github.evasim.controller.UpdatedWorld
 import io.github.evasim.model.Blob
 import io.github.evasim.model.Entity
+import io.github.evasim.model.EventSubscriber
 import io.github.evasim.model.Food
+import io.github.evasim.model.UpdatedBlob
+import io.github.evasim.model.UpdatedFood
+import io.github.evasim.model.UpdatedWorld
 import io.github.evasim.view.renderables.BlobRenderableConfig
 import io.github.evasim.view.renderables.blobRenderable
 import io.github.evasim.view.renderables.foodRenderable
