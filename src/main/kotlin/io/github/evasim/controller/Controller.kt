@@ -2,6 +2,8 @@ package io.github.evasim.controller
 
 import io.github.evasim.agents.SimulationEnvironment
 import io.github.evasim.agents.blobAgent
+import io.github.evasim.model.EventBusPublisher
+import io.github.evasim.model.EventPublisher
 import io.github.evasim.model.World
 import io.github.evasim.model.World.Companion.Configuration
 import it.unibo.jakta.agents.bdi.dsl.mas
@@ -33,28 +35,30 @@ interface Controller : EventPublisher {
 /** The simulation controller. */
 object SimulatorController : Controller, EventBusPublisher() {
 
-    private var domain: World? = null
+    private var environment: SimulationEnvironment? = null
 
     @Synchronized
     override fun start(configuration: Configuration) {
-        require(domain == null) { "A simulation is already running. Please, stop it first." }
+        require(environment == null) { "A simulation is already running. Please, stop it first." }
         World.fromConfiguration(configuration).also { world ->
-            domain = world
-            startMas(world)
+            environment = startMas(world)
             subscribers.forEach { world.register(it) }
         }
     }
 
     // TODO: think if this is the right place where to start the agents, e.g., in the rounds manager.
-    private fun startMas(domain: Domain) = mas {
-        environment(SimulationEnvironment(domain))
-        domain.blobs.forEach { blobAgent(it) }
-        executionStrategy = ExecutionStrategy.discreteTimeExecution()
-    }.let { thread { it.start() } }
+    private fun startMas(domain: Domain) = SimulationEnvironment(domain).also {
+        mas {
+            executionStrategy = ExecutionStrategy.discreteTimeExecution()
+            domain.blobs.forEach { blob -> blobAgent(blob) }
+            environment(it)
+        }.also { mas -> thread { mas.start() } }
+    }
 
     @Synchronized
     override fun stop() {
-        requireNotNull(domain) { "Cannot stop a non-existing simulation!" }
-        domain = null
+        requireNotNull(environment) { "Cannot stop a non-existing simulation!" }
+        environment?.updateData(mapOf("command" to "stop"))
+        environment = null
     }
 }
