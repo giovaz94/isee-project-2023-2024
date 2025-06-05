@@ -4,8 +4,8 @@ import io.github.evasim.agents.SimulationEnvironment
 import io.github.evasim.agents.blobAgent
 import io.github.evasim.model.EventBusPublisher
 import io.github.evasim.model.EventPublisher
+import io.github.evasim.model.Round
 import io.github.evasim.model.World
-import io.github.evasim.model.World.Companion.Configuration
 import it.unibo.jakta.agents.bdi.dsl.mas
 import it.unibo.jakta.agents.bdi.executionstrategies.ExecutionStrategy
 import kotlin.concurrent.thread
@@ -24,7 +24,7 @@ interface Controller : EventPublisher {
     /**
      * Starts the simulation with the given [configuration].
      */
-    fun start(configuration: Configuration)
+    fun start(configuration: World.Companion.Configuration)
 
     /**
      * Stops the current simulation.
@@ -35,30 +35,35 @@ interface Controller : EventPublisher {
 /** The simulation controller. */
 object SimulatorController : Controller, EventBusPublisher() {
 
-    private var environment: SimulationEnvironment? = null
+    private var activeSimulation: Thread? = null
 
     @Synchronized
-    override fun start(configuration: Configuration) {
-        require(environment == null) { "A simulation is already running. Please, stop it first." }
+    override fun start(configuration: World.Companion.Configuration) {
+        check(activeSimulation == null) { "A simulation is already running. Please, stop it first." }
         World.fromConfiguration(configuration).also { world ->
-            environment = startMas(world)
+            // TODO: make it configurable the round and simulation end criteria
+            val initialRound = Round.byEmptyWorld(world)
+            activeSimulation = thread { simulationLoop(initialRound) }
             subscribers.forEach { world.register(it) }
         }
     }
 
-    // TODO: think if this is the right place where to start the agents, e.g., in the rounds manager.
-    private fun startMas(domain: Domain) = SimulationEnvironment(domain).also {
+    private fun simulationLoop(round: Round, shouldStop: (Round) -> Boolean = { false }) {
+        mas(round).start()
+        if (shouldStop(round)) return else simulationLoop(round.next())
+    }
+
+    private fun mas(round: Round) = SimulationEnvironment(round).let {
         mas {
             executionStrategy = ExecutionStrategy.discreteTimeExecution()
-            domain.blobs.forEach { blob -> blobAgent(blob) }
+            round.world.blobs.forEach { blobAgent(it) }
             environment(it)
-        }.also { mas -> thread { mas.start() } }
+        }
     }
 
     @Synchronized
     override fun stop() {
-        requireNotNull(environment) { "Cannot stop a non-existing simulation!" }
-        environment?.updateData(mapOf("command" to "stop"))
-        environment = null
+        checkNotNull(activeSimulation) { "Cannot stop a non-existing simulation!" }
+        activeSimulation = null
     }
 }
