@@ -90,52 +90,30 @@ infix fun Placed<out Shape>.collidesWith(shape: Shape): Boolean {
 }
 
 /** Check if a [Placed] is entirely contained in a [Shape]. */
-fun Placed<out Shape>.isFullyContainedIn(other: Shape): Boolean {
-    return when (val shape = this.shape) {
-        is Rectangle -> {
-            listOf(
-                Position2D(-shape.halfWidth, -shape.halfHeight),
-                Position2D(shape.halfWidth, -shape.halfHeight),
-                Position2D(-shape.halfWidth, shape.halfHeight),
-                Position2D(shape.halfWidth, shape.halfHeight),
-            ).map { it + this.position }.all { other.locallyContains(it) }
-        }
-        is Circle -> {
-            val directions = listOf(
-                Position2D(1.0, 0.0),
-                Position2D(-1.0, 0.0),
-                Position2D(0.0, 1.0),
-                Position2D(0.0, -1.0),
-                Position2D(1.0, 1.0),
-                Position2D(-1.0, 1.0),
-                Position2D(1.0, -1.0),
-                Position2D(-1.0, -1.0),
+fun Placed<out Shape>.isFullyContainedIn(other: Shape): Boolean = when (shape) {
+    is Rectangle -> listOf(-1, 1)
+        .flatMap { dx -> listOf(-1, 1).map { dy -> Position2D(dx * shape.halfWidth, dy * shape.halfHeight) } }
+        .map { it + this.position }
+        .all { other.locallyContains(it) }
+    is Circle -> listOf(-1.0, 0.0, 1.0)
+        .flatMap { dx -> listOf(-1.0, 0.0, 1.0).map { dy -> Position2D(dx, dy) } }
+        .map { dir -> position + (dir.asVector2D().normalized() ?: zero) * shape.radius }
+        .all { other.locallyContains(it) }
+    is Cone -> {
+        val direction = direction ?: error("Direction must be specified for a placed Cone.")
+        val fovRad = Math.toRadians(shape.fovDegrees.value)
+        val halfFov = fovRad / 2.0
+        val baseAngle = atan2(direction.y, direction.x)
+        val angles = listOf(baseAngle - halfFov, baseAngle + halfFov, baseAngle)
+        val arcPoints = angles.map { angle ->
+            Position2D(
+                x = position.x + shape.radius * cos(angle),
+                y = position.y + shape.radius * sin(angle),
             )
-            directions.map { dir ->
-                val norm = dir.asVector2D().normalized() ?: zero
-                val testPoint = this.position + norm * shape.radius
-                testPoint
-            }.all { other.locallyContains(it) }
         }
-        is Cone -> {
-            val direction = this.direction ?: error("Direction must be specified for a placed Cone.")
-            val fovRad = Math.toRadians(shape.fovDegrees.value)
-            val halfFov = fovRad / 2.0
-            val baseAngle = atan2(direction.y, direction.x)
-            val radius = shape.radius
-            val apex = this.position
-            val angles = listOf(baseAngle - halfFov, baseAngle + halfFov, baseAngle)
-            val arcPoints = angles.map { angle ->
-                Position2D(
-                    x = apex.x + radius * cos(angle),
-                    y = apex.y + radius * sin(angle),
-                )
-            }
-            val allPoints = listOf(apex) + arcPoints
-            allPoints.all { other.locallyContains(it) }
-        }
-        else -> error("Not implemented for ${shape::class.simpleName}")
+        (arcPoints + position).all { other.locallyContains(it) }
     }
+    else -> error("Not implemented for ${shape::class.simpleName}")
 }
 
 internal infix fun Placed<Circle>.circleIntersect(other: Placed<Circle>): Boolean {
