@@ -90,6 +90,13 @@ interface World : EventPublisher {
                 .toMap(ConcurrentHashMap())
             WorldImpl(shape, foods, blobs, CopyOnWriteArraySet(spawnZones))
         }
+
+        /**
+         * Creates a new world instance from an existing one.
+         */
+        fun from(world: World): World = with(world) {
+            TODO("Still needs to be implemented")
+        }
     }
 }
 

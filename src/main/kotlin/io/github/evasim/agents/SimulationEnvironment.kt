@@ -2,8 +2,8 @@ package io.github.evasim.agents
 
 import io.github.evasim.model.Blob
 import io.github.evasim.model.Food
+import io.github.evasim.model.Round
 import io.github.evasim.model.Vector2D
-import io.github.evasim.model.World
 import io.github.evasim.model.collidesWith
 import io.github.evasim.model.distanceTo
 import io.github.evasim.utils.Logic.asBelief
@@ -27,7 +27,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * Simulation agent environment.
  */
 class SimulationEnvironment(
-    private val world: World,
+    private val round: Round,
     agentIDs: Map<String, AgentID> = emptyMap(),
     externalActions: Map<String, ExternalAction> = mapOf(update to Update, collect to CollectFood),
     messageBoxes: Map<AgentID, MessageQueue> = emptyMap(),
@@ -35,7 +35,7 @@ class SimulationEnvironment(
     data: Map<String, Any> = mapOf("collectedFood" to mutableMapOf<Blob, Pair<Food, Boolean>>()),
 ) : EnvironmentImpl(externalActions, agentIDs, messageBoxes, perception, data) {
 
-    override fun percept(agent: Agent): BeliefBase = world.findBlob(agent.name)?.let { blob ->
+    override fun percept(agent: Agent): BeliefBase = round.world.findBlob(agent.name)?.let { blob ->
         BeliefBase.of(
             position(blob.position).asBelief(),
             *setOfNotNull(foodsSurrounding(blob), collectedFood(blob)).toTypedArray(),
@@ -44,20 +44,20 @@ class SimulationEnvironment(
         )
     } ?: BeliefBase.empty()
 
-    private fun foodsSurrounding(blob: Blob): Belief? = world.foods
+    private fun foodsSurrounding(blob: Blob): Belief? = round.world.foods
         .filter { it in blob.sight }
         .filter { it.hasUncollectedPieces() }
         .minByOrNull { blob.distanceTo(it) }
         ?.let { food(it.position).asBelief() }
 
-    private fun foodsCollidingWith(blob: Blob): Set<Belief> = world.foods
+    private fun foodsCollidingWith(blob: Blob): Set<Belief> = round.world.foods
         .filter { it.hasUncollectedPieces() }
         .filter { blob collidingWith it }
         .map { reached_food(it.id.value).asBelief() }
         .toSet()
 
     private fun blobBounce(blob: Blob): Set<Belief> = blob.sight.visibilityArea
-        .takeIf { it collidesWith world.shape }
+        .takeIf { it collidesWith round.world.shape }
         ?.let { setOf(bounce(blob.direction).asBelief()) }
         .orEmpty()
 
@@ -73,15 +73,15 @@ class SimulationEnvironment(
         val collectedFoods = data["collectedFood"] as? MutableMap<Blob, Pair<Food, Boolean>> ?: mutableMapOf()
         if (update in newData) {
             val (agentID, velocity, elapsedTime) = newData["update"] as Triple<String, Vector2D, Time>
-            world.findBlob(agentID)?.let { blob ->
+            round.world.findBlob(agentID)?.let { blob ->
                 blob.updateVelocity(velocity)
                 blob.update((elapsedTime as SimulatedTime).value.milliseconds)
             }
         }
         if (collect in newData) {
             val (agentID, foodID) = newData[collect] as Pair<String, String>
-            world.findBlob(agentID)?.let { blob ->
-                world.findFood(foodID)?.let { food ->
+            round.world.findBlob(agentID)?.let { blob ->
+                round.world.findFood(foodID)?.let { food ->
                     collectedFoods[blob] = food to food.attemptCollecting(blob)
                 }
             }
@@ -95,5 +95,5 @@ class SimulationEnvironment(
         messageBoxes: Map<AgentID, MessageQueue>,
         perception: Perception,
         data: Map<String, Any>,
-    ): Environment = SimulationEnvironment(world, agentIDs, externalActions, messageBoxes, perception, data)
+    ): Environment = SimulationEnvironment(round, agentIDs, externalActions, messageBoxes, perception, data)
 }
