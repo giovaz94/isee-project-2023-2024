@@ -243,8 +243,12 @@ status(exploring).
 +reached_food(F) : status(targeting(F)) <- // Belief added from the environment
   status(reached(F)).
 
-!contention : status(contending(F)) <-
-  ...
+  
+------
+
+
+  
+
 ```
 
 ## Salient implementation details
