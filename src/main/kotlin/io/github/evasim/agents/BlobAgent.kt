@@ -21,6 +21,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         action(Random)
         action(WaypointDirection)
         action(InverseDirection)
+        action(EndRound)
     }
     goals { achieve(forage) }
     plans {
@@ -85,6 +86,9 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
             val invD = Var.of("DirX")
             execute(inverse_direction(D, invD))
             update(direction(invD).fromSelf)
+        }
+        +ended_round.fromPercept then {
+            execute("end_round")
         }
     }
     timeDistribution {

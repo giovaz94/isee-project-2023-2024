@@ -55,3 +55,5 @@ internal val reached by OwnName
 internal val bounce by OwnName
 
 internal val inverse_direction by OwnName
+
+internal val ended_round by OwnName

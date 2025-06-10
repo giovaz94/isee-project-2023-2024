@@ -6,14 +6,10 @@ import io.github.evasim.model.EventBusPublisher
 import io.github.evasim.model.EventPublisher
 import io.github.evasim.model.Round
 import io.github.evasim.model.World
+import io.github.evasim.utils.logger
 import it.unibo.jakta.agents.bdi.dsl.mas
 import it.unibo.jakta.agents.bdi.executionstrategies.ExecutionStrategy
 import kotlin.concurrent.thread
-
-/**
- * A type alias for the domain aggregate root of the simulation.
- */
-typealias Domain = World
 
 /**
  * Represents the simulation controller interface responsible for managing user inputs, events,
@@ -42,23 +38,27 @@ object SimulatorController : Controller, EventBusPublisher() {
         check(activeSimulation == null) { "A simulation is already running. Please, stop it first." }
         World.fromConfiguration(configuration).also { world ->
             // TODO: make it configurable the round and simulation end criteria
-            val initialRound = Round.byEmptyWorld(world)
+            // val initialRound = Round.byNoFood(world)
+            // TODO: just for testing until we have a proper contention in place
+            val initialRound = Round.byCriteria(world) {
+                it.foods.all { food -> !food.hasUncollectedPieces() }
+            }
             activeSimulation = thread { simulationLoop(initialRound) }
             subscribers.forEach { world.register(it) }
         }
     }
 
     private fun simulationLoop(round: Round, shouldStop: (Round) -> Boolean = { false }) {
+        logger.info { "Starting round ${round.number}..." }
         mas(round).start()
+        logger.info { "Round ${round.number} ended." }
         if (shouldStop(round)) return else simulationLoop(round.next())
     }
 
-    private fun mas(round: Round) = SimulationEnvironment(round).let {
-        mas {
-            executionStrategy = ExecutionStrategy.discreteTimeExecution()
-            round.world.blobs.forEach { blobAgent(it) }
-            environment(it)
-        }
+    private fun mas(round: Round) = mas {
+        executionStrategy = ExecutionStrategy.discreteTimeExecution()
+        round.world.blobs.forEach { blobAgent(it) }
+        environment(SimulationEnvironment(round))
     }
 
     @Synchronized

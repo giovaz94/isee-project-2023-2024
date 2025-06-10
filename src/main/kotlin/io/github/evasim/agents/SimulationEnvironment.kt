@@ -38,7 +38,7 @@ class SimulationEnvironment(
     override fun percept(agent: Agent): BeliefBase = round.world.findBlob(agent.name)?.let { blob ->
         BeliefBase.of(
             position(blob.position).asBelief(),
-            *setOfNotNull(foodsSurrounding(blob), collectedFood(blob)).toTypedArray(),
+            *setOfNotNull(foodsSurrounding(blob), collectedFood(blob), endedRound()).toTypedArray(),
             *foodsCollidingWith(blob).toTypedArray(),
             *blobBounce(blob).toTypedArray(),
         )
@@ -67,6 +67,8 @@ class SimulationEnvironment(
             Struct.of(collected_food, Atom.of(food.id.value), Atom.of(response.toString())).asBelief()
         }
     }
+
+    private fun endedRound(): Belief? = if (round.isEnded()) ended_round().asBelief() else null
 
     @Suppress("UNCHECKED_CAST")
     override fun updateData(newData: Map<String, Any>): Environment {

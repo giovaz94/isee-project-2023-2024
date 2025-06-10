@@ -28,7 +28,7 @@ interface Round {
          * @param world The world in which the round is taking place.
          * @return A new [Round] instance.
          */
-        fun byEmptyWorld(world: World): Round = byCriteria(world) { it.foods.toSet().isEmpty() }
+        fun byNoFood(world: World): Round = byCriteria(world) { it.foods.toSet().isEmpty() }
 
         /**
          * Creates a new [Round] with the given [world] and an end criteria defined by the provided [criteria] function.
@@ -49,7 +49,7 @@ private data class RoundImpl(
     override fun isEnded(): Boolean = endCriteria(world)
 
     override fun next(): Round {
-        check(isEnded()) { "Cannot advance to the next round when the current round is not yet ended." }
+        check(isEnded()) { "Cannot advance to the next round when the current one ($number-th) is not yet ended." }
         return RoundImpl(number + 1, World.from(world), endCriteria)
     }
 }

@@ -30,6 +30,9 @@ object Logic {
     /** Builds a [Struct] from the given [String]. */
     operator fun String.invoke(s: String): Struct = Struct.of(this, Atom.of(s))
 
+    /** Builds a simple [Struct] with no terms. */
+    operator fun String.invoke(): Struct = Struct.of(this)
+
     /** Builds a [Belief] from the given [Struct]. */
     fun Struct.asBelief(): Belief = Belief.fromPerceptSource(this)
 
