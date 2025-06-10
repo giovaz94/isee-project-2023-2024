@@ -17,5 +17,18 @@
                          styleClass="center-view-icon" />
             </graphic>
         </Button>
+        <HBox AnchorPane.leftAnchor="15.0"
+              AnchorPane.bottomAnchor="15.0"
+              spacing="5.0">
+            <HBox spacing="5.0">
+                <Label text="Round:" />
+                <Label fx:id="roundLabel" text="0" />
+            </HBox>
+            <Label text=" | " />
+            <HBox spacing="5.0">
+                <Label text="Status:" />
+                <Label fx:id="simulationStateLabel" text="Ready" />
+            </HBox>
+        </HBox>
     </AnchorPane>
 </StackPane>

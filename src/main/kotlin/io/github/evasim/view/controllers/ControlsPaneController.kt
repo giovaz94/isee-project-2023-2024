@@ -61,6 +61,7 @@ internal class ControlsPaneController : Initializable {
             hawkyBlobs = 0,
         )
         SimulatorController.start(config)
+        simulationPaneController?.newSimulationState(SimulationState.RUNNING)
     }
 
     private fun onPause() {
@@ -69,5 +70,6 @@ internal class ControlsPaneController : Initializable {
 
     private fun onStop() {
         SimulatorController.stop()
+        simulationPaneController?.newSimulationState(SimulationState.READY)
     }
 }
