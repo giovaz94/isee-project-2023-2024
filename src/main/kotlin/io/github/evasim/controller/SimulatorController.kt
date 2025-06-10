@@ -44,12 +44,12 @@ object SimulatorController : Controller, EventBusPublisher() {
                 it.foods.all { food -> !food.hasUncollectedPieces() }
             }
             activeSimulation = thread { simulationLoop(initialRound) }
-            subscribers.forEach { world.register(it) }
         }
     }
 
     private fun simulationLoop(round: Round, shouldStop: (Round) -> Boolean = { false }) {
         logger.info { "Starting round ${round.number}..." }
+        subscribers.forEach { round.world.register(it) }
         mas(round).start()
         logger.info { "Round ${round.number} ended." }
         if (shouldStop(round)) return else simulationLoop(round.next())
