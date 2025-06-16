@@ -21,7 +21,9 @@ import it.unibo.jakta.agents.fsm.time.SimulatedTime
 import it.unibo.jakta.agents.fsm.time.Time
 import it.unibo.tuprolog.core.Atom
 import it.unibo.tuprolog.core.Struct
+import it.unibo.tuprolog.core.toTerm
 import kotlin.time.Duration.Companion.milliseconds
+import it.unibo.tuprolog.core.List as TpList
 
 /**
  * Simulation agent environment.
@@ -29,7 +31,11 @@ import kotlin.time.Duration.Companion.milliseconds
 class SimulationEnvironment(
     private val world: World,
     agentIDs: Map<String, AgentID> = emptyMap(),
-    externalActions: Map<String, ExternalAction> = mapOf(update to Update, collect to CollectFood),
+    externalActions: Map<String, ExternalAction> = mapOf(
+        update to Update,
+        collect to CollectFood,
+        "check_contention" to CheckContention,
+    ),
     messageBoxes: Map<AgentID, MessageQueue> = emptyMap(),
     perception: Perception = Perception.empty(),
     data: Map<String, Any> = mapOf("collectedFood" to mutableMapOf<Blob, Pair<Food, Boolean>>()),
@@ -44,14 +50,15 @@ class SimulationEnvironment(
         )
     } ?: BeliefBase.empty()
 
-    private fun foodsSurrounding(blob: Blob): Belief? = world.foods
-        .filter { it in blob.sight }
+    private fun uncollectedFood(): Sequence<Food> = world.foods
         .filter { it.hasUncollectedPieces() }
+
+    private fun foodsSurrounding(blob: Blob): Belief? = uncollectedFood()
+        .filter { it in blob.sight }
         .minByOrNull { blob.distanceTo(it) }
         ?.let { food(it.position).asBelief() }
 
-    private fun foodsCollidingWith(blob: Blob): Set<Belief> = world.foods
-        .filter { it.hasUncollectedPieces() }
+    private fun foodsCollidingWith(blob: Blob): Set<Belief> = uncollectedFood()
         .filter { blob collidingWith it }
         .map { reached_food(it.id.value).asBelief() }
         .toSet()
@@ -62,15 +69,19 @@ class SimulationEnvironment(
         .orEmpty()
 
     @Suppress("UNCHECKED_CAST")
-    private fun collectedFood(blob: Blob): Belief? = (data["collectedFood"] as? Map<Blob, Pair<Food, Boolean>>)?.let {
-        it[blob]?.let { (food, response) ->
-            Struct.of(collected_food, Atom.of(food.id.value), Atom.of(response.toString())).asBelief()
+    private fun collectedFood(blob: Blob): Belief? = (data["collectedFood"] as? Map<Blob, Pair<Food, List<Blob>>>)
+        ?.let {
+            it[blob]?.let { (food, blobList) ->
+                val terms = blobList.map { it.id.value.toTerm() }.toSet()
+                val blobToFood = TpList.from(terms.asSequence())
+                Struct.of(collected_food, Atom.of(food.id.value), blobToFood).asBelief()
+            }
         }
-    }
 
     @Suppress("UNCHECKED_CAST")
     override fun updateData(newData: Map<String, Any>): Environment {
-        val collectedFoods = data["collectedFood"] as? MutableMap<Blob, Pair<Food, Boolean>> ?: mutableMapOf()
+        val collectedFoods = data["collectedFood"] as? MutableMap<Blob, Pair<Food, List<Blob>>> ?: mutableMapOf()
+
         if (update in newData) {
             val (agentID, velocity, elapsedTime) = newData["update"] as Triple<String, Vector2D, Time>
             world.findBlob(agentID)?.let { blob ->
@@ -78,15 +89,17 @@ class SimulationEnvironment(
                 blob.update((elapsedTime as SimulatedTime).value.milliseconds)
             }
         }
+
         if (collect in newData) {
             val (agentID, foodID) = newData[collect] as Pair<String, String>
             world.findBlob(agentID)?.let { blob ->
                 world.findFood(foodID)?.let { food ->
-                    collectedFoods[blob] = food to food.attemptCollecting(blob)
+                    collectedFoods[blob] = food to (food.attemptCollecting(blob) ?: emptyList())
                 }
             }
         }
-        return copy(data = data)
+
+        return copy(data = data + ("collectedFood" to collectedFoods))
     }
 
     override fun copy(

@@ -55,3 +55,5 @@ internal val reached by OwnName
 internal val bounce by OwnName
 
 internal val inverse_direction by OwnName
+
+internal val check_contention by OwnName

@@ -31,7 +31,7 @@ interface Food : Entity, EventPublisher {
     fun hasUncollectedPieces(): Boolean = pieces.any { it.collectedBy() == null }
 
     /** Attempts to collect this food item by the given blob, returning true if successful or false otherwise. */
-    fun attemptCollecting(blob: Blob): Boolean
+    fun attemptCollecting(blob: Blob): List<Blob>?
 
     /** Food factory methods. */
     companion object {
@@ -68,9 +68,15 @@ private data class FoodImpl private constructor(
 
     override val pieces: Set<Food.Piece> = Collections.unmodifiableSet(pieceSet)
 
-    override fun attemptCollecting(blob: Blob): Boolean = pieceSet
-        .any { it.collectedBy.compareAndSet(null, blob) }
-        .also { if (it) post(UpdatedFood(copy())) }
+    override fun attemptCollecting(blob: Blob): List<Blob>? {
+        val collectedSuccessfully = pieceSet.any { it.collectedBy.compareAndSet(null, blob) }
+        return if (collectedSuccessfully) {
+            post(UpdatedFood(copy()))
+            pieceSet.mapNotNull { it.collectedBy.get() }.toList()
+        } else {
+            null
+        }
+    }
 
     private class PieceImpl(override val energy: Energy) : Food.Piece {
         val collectedBy: AtomicReference<Blob?> = AtomicReference(null)

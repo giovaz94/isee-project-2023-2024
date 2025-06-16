@@ -3,6 +3,7 @@ package io.github.evasim.agents
 import io.github.evasim.model.Blob
 import it.unibo.jakta.agents.bdi.dsl.MasScope
 import it.unibo.jakta.agents.fsm.time.Time
+import it.unibo.tuprolog.core.List
 import it.unibo.tuprolog.core.Var
 
 private const val MIN_STEPS = 20
@@ -64,6 +65,10 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
             execute(collect(F))
         }
 
+        +achieve(contention) then {
+            execute(print("Let's solve it"))
+        }
+
         // ENVIRONMENT PERCEPTIONS
         +food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
             update(status(targeting(P)).fromSelf)
@@ -74,13 +79,16 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         +reached_food(F).fromPercept then {
             update(status(reached(F)).fromSelf)
         }
-        +collected_food(F, "false").fromPercept onlyIf { status(reached(F)).fromSelf } then {
+
+        +collected_food(F, List.empty()).fromPercept onlyIf { status(reached(F)).fromSelf } then {
             update(status(exploring).fromSelf)
             achieve(forage)
         }
-        +collected_food(F, "true").fromPercept onlyIf { status(reached(F)).fromSelf } then {
-            execute(print("Successfully collected ", F))
+
+        +collected_food(F, X).fromPercept onlyIf { status(reached(F)).fromSelf } then {
+            execute(check_contention(X))
         }
+
         +bounce(D).fromPercept then {
             val invD = Var.of("invD")
             execute(inverse_direction(D, invD))
