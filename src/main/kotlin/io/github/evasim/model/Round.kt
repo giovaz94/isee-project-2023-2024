@@ -1,12 +1,17 @@
 package io.github.evasim.model
 
-typealias Simulation = Sequence<Round>
+import java.util.concurrent.atomic.AtomicReference
+import kotlin.time.Duration
+import kotlin.time.TimeSource
 
 /** A simulation round, i.e., an iteration. */
 interface Round {
 
     /** The number of the round in the simulation. */
     val number: Int
+
+    /** The elapsed time since the start of the round. */
+    val elapsedTime: Duration
 
     /** The world in which the round is taking place. */
     val world: World
@@ -28,7 +33,7 @@ interface Round {
          * @param world The world in which the round is taking place.
          * @return A new [Round] instance.
          */
-        fun byNoFood(world: World): Round = byCriteria(world) { it.foods.toSet().isEmpty() }
+        fun byNoFood(world: World): Round = byCriteria(world) { it.world.foods.toSet().isEmpty() }
 
         /**
          * Creates a new [Round] with the given [world] and an end criteria defined by the provided [criteria] function.
@@ -36,17 +41,22 @@ interface Round {
          * @param criteria A function that takes a [World] and returns true if the round should end.
          * @return A new [Round] instance.
          */
-        fun byCriteria(world: World, criteria: (World) -> Boolean): Round = RoundImpl(0, world, criteria)
+        fun byCriteria(world: World, criteria: (Round) -> Boolean): Round = RoundImpl(0, world, criteria)
     }
 }
 
 private data class RoundImpl(
     override val number: Int,
     override val world: World,
-    private val endCriteria: (World) -> Boolean,
+    private val endCriteria: (Round) -> Boolean,
 ) : Round {
 
-    override fun isEnded(): Boolean = endCriteria(world)
+    private val timer = AtomicReference(TimeSource.Monotonic.markNow())
+
+    override val elapsedTime: Duration
+        get() = timer.get().elapsedNow()
+
+    override fun isEnded(): Boolean = endCriteria(this)
 
     override fun next(): Round {
         check(isEnded()) { "Cannot advance to the next round when the current one ($number-th) is not yet ended." }

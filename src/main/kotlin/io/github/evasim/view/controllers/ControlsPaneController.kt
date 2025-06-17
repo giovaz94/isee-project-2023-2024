@@ -10,9 +10,12 @@ import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.Button
 import javafx.scene.control.CheckBox
+import javafx.scene.control.TextField
+import javafx.scene.control.TextFormatter
 import javafx.scene.layout.VBox
 import java.net.URL
 import java.util.*
+import java.util.function.UnaryOperator
 
 @Suppress("detekt:VarCouldBeVal")
 internal class ControlsPaneController : Initializable {
@@ -27,6 +30,10 @@ internal class ControlsPaneController : Initializable {
     @FXML private lateinit var stopButton: Button
 
     @FXML private lateinit var showBlobNamesCheckBox: CheckBox
+
+    @FXML private lateinit var doveCountField: TextField
+
+    @FXML private lateinit var hawkCountField: TextField
 
     internal var simulationPaneController: SimulationPaneController? = null
     private var isCollapsed = false
@@ -52,13 +59,19 @@ internal class ControlsPaneController : Initializable {
     }
 
     private fun onStart() {
+        // TODO: validate input
+        val baseRadius = 200.0
+        val scaleFactor = 5.0
+        val hawkyBlobs = hawkCountField.text.toInt()
+        val doveBlobs = doveCountField.text.toInt()
+        val radius = baseRadius + (hawkyBlobs + doveBlobs) * scaleFactor
         val config = World.Companion.Configuration(
-            shape = Circle(radius = 700.0),
+            shape = Circle(radius),
             spawnZones = setOf(
-                SpawnZone(HollowCircle(innerRadius = 600.0, outerRadius = 700.0), origin),
+                SpawnZone(HollowCircle(innerRadius = radius * 0.80, outerRadius = radius), origin),
             ),
-            blobsAmount = 10,
-            hawkyBlobs = 0,
+            hawkyBlobs = hawkyBlobs,
+            doveBlobs = doveBlobs
         )
         SimulatorController.start(config)
         simulationPaneController?.newSimulationState(SimulationState.RUNNING)

@@ -55,21 +55,21 @@ interface World : EventPublisher {
          * Configuration class for creating a new world instance.
          * @param shape The shape of the world positioned at the origin, i.e., (0, 0).
          * @param spawnZones The spawn zones within the world.
-         * @param blobsAmount The total number of blobs in the world.
          * @param hawkyBlobs The number of hawky blobs in the world.
+         * @param doveBlobs The number of dove blobs in the world.
          * @param foodsAmount The number of food items in the world.
          */
         data class Configuration(
             val shape: Shape,
             val spawnZones: Set<SpawnZone>,
-            val blobsAmount: Int,
             val hawkyBlobs: Int,
-            val foodsAmount: Int = blobsAmount / 2,
+            val doveBlobs: Int,
+            val foodsAmount: Int = (hawkyBlobs + doveBlobs) / 2,
         )
 
         /** Creates a new world instance based on the provided [configuration]. */
         fun fromConfiguration(configuration: Configuration): World = with(configuration) {
-            val blobsPerSpawnZone = blobsAmount / spawnZones.size
+            val blobsPerSpawnZone = (hawkyBlobs + doveBlobs) / spawnZones.size
             val foods = generateFoods(shape, spawnZones, foodsAmount)
             val blobs = spawnZones
                 .flatMap { zone -> generateSequence { positionWithin(zone.place) }.take(blobsPerSpawnZone) }

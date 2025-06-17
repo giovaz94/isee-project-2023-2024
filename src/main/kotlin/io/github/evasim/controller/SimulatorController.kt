@@ -10,6 +10,7 @@ import io.github.evasim.utils.logger
 import it.unibo.jakta.agents.bdi.dsl.mas
 import it.unibo.jakta.agents.bdi.executionstrategies.ExecutionStrategy
 import kotlin.concurrent.thread
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Represents the simulation controller interface responsible for managing user inputs, events,
@@ -41,7 +42,7 @@ object SimulatorController : Controller, EventBusPublisher() {
             // val initialRound = Round.byNoFood(world)
             // TODO: just for testing until we have a proper contention in place
             val initialRound = Round.byCriteria(world) {
-                it.foods.all { food -> !food.hasUncollectedPieces() }
+                it.elapsedTime > 5.seconds || it.world.foods.all { food -> !food.hasUncollectedPieces() }
             }
             activeSimulation = thread { simulationLoop(initialRound) }
         }
@@ -56,7 +57,7 @@ object SimulatorController : Controller, EventBusPublisher() {
     }
 
     private fun mas(round: Round) = mas {
-        executionStrategy = ExecutionStrategy.discreteTimeExecution()
+        executionStrategy = ExecutionStrategy.oneThreadPerMas() // TODO!!!
         round.world.blobs.forEach { blobAgent(it) }
         environment(SimulationEnvironment(round))
     }

@@ -8,8 +8,8 @@ import kotlin.time.DurationUnit
 /** A blob in the simulation. */
 interface Blob : Entity, EventPublisher {
 
-    /** The blob initial position in the simulation. */
-    val initialPosition: Position2D
+    /** The blob initial place in the simulation. */
+    val initialPlace: Placed<Shape>
 
     /** The blob current velocity as a 2D vector with speed and direction. */
     val velocity: Vector2D
@@ -64,7 +64,7 @@ interface Blob : Entity, EventPublisher {
             shape: Shape = Circle(radius = 20.0),
             velocity: Vector2D = Vector2D.ZERO,
             defaultDirection: Direction = Direction.DOWN,
-            sightShape: Shape = Cone(radius = 75.0, fovDegrees = Degrees(value = 90.0)),
+            sightShape: Shape = Cone(radius = 100.0, fovDegrees = Degrees(value = 90.0)),
             health: Health = Health(min = 0.0, max = 2.0),
         ): Blob = BlobImpl(
             id,
@@ -132,7 +132,7 @@ private data class BlobImpl(
     override val health: Health,
 ) : Blob, EventBusPublisher() {
 
-    override val initialPosition: Position2D = currentPosition
+    override val initialPlace: Placed<Shape> = shape at currentPosition
 
     override val position: Position2D
         get() = currentPosition

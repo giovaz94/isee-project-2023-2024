@@ -5,7 +5,7 @@ import io.github.evasim.utils.Logic.castToVector2D
 import it.unibo.jakta.agents.bdi.actions.ExternalRequest
 import it.unibo.jakta.agents.bdi.actions.impl.AbstractExternalAction
 
-internal object Update : AbstractExternalAction(name = update, arity = 3) {
+internal object Update : AbstractExternalAction(name = update, arity = 2) {
     override fun action(request: ExternalRequest) {
         val direction = request.arguments[0].castToTuple().castToVector2D().normalized() ?: zero
         val speed = request.arguments[1].castToReal().value.toDouble()

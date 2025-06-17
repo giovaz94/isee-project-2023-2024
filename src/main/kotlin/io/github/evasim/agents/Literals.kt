@@ -5,6 +5,7 @@ import io.github.evasim.utils.OwnName
 /** The literal `print/2` internal action. */
 internal val print by OwnName
 
+/** The literal `random/3` internal action. */
 internal val random by OwnName
 
 internal val direction by OwnName
@@ -33,6 +34,10 @@ internal val collected_food by OwnName
 internal val contention by OwnName
 
 internal val go_home by OwnName
+
+internal val going_home by OwnName
+
+internal val reached_home by OwnName
 
 internal val update by OwnName
 

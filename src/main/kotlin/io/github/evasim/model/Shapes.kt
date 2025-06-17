@@ -84,9 +84,26 @@ data class Placed<S : Shape>(val shape: S, var position: Position2D, var directi
     }
 }
 
-/** Check if a [Placed] collides with a container [Shape]. */
-infix fun Placed<out Shape>.collidesWith(shape: Shape): Boolean {
-    return !this.isFullyContainedIn(shape)
+/** Check if a [Placed] shape collides with a container [Shape]. */
+infix fun Placed<out Shape>.collidesWith(shape: Shape): Boolean = !isFullyContainedIn(shape)
+
+infix fun Placed<out Shape>.collidesWith(other: Placed<out Shape>): Boolean {
+    return when (shape) {
+        is Circle -> when (other.shape) {
+            is Circle -> shape at position circleIntersect (other.shape at other.position)
+            is Rectangle -> shape at position circleRectIntersect (other.shape at other.position)
+            is Cone -> TODO("No collisions with cones yet")
+            is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
+        }
+        is Rectangle -> when (other.shape) {
+            is Circle -> other.shape at other.position circleRectIntersect (shape at position)
+            is Rectangle -> shape at position rectIntersect (other.shape at other.position)
+            is Cone -> TODO("No collisions with cones yet")
+            is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
+        }
+        is Cone -> TODO("No collisions with cones yet")
+        is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
+    }
 }
 
 /** Check if a [Placed] is entirely contained in a [Shape]. */
