@@ -71,6 +71,7 @@ internal object SolveContention : AbstractExternalAction(solve_contention, arity
         val totalEnergy = request.arguments[4].castToReal().value.toDouble().castToEnergy()
         val solverEnergy = request.arguments[5].castToVar()
         val ruleOutput = contentionRule(solverPersonality, contenderPersonality, totalEnergy)
+        println(ruleOutput)
         val contenderEnergy = ruleOutput.second
         updateData(remove_food to foodId)
         sendMessage(contenderId, Message(request.sender, Tell, Struct.of(contention_result, Real.of(contenderEnergy))))

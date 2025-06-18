@@ -9,15 +9,18 @@ package io.github.evasim.model
 fun interface ContentionRule : (Personality, Personality, Energy) -> Pair<Energy, Energy>
 
 /** A basic contention rule that determines how two entities (blobs) compete for food based on their personalities. */
+@Suppress("detekt:all")
 val contentionRule: ContentionRule = ContentionRule { one, other, energy ->
     when (one) {
         is Hawk -> when (other) {
             is Hawk -> Pair(0.0, 0.0)
-            is Dove -> Pair(3 / 2 * energy, 1 / 2 * energy)
+            is Dove -> Pair(1.5 * energy, 0.5 * energy)
         }
         is Dove -> when (other) {
             is Hawk -> contentionRule(other, one, energy).swapped()
-            is Dove -> Pair(1 / 2 * energy, 1 / 2 * energy)
+            is Dove -> {
+                Pair(0.5 * energy, 0.5 * energy)
+            }
         }
     }
 }

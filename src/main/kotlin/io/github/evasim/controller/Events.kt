@@ -48,3 +48,6 @@ data class UpdatedFood(val food: Food) : Event
 
 /** A [world] update event. */
 data class UpdatedWorld(val world: World) : Event
+
+/** A [food] removal event. */
+data class RemoveFood(val food: Food) : Event

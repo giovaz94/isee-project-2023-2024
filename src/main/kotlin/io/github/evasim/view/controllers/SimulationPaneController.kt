@@ -2,6 +2,7 @@ package io.github.evasim.view.controllers
 
 import com.google.common.eventbus.Subscribe
 import io.github.evasim.controller.EventSubscriber
+import io.github.evasim.controller.RemoveFood
 import io.github.evasim.controller.SimulatorController
 import io.github.evasim.controller.UpdatedBlob
 import io.github.evasim.controller.UpdatedFood
@@ -141,11 +142,18 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
     @Subscribe
     fun update(updatedFood: UpdatedFood) = updateEntity(updatedFood.food)
 
+    @Subscribe
+    fun update(removedFood: RemoveFood) = removeEntity(removedFood.food)
+
     private fun updateEntity(entity: Entity) = Platform.runLater {
         simulationGroup.children.find { it.userData == entity.id }?.let { toBeRemoved ->
             simulationGroup.children.remove(toBeRemoved)
             simulationGroup.children.add(entity.render())
         }
+    }
+
+    private fun removeEntity(entity: Entity) = Platform.runLater {
+        simulationGroup.children.find { it.userData == entity.id }?.let { simulationGroup.children.remove(it) }
     }
 
     private fun Entity.render(): Node = when (this) {

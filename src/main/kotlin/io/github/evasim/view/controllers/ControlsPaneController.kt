@@ -58,7 +58,7 @@ internal class ControlsPaneController : Initializable {
                 SpawnZone(HollowCircle(innerRadius = 100.0, outerRadius = 150.0), origin),
             ),
             blobsAmount = 2,
-            hawkyBlobs = 2,
+            hawkyBlobs = 0,
         )
         SimulatorController.start(config)
     }

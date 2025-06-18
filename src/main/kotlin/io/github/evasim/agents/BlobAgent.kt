@@ -67,6 +67,12 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
             execute(collect(F))
         }
 
+        +achieve("update_energy"(E)) onlyIf { energy(Y).fromSelf and (N `is` Y + E) } then {
+            update(energy(N).fromSelf)
+            execute(print("new energy ", N))
+            achieve(forage)
+        }
+
         // ENVIRONMENT PERCEPTIONS
         +food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
             update(status(targeting(P)).fromSelf)
@@ -94,15 +100,14 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         }
 
         // CONTENTION
-        +contention("source"(S), P, E, F) onlyIf { energy(Y).fromSelf } then {
+        +contention("source"(S), P, E, F) then {
             execute(solve_contention(F, S, Atom.of(blob.personality.toString()), P, E, N))
-            update(energy(Y + N).fromSelf)
-            achieve(forage)
+            achieve("update_energy"(N))
         }
 
-        +contention_result("source"(S), E) then {
-            update(energy(Y + E).fromSelf)
-            execute(print("new energy from solver ", energy.fromSelf))
+        +contention_result("source"(S), E) onlyIf { energy(Y).fromSelf and (N `is` Y + E) } then {
+            update(energy(N).fromSelf)
+            execute(print("new energy from solver ", N))
             achieve(forage)
         }
     }
