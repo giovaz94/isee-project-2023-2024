@@ -11,11 +11,9 @@ import javafx.fxml.Initializable
 import javafx.scene.control.Button
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
-import javafx.scene.control.TextFormatter
 import javafx.scene.layout.VBox
 import java.net.URL
 import java.util.*
-import java.util.function.UnaryOperator
 
 @Suppress("detekt:VarCouldBeVal")
 internal class ControlsPaneController : Initializable {
@@ -60,18 +58,16 @@ internal class ControlsPaneController : Initializable {
 
     private fun onStart() {
         // TODO: validate input
-        val baseRadius = 200.0
-        val scaleFactor = 5.0
         val hawkyBlobs = hawkCountField.text.toInt()
         val doveBlobs = doveCountField.text.toInt()
-        val radius = baseRadius + (hawkyBlobs + doveBlobs) * scaleFactor
+        val radius = BASE_RADIUS + (hawkyBlobs + doveBlobs) * SCALE_FACTOR
         val config = World.Companion.Configuration(
             shape = Circle(radius),
             spawnZones = setOf(
                 SpawnZone(HollowCircle(innerRadius = radius * 0.80, outerRadius = radius), origin),
             ),
             hawkyBlobs = hawkyBlobs,
-            doveBlobs = doveBlobs
+            doveBlobs = doveBlobs,
         )
         SimulatorController.start(config)
         simulationPaneController?.newSimulationState(SimulationState.RUNNING)
@@ -84,5 +80,10 @@ internal class ControlsPaneController : Initializable {
     private fun onStop() {
         SimulatorController.stop()
         simulationPaneController?.newSimulationState(SimulationState.READY)
+    }
+
+    private companion object {
+        private const val BASE_RADIUS = 200.0
+        private const val SCALE_FACTOR = 5.0
     }
 }

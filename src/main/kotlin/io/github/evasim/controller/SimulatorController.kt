@@ -57,7 +57,7 @@ object SimulatorController : Controller, EventBusPublisher() {
     }
 
     private fun mas(round: Round) = mas {
-        executionStrategy = ExecutionStrategy.oneThreadPerMas() // TODO!!!
+        executionStrategy = ExecutionStrategy.discreteTimeExecution() // TODO!!!
         round.world.blobs.forEach { blobAgent(it) }
         environment(SimulationEnvironment(round))
     }

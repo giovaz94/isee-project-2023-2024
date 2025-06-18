@@ -14,7 +14,7 @@ private const val MAX_STEPS = 200
 fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     beliefs {
         fact { direction(tupleOf(0.0, 0.0)) }
-        fact { speed(20.0) }
+        fact { speed(term = 20.0) }
         fact { status(exploring) }
     }
     actions {
@@ -65,14 +65,6 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
             execute(collect(F))
         }
 
-        +achieve(go_home) onlyIf { status(going_home).fromSelf and position(P).fromPercept } then {
-            val target = tupleOf(blob.initialPlace.position.x, blob.initialPlace.position.y)
-            execute(waypoint_direction(P, target, D))
-            update(direction(D).fromSelf)
-            achieve(move)
-            achieve(go_home)
-        }
-
         // ENVIRONMENT PERCEPTIONS
         +food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
             update(status(targeting(P)).fromSelf)
@@ -90,23 +82,16 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         +collected_food(F, "true").fromPercept onlyIf { status(reached(F)).fromSelf } then {
             execute(print("Successfully collected ", F))
         }
-        +bounce(D).fromPercept onlyIf { not(ended_round.fromPercept) } then {
+        +bounce(D).fromPercept then {
             val invD = Var.of("DirX")
             execute(inverse_direction(D, invD))
             update(direction(invD).fromSelf)
         }
-        +ended_round.fromPercept onlyIf { (not(reached_home.fromPercept)) } then {
-            execute(print("Round ended, going home..."))
-            update(status(going_home).fromSelf)
-            achieve(go_home)
-            // execute("end_round")
-        }
-        +reached_home.fromPercept then {
-            execute(print("Reached home!"))
-            update(status(reached("home")).fromSelf)
+        +ended_round.fromPercept then {
+            execute("end_round")
         }
     }
     timeDistribution {
-        Time.discrete(value = 50)
+        Time.real(value = 50) // milliseconds
     }
 }

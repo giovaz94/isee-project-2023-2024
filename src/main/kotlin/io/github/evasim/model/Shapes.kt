@@ -87,6 +87,7 @@ data class Placed<S : Shape>(val shape: S, var position: Position2D, var directi
 /** Check if a [Placed] shape collides with a container [Shape]. */
 infix fun Placed<out Shape>.collidesWith(shape: Shape): Boolean = !isFullyContainedIn(shape)
 
+/** Check if two [Placed] shapes collide with each other. */
 infix fun Placed<out Shape>.collidesWith(other: Placed<out Shape>): Boolean {
     return when (shape) {
         is Circle -> when (other.shape) {

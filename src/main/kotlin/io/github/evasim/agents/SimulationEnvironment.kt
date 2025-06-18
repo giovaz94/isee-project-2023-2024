@@ -4,12 +4,10 @@ import io.github.evasim.model.Blob
 import io.github.evasim.model.Food
 import io.github.evasim.model.Round
 import io.github.evasim.model.Vector2D
-import io.github.evasim.model.at
 import io.github.evasim.model.collidesWith
 import io.github.evasim.model.distanceTo
 import io.github.evasim.utils.Logic.asBelief
 import io.github.evasim.utils.Logic.invoke
-import io.github.evasim.utils.logger
 import it.unibo.jakta.agents.bdi.Agent
 import it.unibo.jakta.agents.bdi.AgentID
 import it.unibo.jakta.agents.bdi.actions.ExternalAction
@@ -19,7 +17,6 @@ import it.unibo.jakta.agents.bdi.environment.Environment
 import it.unibo.jakta.agents.bdi.environment.impl.EnvironmentImpl
 import it.unibo.jakta.agents.bdi.messages.MessageQueue
 import it.unibo.jakta.agents.bdi.perception.Perception
-import it.unibo.jakta.agents.fsm.time.SimulatedTime
 import it.unibo.jakta.agents.fsm.time.Time
 import it.unibo.tuprolog.core.Atom
 import it.unibo.tuprolog.core.Struct
@@ -40,7 +37,7 @@ class SimulationEnvironment(
     override fun percept(agent: Agent): BeliefBase = round.world.findBlob(agent.name)?.let { blob ->
         BeliefBase.of(
             position(blob.position).asBelief(),
-            *setOfNotNull(foodsSurrounding(blob), collectedFood(blob), isBackHome(blob), endedRound()).toTypedArray(),
+            *setOfNotNull(foodsSurrounding(blob), collectedFood(blob), endedRound()).toTypedArray(),
             *foodsCollidingWith(blob).toTypedArray(),
             *blobBounce(blob).toTypedArray(),
         )
@@ -71,15 +68,6 @@ class SimulationEnvironment(
     }
 
     private fun endedRound(): Belief? = if (round.isEnded()) ended_round().asBelief() else null
-
-    private fun isBackHome(blob: Blob): Belief? =
-        if (
-            round.isEnded()
-            && (blob.shape at blob.position collidesWith blob.initialPlace)
-            // && (round.world.spawnZones.any { it.shape.locallyContains(blob.position) })
-        ) {
-            reached_home().asBelief()
-        } else { null }
 
     @Suppress("UNCHECKED_CAST")
     override fun updateData(newData: Map<String, Any>): Environment {
