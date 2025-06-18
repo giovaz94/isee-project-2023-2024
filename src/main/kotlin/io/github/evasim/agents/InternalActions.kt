@@ -56,3 +56,10 @@ internal object InverseDirection : AbstractInternalAction(inverse_direction, ari
         )
     }
 }
+
+internal object EndRound : AbstractInternalAction("end_round", arity = 0) {
+    override fun action(request: InternalRequest) {
+        println("[${request.agent.name}] Ending round")
+        stopAgent()
+    }
+}

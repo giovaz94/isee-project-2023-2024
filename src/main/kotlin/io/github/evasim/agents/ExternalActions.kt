@@ -13,7 +13,7 @@ import it.unibo.tuprolog.core.Real
 import it.unibo.tuprolog.core.Struct
 import it.unibo.tuprolog.core.Substitution
 
-internal object Update : AbstractExternalAction(name = update, arity = 3) {
+internal object Update : AbstractExternalAction(name = update, arity = 2) {
     override fun action(request: ExternalRequest) {
         val direction = request.arguments[0].castToTuple().castToVector2D().normalized() ?: zero
         val speed = request.arguments[1].castToReal().value.toDouble()

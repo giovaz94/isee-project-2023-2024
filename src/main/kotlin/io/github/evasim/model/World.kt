@@ -1,10 +1,5 @@
 package io.github.evasim.model
 
-import io.github.evasim.controller.EventBusPublisher
-import io.github.evasim.controller.EventPublisher
-import io.github.evasim.controller.EventSubscriber
-import io.github.evasim.controller.RemoveFood
-import io.github.evasim.controller.UpdatedWorld
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -14,11 +9,11 @@ import java.util.concurrent.CopyOnWriteArraySet
  */
 interface World : EventPublisher {
 
-    /**
-     * Defines the overall structure or boundaries of the simulation world,
-     * representing its shape relative to its local origin.
-     */
+    /** Defines the structure/boundary of the simulation world, representing its shape relative to the origin. */
     val shape: Shape
+
+    /** The initial number of food items in the simulation world. */
+    val initialFoods: Int
 
     /** A sequence of all food items in the simulation world. */
     val foods: Sequence<Food>
@@ -60,32 +55,22 @@ interface World : EventPublisher {
          * Configuration class for creating a new world instance.
          * @param shape The shape of the world positioned at the origin, i.e., (0, 0).
          * @param spawnZones The spawn zones within the world.
-         * @param blobsAmount The total number of blobs in the world.
          * @param hawkyBlobs The number of hawky blobs in the world.
+         * @param doveBlobs The number of dove blobs in the world.
          * @param foodsAmount The number of food items in the world.
          */
         data class Configuration(
             val shape: Shape,
             val spawnZones: Set<SpawnZone>,
-            val blobsAmount: Int,
             val hawkyBlobs: Int,
-            val foodsAmount: Int = blobsAmount / 2,
+            val doveBlobs: Int,
+            val foodsAmount: Int = (hawkyBlobs + doveBlobs) / 2,
         )
 
-        /**
-         * Creates a new world instance based on the provided [configuration].
-         */
+        /** Creates a new world instance based on the provided [configuration]. */
         fun fromConfiguration(configuration: Configuration): World = with(configuration) {
-            val blobsPerSpawnZone = blobsAmount / spawnZones.size
-            val acceptedFoods = mutableSetOf<Placed<Circle>>()
-            val foods = generateSequence { positionWithin(shape at origin) }
-                .filter { pos -> spawnZones.none { pos in it.place } }
-                .map { Circle(radius = 10.0) at it }
-                .filter { c -> if (acceptedFoods.none { it circleIntersect c }) acceptedFoods.add(c) else false }
-                .take(foodsAmount)
-                .map { Food.of(it.shape, it.position, pieces = 2) }
-                .associateBy { it.id }
-                .toMap(ConcurrentHashMap())
+            val blobsPerSpawnZone = (hawkyBlobs + doveBlobs) / spawnZones.size
+            val foods = generateFoods(shape, spawnZones, foodsAmount)
             val blobs = spawnZones
                 .flatMap { zone -> generateSequence { positionWithin(zone.place) }.take(blobsPerSpawnZone) }
                 .mapIndexed { i, p ->
@@ -93,13 +78,49 @@ interface World : EventPublisher {
                 }
                 .associateBy { it.id }
                 .toMap(ConcurrentHashMap())
-            WorldImpl(shape, foods, blobs, CopyOnWriteArraySet(spawnZones))
+            WorldImpl(shape, foodsAmount, foods, blobs, CopyOnWriteArraySet(spawnZones))
+        }
+
+        /** Creates a new world instance from the given one. */
+        fun from(world: World): World = with(world) {
+            val foods = generateFoods(shape, spawnZones.toSet(), initialFoods)
+//          TODO: uncomment and improve when contention is in place
+//            val blobs = blobs
+//                .filter { it.isAlive() }
+//                .flatMap { b ->
+//                    if (b.canReproduce())
+//                        listOf(
+//                            b,
+//                            Blob(id = Entity.Id("blob-${b.id}-I"), personality = b.personality, position = b.position)
+//                        )
+//                    else listOf(b)
+//                }.associateBy { it.id }
+//                .toMap(ConcurrentHashMap())
+            val blobs = blobs.associateBy { it.id }.toMap(ConcurrentHashMap())
+            WorldImpl(shape, initialFoods, foods, blobs, CopyOnWriteArraySet(spawnZones.toSet()))
+        }
+
+        private fun generateFoods(
+            container: Shape,
+            spawnZones: Set<SpawnZone>,
+            quantity: Int,
+        ): ConcurrentHashMap<Entity.Id, Food> {
+            val acceptedFoods = mutableSetOf<Placed<Circle>>()
+            return generateSequence { positionWithin(container at origin) }
+                .filter { pos -> spawnZones.none { pos in it.place } }
+                .map { Circle(radius = 10.0) at it }
+                .filter { c -> if (acceptedFoods.none { it circleIntersect c }) acceptedFoods.add(c) else false }
+                .take(quantity)
+                .map { Food.of(it.shape, it.position, pieces = 2) }
+                .associateBy { it.id }
+                .toMap(ConcurrentHashMap())
         }
     }
 }
 
 private data class WorldImpl(
     override val shape: Shape,
+    override val initialFoods: Int,
     private val worldFoods: ConcurrentHashMap<Entity.Id, Food>,
     private val worldBlobs: ConcurrentHashMap<Entity.Id, Blob>,
     private val worldSpawnZones: CopyOnWriteArraySet<SpawnZone>,

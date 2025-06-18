@@ -13,9 +13,21 @@
                 AnchorPane.leftAnchor="15.0"
                 AnchorPane.topAnchor="15.0">
             <graphic>
-                <SVGPath content="M5 15H3v4c0 1.1.9 2 2 2h4v-2H5v-4zM5 5h4V3H5c-1.1 0-2 .9-2 2v4h2V5zm14-2h-4v2h4v4h2V5c0-1.1-.9-2-2-2zm0 16h-4v2h4c1.1 0 2-.9 2-2v-4h-2v4zM12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"
-                         styleClass="center-view-icon" />
+                <SVGPath content="M5 15H3v4c0 1.1.9 2 2 2h4v-2H5v-4zM5 5h4V3H5c-1.1 0-2 .9-2 2v4h2V5zm14-2h-4v2h4v4h2V5c0-1.1-.9-2-2-2zm0 16h-4v2h4c1.1 0 2-.9 2-2v-4h-2v4zM12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
             </graphic>
         </Button>
+        <HBox AnchorPane.leftAnchor="15.0"
+              AnchorPane.bottomAnchor="15.0"
+              spacing="5.0">
+            <HBox spacing="5.0">
+                <Label text="Round:" />
+                <Label fx:id="roundLabel" text="0" />
+            </HBox>
+            <Label text=" | " />
+            <HBox spacing="5.0">
+                <Label text="Status:" />
+                <Label fx:id="simulationStateLabel" text="Ready" />
+            </HBox>
+        </HBox>
     </AnchorPane>
 </StackPane>

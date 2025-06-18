@@ -28,6 +28,14 @@
         <VBox spacing="12.0">
             <Label text="Parameters" styleClass="controls-section"/>
             <CheckBox fx:id="showBlobNamesCheckBox" text="Show blob name labels"/>
+            <HBox spacing="8.0" alignment="CENTER_LEFT">
+                <Label text="Dove blobs:"/>
+                <TextField fx:id="doveCountField" promptText="e.g. 10" text="10" maxWidth="80"/>
+            </HBox>
+            <HBox spacing="8.0" alignment="CENTER_LEFT">
+                <Label text="Hawk blobs:"/>
+                <TextField fx:id="hawkCountField" promptText="e.g. 5" text="0" maxWidth="80"/>
+            </HBox>
         </VBox>
     </VBox>
 </VBox>

@@ -1,15 +1,15 @@
 package io.github.evasim.view.controllers
 
 import com.google.common.eventbus.Subscribe
-import io.github.evasim.controller.EventSubscriber
-import io.github.evasim.controller.RemoveFood
 import io.github.evasim.controller.SimulatorController
-import io.github.evasim.controller.UpdatedBlob
-import io.github.evasim.controller.UpdatedFood
-import io.github.evasim.controller.UpdatedWorld
 import io.github.evasim.model.Blob
 import io.github.evasim.model.Entity
+import io.github.evasim.model.EventSubscriber
 import io.github.evasim.model.Food
+import io.github.evasim.model.RemoveFood
+import io.github.evasim.model.UpdatedBlob
+import io.github.evasim.model.UpdatedFood
+import io.github.evasim.model.UpdatedWorld
 import io.github.evasim.view.renderables.BlobRenderableConfig
 import io.github.evasim.view.renderables.blobRenderable
 import io.github.evasim.view.renderables.foodRenderable
@@ -25,6 +25,7 @@ import javafx.geometry.Point2D
 import javafx.scene.Cursor
 import javafx.scene.Node
 import javafx.scene.control.Button
+import javafx.scene.control.Label
 import javafx.scene.input.ScrollEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
@@ -38,6 +39,10 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
     @FXML private lateinit var simulationPane: AnchorPane
 
     @FXML private lateinit var centerViewButton: Button
+
+    @FXML private lateinit var roundLabel: Label
+
+    @FXML private lateinit var simulationStateLabel: Label
 
     private val simulationGroup = Pane()
     private var scale = DEFAULT_SCALE
@@ -122,6 +127,10 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
         showBlobNames = !showBlobNames
     }
 
+    internal fun newSimulationState(newState: SimulationState) {
+        simulationStateLabel.text = newState.name
+    }
+
     @Subscribe
     fun update(updatedWorldEvent: UpdatedWorld) {
         val worldNode = worldRenderable.render(updatedWorldEvent.world)
@@ -132,6 +141,7 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
     }
 
     private fun update(nodes: Set<Node>) = Platform.runLater {
+        roundLabel.text = roundLabel.text.toIntOrNull()?.plus(1).toString()
         simulationGroup.children.clear()
         simulationGroup.children.addAll(nodes)
     }

@@ -32,24 +32,5 @@ interface Entity {
      * }
      * ```
      */
-    infix fun collidingWith(other: Entity): Boolean {
-        val myShape = this.shape
-        val otherShape = other.shape
-        return when (myShape) {
-            is Circle -> when (otherShape) {
-                is Circle -> myShape at position circleIntersect (otherShape at other.position)
-                is Rectangle -> myShape at position circleRectIntersect (otherShape at other.position)
-                is Cone -> TODO("No collisions with cones yet")
-                is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
-            }
-            is Rectangle -> when (otherShape) {
-                is Circle -> otherShape at other.position circleRectIntersect (myShape at position)
-                is Rectangle -> myShape at position rectIntersect (otherShape at other.position)
-                is Cone -> TODO("No collisions with cones yet")
-                is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
-            }
-            is Cone -> TODO("No collisions with cones yet")
-            is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
-        }
-    }
+    infix fun collidingWith(other: Entity): Boolean = place collidesWith other.place
 }

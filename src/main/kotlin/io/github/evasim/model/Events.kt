@@ -1,9 +1,6 @@
-package io.github.evasim.controller
+package io.github.evasim.model
 
 import com.google.common.eventbus.EventBus
-import io.github.evasim.model.Blob
-import io.github.evasim.model.Food
-import io.github.evasim.model.World
 import java.util.concurrent.CopyOnWriteArraySet
 
 /** A notable event in the simulation to be published towards subscribers. */

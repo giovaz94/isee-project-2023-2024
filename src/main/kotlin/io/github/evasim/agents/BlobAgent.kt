@@ -7,8 +7,8 @@ import it.unibo.tuprolog.core.Atom
 import it.unibo.tuprolog.core.List
 import it.unibo.tuprolog.core.Var
 
-private const val MIN_STEPS = 20
-private const val MAX_STEPS = 50
+private const val MIN_STEPS = 100
+private const val MAX_STEPS = 200
 
 /**
  * Blob agent factory.
@@ -17,13 +17,14 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     beliefs {
         fact { energy(0.0) }
         fact { direction(tupleOf(0.0, 0.0)) }
-        fact { speed(10.0) }
+        fact { speed(term = 20.0) }
         fact { status(exploring) }
     }
     actions {
         action(Random)
         action(WaypointDirection)
         action(InverseDirection)
+        action(EndRound)
     }
     goals { achieve(forage) }
     plans {
@@ -97,6 +98,9 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
             val invD = Var.of("invD")
             execute(inverse_direction(D, invD))
             update(direction(invD).fromSelf)
+        }
+        +ended_round.fromPercept then {
+            execute("end_round")
         }
 
         // CONTENTION
