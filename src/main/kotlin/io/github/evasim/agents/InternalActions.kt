@@ -12,7 +12,6 @@ import kotlin.random.Random
 
 internal object Random : AbstractInternalAction(random, arity = 3) {
     override fun action(request: InternalRequest) {
-        println(request.requestTimestamp)
         val randomValue = request.arguments[0].castToVar()
         if (request.arguments[1].isInteger) {
             val lowerBound = request.arguments[1].castToInteger().value.toInt()
@@ -59,7 +58,6 @@ internal object InverseDirection : AbstractInternalAction(inverse_direction, ari
 
 internal object EndRound : AbstractInternalAction("end_round", arity = 0) {
     override fun action(request: InternalRequest) {
-        println("[${request.agent.name}] Ending round")
         stopAgent()
     }
 }

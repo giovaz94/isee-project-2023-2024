@@ -29,6 +29,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     goals { achieve(forage) }
     plans {
         +achieve(forage) then {
+            update(status(exploring).fromSelf)
             achieve(find_food)
             achieve(collect_food)
         }

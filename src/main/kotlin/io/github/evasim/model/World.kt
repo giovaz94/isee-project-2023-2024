@@ -83,20 +83,22 @@ interface World : EventPublisher {
 
         /** Creates a new world instance from the given one. */
         fun from(world: World): World = with(world) {
-            val foods = generateFoods(shape, spawnZones.toSet(), initialFoods)
-//          TODO: uncomment and improve when contention is in place
-//            val blobs = blobs
-//                .filter { it.isAlive() }
-//                .flatMap { b ->
-//                    if (b.canReproduce())
-//                        listOf(
-//                            b,
-//                            Blob(id = Entity.Id("blob-${b.id}-I"), personality = b.personality, position = b.position)
-//                        )
-//                    else listOf(b)
-//                }.associateBy { it.id }
-//                .toMap(ConcurrentHashMap())
-            val blobs = blobs.associateBy { it.id }.toMap(ConcurrentHashMap())
+            val blobs = blobs
+                .filter { it.isAlive() }
+                .flatMap { b ->
+                    if (b.canReproduce()) {
+                        listOf(
+                            b,
+                            Blob(id = Entity.Id("blob-${b.id}-I"), personality = b.personality, position = b.position),
+                        )
+                    } else if (b.isAlive()) {
+                        listOf(b)
+                    } else {
+                        emptyList()
+                    }
+                }.associateBy { it.id }
+                .toMap(ConcurrentHashMap())
+            val foods = generateFoods(shape, spawnZones.toSet(), blobs.count() / 2)
             WorldImpl(shape, initialFoods, foods, blobs, CopyOnWriteArraySet(spawnZones.toSet()))
         }
 

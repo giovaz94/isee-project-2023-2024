@@ -66,3 +66,5 @@ internal val contention_result by OwnName
 internal val remove_food by OwnName
 
 internal val energy by OwnName
+
+internal val update_energy by OwnName

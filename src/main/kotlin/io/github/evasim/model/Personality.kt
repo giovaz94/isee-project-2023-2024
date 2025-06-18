@@ -10,10 +10,8 @@ data object Hawk : Personality
 data object Dove : Personality
 
 /** Get a personality from a String. */
-fun String.toPersonality(): Personality? {
-    return when (this) {
-        "Hawk" -> Hawk
-        "Dove" -> Dove
-        else -> null
-    }
+fun String.toPersonality(): Personality? = when (this) {
+    "Hawk" -> Hawk
+    "Dove" -> Dove
+    else -> null
 }

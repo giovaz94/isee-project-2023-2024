@@ -1,6 +1,7 @@
 package io.github.evasim.agents
 
 import io.github.evasim.model.Blob
+import io.github.evasim.model.Energy
 import io.github.evasim.model.Food
 import io.github.evasim.model.Round
 import io.github.evasim.model.Vector2D
@@ -110,6 +111,14 @@ class SimulationEnvironment(
             round.world.findFood(foodId).let { round.world.removeFood(it!!) }
         }
 
+        if (update_energy in newData) {
+            val energyMap = newData[update_energy] as Map<String, Energy>
+            energyMap.forEach { (agentId, energy) ->
+                round.world.findBlob(agentId)?.let { blob ->
+                    blob.health + energy
+                }
+            }
+        }
         return copy(data = data + ("collectedFood" to collectedFoods))
     }
 

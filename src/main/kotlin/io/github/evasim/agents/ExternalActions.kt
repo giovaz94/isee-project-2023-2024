@@ -57,23 +57,21 @@ internal object CheckContention : AbstractExternalAction(check_contention, arity
 internal object SolveContention : AbstractExternalAction(solve_contention, arity = 6) {
     override fun action(request: ExternalRequest) {
         val foodId = request.arguments[0].castToAtom().value
-        val contenderId = request.arguments[1].castToAtom()
-            .toString()
-            .removeSurrounding("'")
-        val solverPersonality = request.arguments[2].castToAtom()
-            .toString()
-            .removeSurrounding("'")
-            .toPersonality()!!
-        val contenderPersonality = request.arguments[3].castToAtom()
-            .toString()
-            .removeSurrounding("'")
-            .toPersonality()!!
+        val contenderId = request.arguments[1].castToAtom().value
+        val solverPersonality = request.arguments[2].castToAtom().value.toPersonality()!!
+        val contenderPersonality = request.arguments[3].castToAtom().value.toPersonality()!!
+
         val totalEnergy = request.arguments[4].castToReal().value.toDouble().castToEnergy()
         val solverEnergy = request.arguments[5].castToVar()
         val ruleOutput = contentionRule(solverPersonality, contenderPersonality, totalEnergy)
-        println(ruleOutput)
         val contenderEnergy = ruleOutput.second
         updateData(remove_food to foodId)
+        updateData(
+            update_energy to mapOf(
+                contenderId to ruleOutput.second,
+                request.sender to ruleOutput.first,
+            ),
+        )
         sendMessage(contenderId, Message(request.sender, Tell, Struct.of(contention_result, Real.of(contenderEnergy))))
         addResults(
             Substitution.unifier(solverEnergy to Real.of(ruleOutput.first)),
