@@ -20,6 +20,7 @@ import it.unibo.jakta.agents.bdi.perception.Perception
 import it.unibo.jakta.agents.fsm.time.SimulatedTime
 import it.unibo.jakta.agents.fsm.time.Time
 import it.unibo.tuprolog.core.Atom
+import it.unibo.tuprolog.core.Real
 import it.unibo.tuprolog.core.Struct
 import it.unibo.tuprolog.core.toTerm
 import kotlin.time.Duration.Companion.milliseconds
@@ -34,7 +35,8 @@ class SimulationEnvironment(
     externalActions: Map<String, ExternalAction> = mapOf(
         update to Update,
         collect to CollectFood,
-        "check_contention" to CheckContention,
+        check_contention to CheckContention,
+        solve_contention to SolveContention,
     ),
     messageBoxes: Map<AgentID, MessageQueue> = emptyMap(),
     perception: Perception = Perception.empty(),
@@ -73,8 +75,13 @@ class SimulationEnvironment(
         ?.let {
             it[blob]?.let { (food, blobList) ->
                 val terms = blobList.map { it.id.value.toTerm() }.toSet()
-                val blobToFood = TpList.from(terms.asSequence())
-                Struct.of(collected_food, Atom.of(food.id.value), blobToFood).asBelief()
+                val energy = food.totalEnergy
+                Struct.of(
+                    collected_food,
+                    Atom.of(food.id.value),
+                    TpList.from(terms.asSequence()),
+                    Real.of(energy),
+                ).asBelief()
             }
         }
 
@@ -83,7 +90,7 @@ class SimulationEnvironment(
         val collectedFoods = data["collectedFood"] as? MutableMap<Blob, Pair<Food, List<Blob>>> ?: mutableMapOf()
 
         if (update in newData) {
-            val (agentID, velocity, elapsedTime) = newData["update"] as Triple<String, Vector2D, Time>
+            val (agentID, velocity, elapsedTime) = newData[update] as Triple<String, Vector2D, Time>
             world.findBlob(agentID)?.let { blob ->
                 blob.updateVelocity(velocity)
                 blob.update((elapsedTime as SimulatedTime).value.milliseconds)
@@ -97,6 +104,11 @@ class SimulationEnvironment(
                     collectedFoods[blob] = food to (food.attemptCollecting(blob) ?: emptyList())
                 }
             }
+        }
+
+        if (remove_food in newData) {
+            val foodId = newData[remove_food] as String
+            world.findFood(foodId).let { world.removeFood(it!!) }
         }
 
         return copy(data = data + ("collectedFood" to collectedFoods))

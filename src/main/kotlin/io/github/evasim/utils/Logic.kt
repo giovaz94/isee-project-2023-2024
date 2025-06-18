@@ -1,5 +1,6 @@
 package io.github.evasim.utils
 
+import io.github.evasim.model.Energy
 import io.github.evasim.model.Position2D
 import io.github.evasim.model.Vector2D
 import io.github.evasim.model.asVector2D
@@ -39,4 +40,7 @@ object Logic {
 
     /** Builds a [Tuple] out of this [Vector2D]. */
     fun Vector2D.castToVector2D(): Tuple = Tuple.of(Real.of(x), Real.of(y))
+
+    /**  Builds a [Energy] out of this  [Double]. */
+    fun Double.castToEnergy(): Energy = this
 }

@@ -57,3 +57,11 @@ internal val bounce by OwnName
 internal val inverse_direction by OwnName
 
 internal val check_contention by OwnName
+
+internal val solve_contention by OwnName
+
+internal val contention_result by OwnName
+
+internal val remove_food by OwnName
+
+internal val energy by OwnName

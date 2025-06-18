@@ -3,6 +3,7 @@ package io.github.evasim.agents
 import io.github.evasim.model.Blob
 import it.unibo.jakta.agents.bdi.dsl.MasScope
 import it.unibo.jakta.agents.fsm.time.Time
+import it.unibo.tuprolog.core.Atom
 import it.unibo.tuprolog.core.List
 import it.unibo.tuprolog.core.Var
 
@@ -14,6 +15,7 @@ private const val MAX_STEPS = 50
  */
 fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     beliefs {
+        fact { energy(0.0) }
         fact { direction(tupleOf(0.0, 0.0)) }
         fact { speed(10.0) }
         fact { status(exploring) }
@@ -65,10 +67,6 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
             execute(collect(F))
         }
 
-        +achieve(contention) then {
-            execute(print("Let's solve it"))
-        }
-
         // ENVIRONMENT PERCEPTIONS
         +food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
             update(status(targeting(P)).fromSelf)
@@ -80,19 +78,32 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
             update(status(reached(F)).fromSelf)
         }
 
-        +collected_food(F, List.empty()).fromPercept onlyIf { status(reached(F)).fromSelf } then {
+        +collected_food(F, List.empty(), `_`).fromPercept onlyIf { status(reached(F)).fromSelf } then {
             update(status(exploring).fromSelf)
             achieve(forage)
         }
 
-        +collected_food(F, X).fromPercept onlyIf { status(reached(F)).fromSelf } then {
-            execute(check_contention(X))
+        +collected_food(F, B, E).fromPercept onlyIf { status(reached(F)).fromSelf } then {
+            execute(check_contention(B, Atom.of(blob.personality.toString()), E, F))
         }
 
         +bounce(D).fromPercept then {
             val invD = Var.of("invD")
             execute(inverse_direction(D, invD))
             update(direction(invD).fromSelf)
+        }
+
+        // CONTENTION
+        +contention("source"(S), P, E, F) onlyIf { energy(Y).fromSelf } then {
+            execute(solve_contention(F, S, Atom.of(blob.personality.toString()), P, E, N))
+            update(energy(Y + N).fromSelf)
+            achieve(forage)
+        }
+
+        +contention_result("source"(S), E) then {
+            update(energy(Y + E).fromSelf)
+            execute(print("new energy from solver ", energy.fromSelf))
+            achieve(forage)
         }
     }
     timeDistribution {

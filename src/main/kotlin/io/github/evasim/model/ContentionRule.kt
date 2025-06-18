@@ -6,18 +6,18 @@ package io.github.evasim.model
  * It returns the pair of energies gained by the two entities after the contention **in the same
  * order they have been provided in input**.
  */
-fun interface ContentionRule : (Blob, Blob, Food) -> Pair<Energy, Energy>
+fun interface ContentionRule : (Personality, Personality, Energy) -> Pair<Energy, Energy>
 
 /** A basic contention rule that determines how two entities (blobs) compete for food based on their personalities. */
-val contentionRule: ContentionRule = ContentionRule { one, other, food ->
-    when (one.personality) {
-        is Hawk -> when (other.personality) {
+val contentionRule: ContentionRule = ContentionRule { one, other, energy ->
+    when (one) {
+        is Hawk -> when (other) {
             is Hawk -> Pair(0.0, 0.0)
-            is Dove -> Pair(3 / 2 * food.totalEnergy, 1 / 2 * food.totalEnergy)
+            is Dove -> Pair(3 / 2 * energy, 1 / 2 * energy)
         }
-        is Dove -> when (other.personality) {
-            is Hawk -> contentionRule(other, one, food).swapped()
-            is Dove -> Pair(1 / 2 * food.totalEnergy, 1 / 2 * food.totalEnergy)
+        is Dove -> when (other) {
+            is Hawk -> contentionRule(other, one, energy).swapped()
+            is Dove -> Pair(1 / 2 * energy, 1 / 2 * energy)
         }
     }
 }
