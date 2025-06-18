@@ -89,7 +89,7 @@ interface World : EventPublisher {
                     if (b.canReproduce()) {
                         listOf(
                             b,
-                            Blob(id = Entity.Id("blob-${b.id}-I"), personality = b.personality, position = b.position),
+                            Blob(id = Entity.Id("${b.id.value}-I"), personality = b.personality, position = b.position),
                         )
                     } else if (b.isAlive()) {
                         listOf(b)

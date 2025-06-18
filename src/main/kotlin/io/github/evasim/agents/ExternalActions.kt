@@ -54,6 +54,7 @@ internal object CheckContention : AbstractExternalAction(check_contention, arity
     }
 }
 
+@Suppress("detekt:all")
 internal object SolveContention : AbstractExternalAction(solve_contention, arity = 6) {
     override fun action(request: ExternalRequest) {
         val foodId = request.arguments[0].castToAtom().value

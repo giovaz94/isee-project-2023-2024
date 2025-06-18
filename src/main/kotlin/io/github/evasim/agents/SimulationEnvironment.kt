@@ -101,14 +101,16 @@ class SimulationEnvironment(
             val (agentID, foodID) = newData[collect] as Pair<String, String>
             round.world.findBlob(agentID)?.let { blob ->
                 round.world.findFood(foodID)?.let { food ->
-                    collectedFoods[blob] = food to (food.attemptCollecting(blob) ?: emptyList())
+                    collectedFoods[blob] = food to food.attemptCollecting(blob).orEmpty()
                 }
             }
         }
 
         if (remove_food in newData) {
             val foodId = newData[remove_food] as String
-            round.world.findFood(foodId).let { round.world.removeFood(it!!) }
+            round.world.findFood(foodId)?.let {
+                round.world.removeFood(it)
+            }
         }
 
         if (update_energy in newData) {
