@@ -27,7 +27,7 @@ internal class ControlsPaneController : Initializable {
 
     @FXML private lateinit var stopButton: Button
 
-    @FXML private lateinit var showBlobNamesCheckBox: CheckBox
+    @FXML private lateinit var showBlobInfoCheckBox: CheckBox
 
     @FXML private lateinit var doveCountField: TextField
 
@@ -42,7 +42,7 @@ internal class ControlsPaneController : Initializable {
         startButton.setOnAction { onStart() }
         pauseButton.setOnAction { onPause() }
         stopButton.setOnAction { onStop() }
-        showBlobNamesCheckBox.setOnAction { simulationPaneController?.toggleShowBlobNames() }
+        showBlobInfoCheckBox.setOnAction { simulationPaneController?.toggleShowBlobNames() }
     }
 
     private fun toggleControlsPane() {

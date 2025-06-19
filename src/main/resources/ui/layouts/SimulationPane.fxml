@@ -4,7 +4,7 @@
 <?import javafx.scene.shape.*?>
 <StackPane xmlns:fx="http://javafx.com/fxml"
            fx:controller="io.github.evasim.view.controllers.SimulationPaneController">
-    <AnchorPane fx:id="simulationPane" styleClass="simulation-pane">
+    <AnchorPane fx:id="simulationPane" styleClass="main-panel">
         <!-- Simulation Content -->
     </AnchorPane>
     <AnchorPane pickOnBounds="false">

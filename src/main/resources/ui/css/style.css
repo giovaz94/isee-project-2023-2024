@@ -4,12 +4,12 @@
 }
 
 /* Full-screen simulation area */
-.simulation-pane {
+.main-panel {
     -fx-background-color: linear-gradient(to bottom, #ffffff, #fbfbfd);
 }
 
 /* Semi-transparent controls panel overlay */
-.controls-panel {
+.hover-panel {
     -fx-background-color: rgba(255, 255, 255, 0.85);
     -fx-background-radius: 12;
     -fx-padding: 16 20 20 20;
@@ -134,26 +134,26 @@
 }
 
 /* Collapsed state styles */
-.controls-panel.collapsed {
+.hover-panel.collapsed {
     -fx-min-width: 60;
     -fx-max-width: 60;
 }
 
-.controls-panel.collapsed .controls-content {
+.hover-panel.collapsed .controls-content {
     -fx-opacity: 0;
 }
 
-.controls-panel.collapsed .controls-title {
+.hover-panel.collapsed .controls-title {
     -fx-opacity: 0;
 }
 
 /* Hover effects for the entire panel */
-.controls-panel:hover {
+.hover-panel:hover {
     -fx-background-color: rgba(255, 255, 255, 0.95);
 }
 
 /* Backdrop blur effect simulation */
-.controls-panel {
+.hover-panel {
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 30, 0.4, 0, 4);
 }
 

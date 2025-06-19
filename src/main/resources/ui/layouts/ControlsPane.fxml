@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 <VBox xmlns:fx="http://javafx.com/fxml" fx:id="controlsPanel" spacing="16.0" alignment="TOP_CENTER"
-      styleClass="controls-panel"
+      styleClass="hover-panel"
       fx:controller="io.github.evasim.view.controllers.ControlsPaneController">
     <!-- Panel header with toggle button -->
     <HBox spacing="8.0" alignment="CENTER_RIGHT" styleClass="panel-header">
@@ -27,7 +27,7 @@
         <!-- Parameters section -->
         <VBox spacing="12.0">
             <Label text="Parameters" styleClass="controls-section"/>
-            <CheckBox fx:id="showBlobNamesCheckBox" text="Show blob name labels"/>
+            <CheckBox fx:id="showBlobInfoCheckBox" text="Show blob info"/>
             <HBox spacing="8.0" alignment="CENTER_LEFT">
                 <Label text="Dove blobs:"/>
                 <TextField fx:id="doveCountField" promptText="e.g. 10" text="10" maxWidth="80"/>

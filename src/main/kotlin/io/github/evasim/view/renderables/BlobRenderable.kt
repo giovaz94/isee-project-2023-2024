@@ -30,7 +30,7 @@ internal val blobRenderable = RenderableWithContext<Blob, BlobRenderableConfig, 
         .apply { opacity = 0.5 }
     val group = Group(sightNode, imageView)
     if (conf.showNames) {
-        val nameLabel = Label(blob.id.value).apply {
+        val nameLabel = Label("${blob.id.value} (${blob.health.current})").apply {
             translateX = blob.position.x
             translateY = blob.position.y - conf.iconDimension / 2 - 10
         }

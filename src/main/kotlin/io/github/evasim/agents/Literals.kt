@@ -68,3 +68,8 @@ internal val remove_food by OwnName
 internal val energy by OwnName
 
 internal val update_energy by OwnName
+
+internal val source by OwnName
+
+/** The perception `end_round/0` literal sent by the environment when the round has ended. */
+internal val end_round by OwnName

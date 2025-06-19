@@ -9,4 +9,8 @@
     <!-- Controls panel overlay on the right -->
     <fx:include fx:id="controlsView" source="ControlsPane.fxml"
                 AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="20.0"/>
+    <!-- Statistics panel overlay on the bottom -->
+    <fx:include fx:id="statisticsView" source="StatisticsPane.fxml"
+                AnchorPane.bottomAnchor="20.0"
+                AnchorPane.rightAnchor="20.0"/>
 </AnchorPane>
