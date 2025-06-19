@@ -18,7 +18,6 @@
             <Label text="Simulation" styleClass="controls-section"/>
             <HBox spacing="8.0" alignment="CENTER_RIGHT">
                 <Button fx:id="startButton" text="Start" styleClass="control-button"/>
-                <Button fx:id="pauseButton" text="Pause" styleClass="control-button"/>
                 <Button fx:id="stopButton" text="Stop" styleClass="control-button"/>
             </HBox>
         </VBox>

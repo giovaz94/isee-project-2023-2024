@@ -20,6 +20,12 @@ interface Round {
     fun isEnded(): Boolean
 
     /**
+     * Forces the round to end immediately, regardless of the end criteria.
+     * This method can be used to stop the round prematurely.
+     */
+    fun forceEnd()
+
+    /**
      * Advances to the next round, returning a new [Round] instance.
      * @throws IllegalStateException if the current round has not yet ended.
      */
@@ -51,15 +57,18 @@ private data class RoundImpl(
     private val endCriteria: (Round) -> Boolean,
 ) : Round {
 
+    private val forcefullyStopped = AtomicReference(false)
     private val timer = AtomicReference(TimeSource.Monotonic.markNow())
 
     override val elapsedTime: Duration
         get() = timer.get().elapsedNow()
 
-    override fun isEnded(): Boolean = endCriteria(this)
+    override fun isEnded(): Boolean = forcefullyStopped.get() || endCriteria(this)
+
+    override fun forceEnd() = forcefullyStopped.set(true)
 
     override fun next(): Round {
         check(isEnded()) { "Cannot advance to the next round when the current one ($number-th) is not yet ended." }
-        return RoundImpl(number + 1, World.from(world), endCriteria)
+        return RoundImpl(number + 1, World.from(this), endCriteria)
     }
 }

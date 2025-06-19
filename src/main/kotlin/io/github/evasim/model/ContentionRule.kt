@@ -14,7 +14,7 @@ val contentionRule: ContentionRule = ContentionRule { one, other, energy ->
     when (one) {
         is Hawk -> when (other) {
             is Hawk -> Pair(0.0, 0.0)
-            is Dove -> Pair(1.5 * energy, 0.5 * energy)
+            is Dove -> Pair(0.75 * energy, 0.25 * energy)
         }
         is Dove -> when (other) {
             is Hawk -> contentionRule(other, one, energy).swapped()

@@ -30,6 +30,9 @@ interface Blob : Entity, EventPublisher {
     /** The blob personality. */
     val personality: Personality
 
+    /** The blob's reproduction strategy. */
+    val reproductionStrategy: ReproductionStrategy
+
     /** Applies a force to the blob, changing its velocity. */
     fun applyForce(force: Vector2D)
 
@@ -45,11 +48,21 @@ interface Blob : Entity, EventPublisher {
     /** Returns whether the blob is dead, i.e., has no health left. Dual to [isAlive]. */
     fun isDead(): Boolean
 
-    /** Returns whether the blob is hungry. */
-    fun isHungry(): Boolean
-
     /** Returns whether the blob can reproduce based on its current health. */
     fun canReproduce(): Boolean
+
+    /** Clones this blob, creating a new instance with the specified parameters. */
+    fun clone(
+        id: Entity.Id = this.id,
+        personality: Personality = this.personality,
+        position: Position2D = this.position,
+        shape: Shape = this.shape,
+        velocity: Vector2D = this.velocity,
+        defaultDirection: Direction = this.defaultDirection,
+        sightShape: Shape = this.sight.visibilityArea.shape,
+        health: Health = this.health,
+        reproductionStrategy: ReproductionStrategy = this.reproductionStrategy,
+    ): Blob
 
     /** The blob's factory methods. */
     companion object {
@@ -66,6 +79,7 @@ interface Blob : Entity, EventPublisher {
             defaultDirection: Direction = Direction.DOWN,
             sightShape: Shape = Cone(radius = 100.0, fovDegrees = Degrees(value = 90.0)),
             health: Health = Health(min = 0.0, max = 2.0),
+            reproductionRule: ReproductionStrategy = reproductionRule(),
         ): Blob = BlobImpl(
             id,
             shape,
@@ -75,6 +89,7 @@ interface Blob : Entity, EventPublisher {
             defaultDirection,
             Sight(sightShape, position, velocity.normalized() ?: defaultDirection),
             health,
+            reproductionRule,
         )
     }
 }
@@ -130,6 +145,7 @@ private data class BlobImpl(
     override val defaultDirection: Direction,
     override val sight: Sight,
     override val health: Health,
+    override val reproductionStrategy: ReproductionStrategy,
 ) : Blob, EventBusPublisher() {
 
     override val initialPlace: Placed<Shape> = shape at currentPosition
@@ -157,11 +173,33 @@ private data class BlobImpl(
         post(UpdatedBlob(copy()))
     }
 
-    override fun isDead(): Boolean = !isAlive()
+    override fun isDead(): Boolean = reproductionStrategy.invoke(health.current) == State.Dead
 
-    override fun isAlive(): Boolean = health.let { it.current > it.min }
+    override fun isAlive(): Boolean = reproductionStrategy.invoke(health.current) == State.Alive
 
-    override fun isHungry(): Boolean = health.let { it.current < it.max }
+    override fun canReproduce(): Boolean = reproductionStrategy.invoke(health.current) == State.Reproducing
 
-    override fun canReproduce(): Boolean = health.let { it.current == it.max }
+    override fun clone(
+        id: Entity.Id,
+        personality: Personality,
+        position: Position2D,
+        shape: Shape,
+        velocity: Vector2D,
+        defaultDirection: Direction,
+        sightShape: Shape,
+        health: Health,
+        reproductionStrategy: ReproductionStrategy,
+    ): Blob = copy(
+        id,
+        shape,
+        personality,
+        position, velocity, defaultDirection,
+        Sight(
+            sightShape,
+            position,
+            defaultDirection,
+        ),
+        health,
+        reproductionStrategy,
+    )
 }

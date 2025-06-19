@@ -23,8 +23,6 @@ internal class ControlsPaneController : Initializable {
 
     @FXML private lateinit var startButton: Button
 
-    @FXML private lateinit var pauseButton: Button
-
     @FXML private lateinit var stopButton: Button
 
     @FXML private lateinit var showBlobInfoCheckBox: CheckBox
@@ -40,7 +38,6 @@ internal class ControlsPaneController : Initializable {
         toggleButton.text = "⟩"
         toggleButton.setOnAction { toggleControlsPane() }
         startButton.setOnAction { onStart() }
-        pauseButton.setOnAction { onPause() }
         stopButton.setOnAction { onStop() }
         showBlobInfoCheckBox.setOnAction { simulationPaneController?.toggleShowBlobNames() }
     }
@@ -71,10 +68,6 @@ internal class ControlsPaneController : Initializable {
         )
         SimulatorController.start(config)
         simulationPaneController?.newSimulationState(SimulationState.RUNNING)
-    }
-
-    private fun onPause() {
-        // TODO: Pause simulation logic
     }
 
     private fun onStop() {

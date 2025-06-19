@@ -64,7 +64,7 @@ interface World : EventPublisher {
             val spawnZones: Set<SpawnZone>,
             val hawkyBlobs: Int,
             val doveBlobs: Int,
-            val foodsAmount: Int = (hawkyBlobs + doveBlobs) / 2,
+            val foodsAmount: Int = hawkyBlobs + doveBlobs,
         )
 
         /** Creates a new world instance based on the provided [configuration]. */
@@ -81,24 +81,25 @@ interface World : EventPublisher {
             WorldImpl(shape, foodsAmount, foods, blobs, CopyOnWriteArraySet(spawnZones))
         }
 
-        /** Creates a new world instance from the given one. */
-        fun from(world: World): World = with(world) {
+        /** Creates a new world instance from the given round. */
+        fun from(round: Round): World = with(round.world) {
             val blobs = blobs
-                .filter { it.isAlive() }
                 .flatMap { b ->
-                    if (b.canReproduce()) {
-                        listOf(
-                            b,
-                            Blob(id = Entity.Id("${b.id.value}-I"), personality = b.personality, position = b.position),
+                    when {
+                        b.canReproduce() -> listOf(
+                            b.clone(health = Health(min = 0.0, max = 2.0)),
+                            Blob(
+                                id = Entity.Id("${b.id.value}-${round.number}"),
+                                personality = b.personality,
+                                position = b.position,
+                            ),
                         )
-                    } else if (b.isAlive()) {
-                        listOf(b)
-                    } else {
-                        emptyList()
+                        b.isAlive() -> listOf(b.clone(health = Health(min = 0.0, max = 2.0)))
+                        else -> emptyList()
                     }
                 }.associateBy { it.id }
                 .toMap(ConcurrentHashMap())
-            val foods = generateFoods(shape, spawnZones.toSet(), blobs.count() / 2)
+            val foods = generateFoods(shape, spawnZones.toSet(), blobs.count())
             WorldImpl(shape, initialFoods, foods, blobs, CopyOnWriteArraySet(spawnZones.toSet()))
         }
 

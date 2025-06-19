@@ -66,8 +66,8 @@ internal object SolveContention : AbstractExternalAction(solve_contention, arity
         val solverEnergy = request.arguments[5].castToVar()
         val ruleOutput = contentionRule(solverPersonality, contenderPersonality, totalEnergy)
         val contenderEnergy = ruleOutput.second
-        updateData(remove_food to foodId)
         updateData(
+            remove_food to foodId,
             update_energy to mapOf(
                 contenderId to ruleOutput.second,
                 request.sender to ruleOutput.first,

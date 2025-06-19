@@ -7,5 +7,6 @@ import java.util.ResourceBundle
 @Suppress("detekt:VarCouldBeVal")
 internal class StatisticsPaneController : Initializable {
     override fun initialize(location: URL?, resources: ResourceBundle?) {
+        // TODO
     }
 }

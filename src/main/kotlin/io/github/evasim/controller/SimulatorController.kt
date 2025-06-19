@@ -31,7 +31,7 @@ interface Controller : EventPublisher {
 /** The simulation controller. */
 object SimulatorController : Controller, EventBusPublisher() {
 
-    private var activeSimulation: Thread? = null
+    private var activeSimulation: Round? = null
 
     @Synchronized
     override fun start(configuration: World.Companion.Configuration) {
@@ -43,16 +43,21 @@ object SimulatorController : Controller, EventBusPublisher() {
             val initialRound = Round.byCriteria(world) {
                 it.world.foods.count() == 0
             }
-            activeSimulation = thread { simulationLoop(initialRound) }
+            thread { simulationLoop(initialRound) }
+            activeSimulation = initialRound
         }
     }
 
-    private fun simulationLoop(round: Round, shouldStop: (Round) -> Boolean = { false }) {
+    private tailrec fun simulationLoop(round: Round, shouldStop: (Round) -> Boolean = { activeSimulation == null }) {
         logger.info { "Starting round ${round.number}..." }
         subscribers.forEach { round.world.register(it) }
         mas(round).start()
         logger.info { "Round ${round.number} ended." }
-        if (shouldStop(round)) return else simulationLoop(round.next())
+        if (!shouldStop(round)) {
+            val nextRound = round.next()
+            activeSimulation = nextRound
+            simulationLoop(nextRound)
+        }
     }
 
     private fun mas(round: Round) = mas {
@@ -62,8 +67,8 @@ object SimulatorController : Controller, EventBusPublisher() {
     }
 
     @Synchronized
-    override fun stop() {
-        checkNotNull(activeSimulation) { "Cannot stop a non-existing simulation!" }
+    override fun stop() = activeSimulation?.let {
+        it.forceEnd()
         activeSimulation = null
-    }
+    } ?: error("Cannot stop a non-existing simulation!")
 }

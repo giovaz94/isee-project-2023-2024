@@ -38,7 +38,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     }
 }
 
-fun PlansScope.forage() {
+private fun PlansScope.forage() {
     +achieve(forage) then {
         update(status(exploring).fromSelf)
         achieve(find_food)
@@ -46,7 +46,7 @@ fun PlansScope.forage() {
     }
 }
 
-fun PlansScope.findFood(minSteps: Int = 100, maxSteps: Int = 200) {
+private fun PlansScope.findFood(minSteps: Int = 100, maxSteps: Int = 200) {
     +achieve(find_food) onlyIf { status(exploring).fromSelf } then {
         achieve(change_direction)
         execute(random(N, minSteps, maxSteps))
@@ -62,7 +62,7 @@ fun PlansScope.findFood(minSteps: Int = 100, maxSteps: Int = 200) {
     +achieve(find_food) onlyIf { status(reached(`_`)).fromSelf }
 }
 
-fun PlansScope.movement(minValue: Double = -1.0, maxValue: Double = 1.0) {
+private fun PlansScope.movement(minValue: Double = -1.0, maxValue: Double = 1.0) {
     +achieve(change_direction) then {
         execute(random(X, minValue, maxValue))
         execute(random(Y, minValue, maxValue))
@@ -84,7 +84,7 @@ fun PlansScope.movement(minValue: Double = -1.0, maxValue: Double = 1.0) {
     }
 }
 
-fun PlansScope.collectFood(blob: Blob) {
+private fun PlansScope.collectFood(blob: Blob) {
     +achieve(collect_food) onlyIf { status(reached(F)).fromSelf } then {
         execute(collect(F))
     }
@@ -107,7 +107,7 @@ fun PlansScope.collectFood(blob: Blob) {
     }
 }
 
-fun PlansScope.contention(blob: Blob) {
+private fun PlansScope.contention(blob: Blob) {
     +contention(source(S), P, E, F) then {
         execute(solve_contention(F, S, Atom.of(blob.personality.toString()), P, E, N))
         achieve(update_energy(N))
@@ -124,7 +124,7 @@ fun PlansScope.contention(blob: Blob) {
     }
 }
 
-fun PlansScope.endedRound() {
+private fun PlansScope.endedRound() {
     +ended_round.fromPercept then {
         execute(end_round)
     }
