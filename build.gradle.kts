@@ -1,7 +1,6 @@
 import Utils.platform
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.gradle.internal.extensions.stdlib.capitalized
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -22,7 +21,6 @@ dependencies {
     with(libs) {
         implementation(kotlin.stdlib)
         implementation(kotlin.stdlib.jdk8)
-        // implementation(jason)
         implementation(javafx)
         implementation(jakta)
         implementation(bundles.coroutines)
@@ -75,20 +73,6 @@ tasks.withType<JavaExec> {
         "--add-modules",
         "javafx.controls,javafx.fxml",
     )
-}
-
-projectDir.walkTopDown().filter { it.extension == "mas2j" }.forEach { mas2jFile ->
-    val taskName = "run${mas2jFile.nameWithoutExtension.capitalized()}Mas"
-    if (!tasks.names.contains(taskName)) {
-        tasks.register<JavaExec>(taskName) {
-            group = "run"
-            classpath = sourceSets.getByName("main").runtimeClasspath
-            mainClass.set("jason.infra.centralised.RunCentralisedMAS")
-            args(mas2jFile.path)
-            standardInput = System.`in`
-            javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
-        }
-    }
 }
 
 // Set the project version based on the git history.
