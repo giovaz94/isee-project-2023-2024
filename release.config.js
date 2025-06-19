@@ -1,4 +1,5 @@
 const publishCommands = `
+./gradlew shadowJar || exit 1
 echo "RELEASE_STATUS=released" >> $GITHUB_ENV
 echo "RELEASE_VERSION="\${nextRelease.version} >> $GITHUB_ENV
 `
@@ -10,7 +11,11 @@ config.plugins.push(
     ["@semantic-release/exec", {
         "publishCmd": publishCommands,
     }],
-    "@semantic-release/github",
+    ["@semantic-release/github", {
+        "assets": [
+            { "path": "build/libs/*-all.jar" },
+        ]
+    }],
     "@semantic-release/git",
 )
 module.exports = config
