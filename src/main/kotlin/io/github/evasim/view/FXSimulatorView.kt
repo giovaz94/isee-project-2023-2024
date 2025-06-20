@@ -1,8 +1,10 @@
 package io.github.evasim.view
 
 import io.github.evasim.controller.Boundary
+import io.github.evasim.controller.SimulatorController
 import io.github.evasim.utils.resource
 import javafx.application.Application
+import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
 import javafx.scene.Scene
 import javafx.stage.Stage
@@ -19,6 +21,11 @@ class FXSimulatorView : Application(), Boundary {
             scene = Scene(fxmlLoader.load())
             scene.stylesheets.add(styleFile.toExternalForm())
             isMaximized = true
+            onCloseRequest = EventHandler {
+                it.consume() // Prevent default close action
+                SimulatorController.stop()
+                primaryStage.close() // Close the stage explicitly
+            }
             show()
         }
     }
