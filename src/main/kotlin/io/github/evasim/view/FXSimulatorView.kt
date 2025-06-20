@@ -23,7 +23,7 @@ class FXSimulatorView : Application(), Boundary {
             isMaximized = true
             onCloseRequest = EventHandler {
                 it.consume() // Prevent default close action
-                SimulatorController.stop()
+                runCatching { SimulatorController.stop() }
                 primaryStage.close() // Close the stage explicitly
             }
             show()
