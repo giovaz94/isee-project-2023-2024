@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
 <VBox xmlns:fx="http://javafx.com/fxml" fx:id="statisticsPanel" spacing="16.0" alignment="TOP_CENTER"
       styleClass="hover-panel"
       fx:controller="io.github.evasim.view.controllers.StatisticsPaneController">
-    <VBox spacing="8.0" styleClass="">
-        <LineChart fx:id="lineChart" layoutX="50.0" layoutY="50.0" prefHeight="400.0" prefWidth="500.0">
-            <xAxis>
-                <NumberAxis fx:id="xAxis" label="Round" />
-            </xAxis>
-            <yAxis>
-                <NumberAxis fx:id="yAxis" label="#Blobs" />
-            </yAxis>
-        </LineChart>
+    <!-- Panel header with toggle button -->
+    <HBox spacing="8.0" alignment="CENTER_RIGHT" styleClass="panel-header">
+        <Label text="Statistics" styleClass="panel-title"/>
+        <Button fx:id="toggleButton" styleClass="toggle-button" text="⟩"
+                minWidth="24.0" minHeight="24.0" maxWidth="24.0" maxHeight="24.0"/>
+    </HBox>
+    <!-- Collapsible content -->
+    <VBox spacing="16.0" styleClass="panel-content">
+        <!-- Statistics content -->
+        <VBox spacing="8.0" styleClass="">
+            <AreaChart fx:id="areaChart" layoutX="50.0" layoutY="50.0" prefHeight="400.0" prefWidth="500.0">
+                <xAxis>
+                    <NumberAxis fx:id="xAxis" label="Round" />
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="yAxis" label="#Blobs" />
+                </yAxis>
+            </AreaChart>
+        </VBox>
     </VBox>
 </VBox>

@@ -37,14 +37,14 @@ open class EventBusPublisher : EventPublisher {
         subscribers.remove(subscriber).also { if (it) eventBus.unregister(subscriber) }
 }
 
+/** A [world] update event. */
+data class UpdatedWorld(val world: World) : Event
+
 /** A [blob] update event. */
 data class UpdatedBlob(val blob: Blob) : Event
 
 /** A [food] update event. */
 data class UpdatedFood(val food: Food) : Event
-
-/** A [world] update event. */
-data class UpdatedWorld(val world: World) : Event
 
 /** A [food] removal event. */
 data class RemoveFood(val food: Food) : Event

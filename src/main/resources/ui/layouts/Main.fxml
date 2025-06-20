@@ -3,14 +3,14 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml" prefWidth="1400.0" prefHeight="700.0"
             fx:controller="io.github.evasim.view.controllers.MainController">
     <!-- Full-screen simulation pane -->
-    <fx:include fx:id="simulationView" source="SimulationPane.fxml"
+    <fx:include fx:id="simulationPane" source="SimulationPane.fxml"
                 AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
                 AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
     <!-- Controls panel overlay on the right -->
-    <fx:include fx:id="controlsView" source="ControlsPane.fxml"
+    <fx:include fx:id="controlsPane" source="ControlsPane.fxml"
                 AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="20.0"/>
     <!-- Statistics panel overlay on the bottom -->
-    <fx:include fx:id="statisticsView" source="StatisticsPane.fxml"
+    <fx:include fx:id="statisticsPane" source="StatisticsPane.fxml"
                 AnchorPane.bottomAnchor="20.0"
                 AnchorPane.rightAnchor="20.0"/>
 </AnchorPane>

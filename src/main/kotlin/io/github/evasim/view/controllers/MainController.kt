@@ -5,14 +5,17 @@ import javafx.fxml.Initializable
 import java.net.URL
 import java.util.ResourceBundle
 
-@Suppress("detekt:all")
+@Suppress("detekt:VarCouldBeVal")
 internal class MainController : Initializable {
 
-    @FXML private lateinit var simulationViewController: SimulationPaneController
+    @FXML private lateinit var simulationPaneController: SimulationPaneController
 
-    @FXML private lateinit var controlsViewController: ControlsPaneController
+    @FXML private lateinit var controlsPaneController: ControlsPaneController
+
+    @FXML private lateinit var statisticsPaneController: StatisticsPaneController
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
-        controlsViewController.simulationPaneController = simulationViewController
+        controlsPaneController.simulationPaneController = simulationPaneController
+        simulationPaneController.statisticsPaneController = statisticsPaneController
     }
 }

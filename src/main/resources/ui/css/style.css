@@ -43,7 +43,7 @@
 }
 
 /* Main title */
-.controls-title {
+.panel-title {
     -fx-font-size: 18px;
     -fx-font-weight: 600;
     -fx-text-fill: #1d1d1f;
@@ -51,7 +51,7 @@
 }
 
 /* Section labels */
-.controls-section {
+.panel-section {
     -fx-font-size: 13px;
     -fx-font-weight: 600;
     -fx-text-fill: #6e6e73;
@@ -66,8 +66,8 @@
     -fx-padding: 0;
 }
 
-/* Control buttons - Apple blue */
-.control-button {
+/* Panel buttons - Apple blue */
+.panel-button {
     -fx-background-color: #007aff;
     -fx-text-fill: white;
     -fx-background-radius: 8;
@@ -79,11 +79,11 @@
     -fx-border-width: 0;
 }
 
-.control-button:hover {
+.panel-button:hover {
     -fx-background-color: #0056cc;
 }
 
-.control-button:pressed {
+.panel-button:pressed {
     -fx-background-color: #004bb5;
 }
 
@@ -128,8 +128,8 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 122, 255, 0.25), 4, 0.3, 0, 0);
 }
 
-/* Controls content container */
-.controls-content {
+/* Panels content container */
+.panel-content {
     -fx-padding: 0;
 }
 
@@ -139,11 +139,11 @@
     -fx-max-width: 60;
 }
 
-.hover-panel.collapsed .controls-content {
+.hover-panel.collapsed .panel-content {
     -fx-opacity: 0;
 }
 
-.hover-panel.collapsed .controls-title {
+.hover-panel.collapsed .panel-title {
     -fx-opacity: 0;
 }
 

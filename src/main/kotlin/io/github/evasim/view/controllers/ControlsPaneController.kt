@@ -17,6 +17,9 @@ import java.util.*
 
 @Suppress("detekt:VarCouldBeVal")
 internal class ControlsPaneController : Initializable {
+
+    internal var simulationPaneController: SimulationPaneController? = null
+
     @FXML private lateinit var controlsPanel: VBox
 
     @FXML private lateinit var toggleButton: Button
@@ -31,26 +34,11 @@ internal class ControlsPaneController : Initializable {
 
     @FXML private lateinit var hawkCountField: TextField
 
-    internal var simulationPaneController: SimulationPaneController? = null
-    private var isCollapsed = false
-
     override fun initialize(location: URL?, resources: ResourceBundle?) {
-        toggleButton.text = "⟩"
-        toggleButton.setOnAction { toggleControlsPane() }
+        ToggleController(toggleButton, controlsPanel)
         startButton.setOnAction { onStart() }
         stopButton.setOnAction { onStop() }
         showBlobInfoCheckBox.setOnAction { simulationPaneController?.toggleShowBlobNames() }
-    }
-
-    private fun toggleControlsPane() {
-        isCollapsed = !isCollapsed
-        if (isCollapsed) {
-            controlsPanel.styleClass.add("collapsed")
-            toggleButton.text = "⟨"
-        } else {
-            controlsPanel.styleClass.remove("collapsed")
-            toggleButton.text = "⟩"
-        }
     }
 
     private fun onStart() {

@@ -7,26 +7,26 @@
       fx:controller="io.github.evasim.view.controllers.ControlsPaneController">
     <!-- Panel header with toggle button -->
     <HBox spacing="8.0" alignment="CENTER_RIGHT" styleClass="panel-header">
-        <Label text="Controls" styleClass="controls-title"/>
+        <Label text="Controls" styleClass="panel-title"/>
         <Button fx:id="toggleButton" styleClass="toggle-button" text="⟩"
                 minWidth="24.0" minHeight="24.0" maxWidth="24.0" maxHeight="24.0"/>
     </HBox>
     <!-- Collapsible content -->
-    <VBox spacing="16.0" styleClass="controls-content">
+    <VBox spacing="16.0" styleClass="panel-content">
         <!-- Simulation controls -->
         <VBox spacing="8.0">
-            <Label text="Simulation" styleClass="controls-section"/>
+            <Label text="Simulation" styleClass="panel-section"/>
             <HBox spacing="8.0" alignment="CENTER_RIGHT">
-                <Button fx:id="startButton" text="Start" styleClass="control-button"/>
-                <Button fx:id="stopButton" text="Stop" styleClass="control-button"/>
+                <Button fx:id="startButton" text="Start" styleClass="panel-button"/>
+                <Button fx:id="stopButton" text="Stop" styleClass="panel-button"/>
             </HBox>
         </VBox>
         <!-- Separator line -->
         <Line endX="200" stroke="#e5e5e7" strokeWidth="0.5"/>
         <!-- Parameters section -->
         <VBox spacing="12.0">
-            <Label text="Parameters" styleClass="controls-section"/>
-            <CheckBox fx:id="showBlobInfoCheckBox" text="Show blob info"/>
+            <Label text="Parameters" styleClass="panel-section"/>
+            <CheckBox fx:id="showBlobInfoCheckBox" text="Show blobs' info"/>
             <HBox spacing="8.0" alignment="CENTER_LEFT">
                 <Label text="Dove blobs:"/>
                 <TextField fx:id="doveCountField" promptText="e.g. 10" text="10" maxWidth="80"/>
