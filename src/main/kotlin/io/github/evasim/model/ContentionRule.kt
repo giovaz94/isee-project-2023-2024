@@ -8,19 +8,22 @@ package io.github.evasim.model
  */
 fun interface ContentionRule : (Personality, Personality, Energy) -> Pair<Energy, Energy>
 
+/** The ratio of energy gained by a hawk when attacking a dove. */
+private const val HAWK_ATTACK_RATIO = 0.75
+
+/** The ratio of energy gained by a dove when attacked by a hawk. */
+private const val DOVE_ATTACK_RATIO = 0.25
+
 /** A basic contention rule that determines how two entities (blobs) compete for food based on their personalities. */
-@Suppress("detekt:all")
 val contentionRule: ContentionRule = ContentionRule { one, other, energy ->
     when (one) {
         is Hawk -> when (other) {
-            is Hawk -> Pair(0.0, 0.0)
-            is Dove -> Pair(0.75 * energy, 0.25 * energy)
+            is Hawk -> 0.0 to 0.0
+            is Dove -> HAWK_ATTACK_RATIO * energy to DOVE_ATTACK_RATIO * energy
         }
         is Dove -> when (other) {
             is Hawk -> contentionRule(other, one, energy).swapped()
-            is Dove -> {
-                Pair(0.5 * energy, 0.5 * energy)
-            }
+            is Dove -> 0.5 * energy to 0.5 * energy
         }
     }
 }
