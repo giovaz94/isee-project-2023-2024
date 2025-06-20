@@ -1,3 +1,17 @@
+## [0.4.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.3.0...0.4.0) (2025-06-20)
+
+### Features
+
+* Automatic increase world shape when new blobs are added ([59c6339](https://github.com/giovaz94/isee-project-2023-2024/commit/59c633944784f45162f1a0f3d1aecc844873a465))
+
+### Build and continuous integration
+
+* fix dokka output directory ([ed38525](https://github.com/giovaz94/isee-project-2023-2024/commit/ed385256efe22827f943265ac4fa6de72dc4cd18))
+
+### Refactoring
+
+* remove suppression with nice code ([740ac8b](https://github.com/giovaz94/isee-project-2023-2024/commit/740ac8b20851264b7953a46211b05d7f914c98b9))
+
 ## [0.3.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.2.0...0.3.0) (2025-06-20)
 
 ### Features
