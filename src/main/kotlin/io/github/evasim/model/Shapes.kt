@@ -29,6 +29,13 @@ sealed interface Shape {
 data class Circle(val radius: Double) : Shape {
     override fun locallyContains(p2D: Position2D, direction: Direction?): Boolean =
         p2D.let { (x, y) -> x * x + y * y <= radius * radius }
+
+    /** [Circle] factory methods. */
+    companion object {
+        /** Create a scaling [Circle] that will contain a certain number of elements inside. */
+        fun scaleFromInnerElements(num: Int, baseRadius: Double = 200.0, scale: Double = 5.0): Circle =
+            Circle(baseRadius + (num) * scale)
+    }
 }
 
 /** A rectangular shape defined by its [width], and [height]. */
@@ -66,6 +73,13 @@ data class HollowCircle(val innerRadius: Double, val outerRadius: Double) : Shap
 
     override fun locallyContains(p2D: Position2D, direction: Direction?): Boolean =
         p2D.let { (x, y) -> x * x + y * y in (innerRadius * innerRadius)..(outerRadius * outerRadius) }
+
+    /** [HollowCircle] factory methods. */
+    companion object {
+        /** Create an [HollowCircle] that is contained in a [Circle]. */
+        fun fromCircle(circle: Circle, scaleMinRadius: Double = 0.80, scaleMaxRadius: Double = 1.0): HollowCircle =
+            HollowCircle(circle.radius * scaleMinRadius, circle.radius * scaleMaxRadius)
+    }
 }
 
 /** Creates a [Placed] shape at the given position. */

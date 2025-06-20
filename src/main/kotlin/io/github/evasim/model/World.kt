@@ -99,8 +99,13 @@ interface World : EventPublisher {
                     }
                 }.associateBy { it.id }
                 .toMap(ConcurrentHashMap())
-            val foods = generateFoods(shape, spawnZones.toSet(), blobs.count())
-            WorldImpl(shape, initialFoods, foods, blobs, CopyOnWriteArraySet(spawnZones.toSet()))
+
+            val newShape = Circle.scaleFromInnerElements(blobs.count())
+            val newSpawnZone = setOf(
+                SpawnZone(HollowCircle.fromCircle(newShape), origin),
+            )
+            val foods = generateFoods(newShape, newSpawnZone, blobs.count())
+            WorldImpl(newShape, initialFoods, foods, blobs, CopyOnWriteArraySet(newSpawnZone))
         }
 
         private fun generateFoods(
@@ -122,7 +127,7 @@ interface World : EventPublisher {
 }
 
 private data class WorldImpl(
-    override val shape: Shape,
+    override var shape: Shape,
     override val initialFoods: Int,
     private val worldFoods: ConcurrentHashMap<Entity.Id, Food>,
     private val worldBlobs: ConcurrentHashMap<Entity.Id, Blob>,

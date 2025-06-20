@@ -59,12 +59,11 @@ internal class ControlsPaneController : Initializable {
         val hawkyBlobs = hawkCountField.text.toInt()
         val doveBlobs = doveCountField.text.toInt()
         val maxRoundDuration = roundMaxDuration.text.toIntOrNull()?.toDuration(DurationUnit.SECONDS)
-        val radius = BASE_RADIUS + (hawkyBlobs + doveBlobs) * SCALE_FACTOR
-        // TODO: enlarge the world shape based on the number of blobs
+        val shape = Circle.scaleFromInnerElements(hawkyBlobs + doveBlobs)
         val config = World.Companion.Configuration(
-            shape = Circle(radius),
+            shape = shape,
             spawnZones = setOf(
-                SpawnZone(HollowCircle(innerRadius = radius * 0.80, outerRadius = radius), origin),
+                SpawnZone(HollowCircle.fromCircle(shape), origin),
             ),
             hawkyBlobs = hawkyBlobs,
             doveBlobs = doveBlobs,
@@ -77,10 +76,5 @@ internal class ControlsPaneController : Initializable {
     private fun onStop() {
         SimulatorController.stop()
         simulationPaneController?.newSimulationState(SimulationState.READY)
-    }
-
-    private companion object {
-        private const val BASE_RADIUS = 200.0
-        private const val SCALE_FACTOR = 5.0
     }
 }
