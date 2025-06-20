@@ -1,3 +1,19 @@
+## [0.3.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.2.0...0.3.0) (2025-06-20)
+
+### Features
+
+* add line chart statistics ([166dc77](https://github.com/giovaz94/isee-project-2023-2024/commit/166dc7766ccf90527ccdca2da806493ac4e911d9))
+* add max round duration and food pieces configurations ([34d87e5](https://github.com/giovaz94/isee-project-2023-2024/commit/34d87e5184110ffea513fbb3c8c561b5c74e0a13))
+* add shutdown hook to shutdown mas when window is closed ([571bf5e](https://github.com/giovaz94/isee-project-2023-2024/commit/571bf5ec4719cc6de43f16ce934db6c7d96cc6e3))
+
+### Bug Fixes
+
+* catch errors on shutdown hooks ([cc05c3a](https://github.com/giovaz94/isee-project-2023-2024/commit/cc05c3ac6b820b388a251cfdf0daccd2a1c2c1b3))
+
+### Build and continuous integration
+
+* fix dokka html doc generation command ([fb4ddff](https://github.com/giovaz94/isee-project-2023-2024/commit/fb4ddff924fb1346752d2e1b97a60a0fe5295fc5))
+
 ## [0.2.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.1.0...0.2.0) (2025-06-19)
 
 ### Features
