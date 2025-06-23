@@ -1,3 +1,13 @@
+## [0.5.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.4.0...0.5.0) (2025-06-23)
+
+### Features
+
+* add rnd controller ([70b35aa](https://github.com/giovaz94/isee-project-2023-2024/commit/70b35aaae452f97e7eb62a13c51a877d513eecc9))
+
+### Dependency updates
+
+* **deps:** update dependency io.mockk:mockk to v1.14.4 ([#41](https://github.com/giovaz94/isee-project-2023-2024/issues/41)) ([4f7256b](https://github.com/giovaz94/isee-project-2023-2024/commit/4f7256bbe066dff9b61ae69f2ea2719e081ec491))
+
 ## [0.4.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.3.0...0.4.0) (2025-06-20)
 
 ### Features
