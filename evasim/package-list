@@ -122,7 +122,6 @@ $dokka.location:io.github.evasim.model/Placed/direction/#/PointingToDeclaration/
 $dokka.location:io.github.evasim.model/Placed/position/#/PointingToDeclaration/evasim/io.github.evasim.model/-placed/position.html
 $dokka.location:io.github.evasim.model/Placed/shape/#/PointingToDeclaration/evasim/io.github.evasim.model/-placed/shape.html
 $dokka.location:io.github.evasim.model/Placed/update/#io.github.evasim.model.Position2D#io.github.evasim.model.Versor2D?/PointingToDeclaration/evasim/io.github.evasim.model/-placed/update.html
-$dokka.location:io.github.evasim.model/Pose///PointingToDeclaration/evasim/io.github.evasim.model/-pose/index.html
 $dokka.location:io.github.evasim.model/Position2D.Companion///PointingToDeclaration/evasim/io.github.evasim.model/-position2-d/-companion/index.html
 $dokka.location:io.github.evasim.model/Position2D.Companion/from/#kotlin.Pair[kotlin.Double,kotlin.Double]/PointingToDeclaration/evasim/io.github.evasim.model/-position2-d/-companion/from.html
 $dokka.location:io.github.evasim.model/Position2D.Companion/invoke/#kotlin.Double#kotlin.Double/PointingToDeclaration/evasim/io.github.evasim.model/-position2-d/-companion/invoke.html
@@ -244,7 +243,8 @@ $dokka.location:io.github.evasim.utils//logger/kotlin.Any#/PointingToDeclaration
 $dokka.location:io.github.evasim.utils//resource/#kotlin.String#kotlin.String/PointingToDeclaration/evasim/io.github.evasim.utils/resource.html
 $dokka.location:io.github.evasim.utils/Logic///PointingToDeclaration/evasim/io.github.evasim.utils/-logic/index.html
 $dokka.location:io.github.evasim.utils/Logic/asBelief/it.unibo.tuprolog.core.Struct#/PointingToDeclaration/evasim/io.github.evasim.utils/-logic/as-belief.html
-$dokka.location:io.github.evasim.utils/Logic/castToEnergy/kotlin.Double#/PointingToDeclaration/evasim/io.github.evasim.utils/-logic/cast-to-energy.html
+$dokka.location:io.github.evasim.utils/Logic/castToDouble/it.unibo.tuprolog.core.Term#/PointingToDeclaration/evasim/io.github.evasim.utils/-logic/cast-to-double.html
+$dokka.location:io.github.evasim.utils/Logic/castToInt/it.unibo.tuprolog.core.Term#/PointingToDeclaration/evasim/io.github.evasim.utils/-logic/cast-to-int.html
 $dokka.location:io.github.evasim.utils/Logic/castToVector2D/io.github.evasim.model.Vector2D#/PointingToDeclaration/evasim/io.github.evasim.utils/-logic/cast-to-vector2-d.html
 $dokka.location:io.github.evasim.utils/Logic/castToVector2D/it.unibo.tuprolog.core.Tuple#/PointingToDeclaration/evasim/io.github.evasim.utils/-logic/cast-to-vector2-d.html
 $dokka.location:io.github.evasim.utils/Logic/invoke/kotlin.String#/PointingToDeclaration/evasim/io.github.evasim.utils/-logic/invoke.html
@@ -253,6 +253,19 @@ $dokka.location:io.github.evasim.utils/Logic/invoke/kotlin.String#io.github.evas
 $dokka.location:io.github.evasim.utils/Logic/invoke/kotlin.String#kotlin.String/PointingToDeclaration/evasim/io.github.evasim.utils/-logic/invoke.html
 $dokka.location:io.github.evasim.utils/OwnName///PointingToDeclaration/evasim/io.github.evasim.utils/-own-name/index.html
 $dokka.location:io.github.evasim.utils/OwnName/getValue/#kotlin.Any?#kotlin.reflect.KProperty[*]/PointingToDeclaration/evasim/io.github.evasim.utils/-own-name/get-value.html
+$dokka.location:io.github.evasim.utils/RandomConfig.Companion///PointingToDeclaration/evasim/io.github.evasim.utils/-random-config/-companion/index.html
+$dokka.location:io.github.evasim.utils/RandomConfig.Companion/default/#/PointingToDeclaration/evasim/io.github.evasim.utils/-random-config/-companion/default.html
+$dokka.location:io.github.evasim.utils/RandomConfig.Companion/withSeed/#kotlin.Long/PointingToDeclaration/evasim/io.github.evasim.utils/-random-config/-companion/with-seed.html
+$dokka.location:io.github.evasim.utils/RandomConfig.Companion/withStringSeed/#kotlin.String/PointingToDeclaration/evasim/io.github.evasim.utils/-random-config/-companion/with-string-seed.html
+$dokka.location:io.github.evasim.utils/RandomConfig.Companion/withTimeSeed/#/PointingToDeclaration/evasim/io.github.evasim.utils/-random-config/-companion/with-time-seed.html
+$dokka.location:io.github.evasim.utils/RandomConfig///PointingToDeclaration/evasim/io.github.evasim.utils/-random-config/index.html
+$dokka.location:io.github.evasim.utils/RandomConfig/rnd/#/PointingToDeclaration/evasim/io.github.evasim.utils/-random-config/rnd.html
+$dokka.location:io.github.evasim.utils/Rnd///PointingToDeclaration/evasim/io.github.evasim.utils/-rnd/index.html
+$dokka.location:io.github.evasim.utils/Rnd/configure/#io.github.evasim.utils.RandomConfig/PointingToDeclaration/evasim/io.github.evasim.utils/-rnd/configure.html
+$dokka.location:io.github.evasim.utils/Rnd/isConfigured/#/PointingToDeclaration/evasim/io.github.evasim.utils/-rnd/is-configured.html
+$dokka.location:io.github.evasim.utils/Rnd/nextDouble/#kotlin.Double#kotlin.Double/PointingToDeclaration/evasim/io.github.evasim.utils/-rnd/next-double.html
+$dokka.location:io.github.evasim.utils/Rnd/nextInt/#kotlin.Int#kotlin.Int/PointingToDeclaration/evasim/io.github.evasim.utils/-rnd/next-int.html
+$dokka.location:io.github.evasim.utils/Rnd/reset/#/PointingToDeclaration/evasim/io.github.evasim.utils/-rnd/reset.html
 $dokka.location:io.github.evasim.view////PointingToDeclaration/evasim/io.github.evasim.view/index.html
 $dokka.location:io.github.evasim.view/FXSimulatorView///PointingToDeclaration/evasim/io.github.evasim.view/-f-x-simulator-view/index.html
 $dokka.location:io.github.evasim.view/FXSimulatorView/FXSimulatorView/#/PointingToDeclaration/evasim/io.github.evasim.view/-f-x-simulator-view/-f-x-simulator-view.html
