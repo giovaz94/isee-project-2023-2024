@@ -1,11 +1,11 @@
 package io.github.evasim.model
 
+import io.github.evasim.utils.Rnd
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
-import kotlin.random.Random
 
 /**
  * A shape in a two-dimensional space relative whose coordinates are **local**, i.e., relative to the origin.
@@ -125,7 +125,7 @@ infix fun Placed<out Shape>.collidesWith(other: Placed<out Shape>): Boolean {
 fun Placed<out Shape>.isFullyContainedIn(other: Shape): Boolean = when (shape) {
     is Rectangle -> listOf(-1, 1)
         .flatMap { dx -> listOf(-1, 1).map { dy -> Position2D(dx * shape.halfWidth, dy * shape.halfHeight) } }
-        .map { it + this.position }
+        .map { it + position }
         .all { other.locallyContains(it) }
     is Circle -> listOf(-1.0, 0.0, 1.0)
         .flatMap { dx -> listOf(-1.0, 0.0, 1.0).map { dy -> Position2D(dx, dy) } }
@@ -172,22 +172,22 @@ internal infix fun Placed<Rectangle>.rectIntersect(other: Placed<Rectangle>): Bo
 /** Generate a random position within the given [bounds]. */
 fun positionWithin(bounds: Placed<Shape>): Position2D = when (val shape = bounds.shape) {
     is Rectangle -> Position2D(
-        x = Random.nextDouble(bounds.position.x - (shape.width / 2), bounds.position.x + (shape.width / 2)),
-        y = Random.nextDouble(bounds.position.y - (shape.height / 2), bounds.position.y + (shape.height / 2)),
+        x = Rnd.nextDouble(bounds.position.x - (shape.width / 2), bounds.position.x + (shape.width / 2)),
+        y = Rnd.nextDouble(bounds.position.y - (shape.height / 2), bounds.position.y + (shape.height / 2)),
     )
     is Circle -> {
-        val angle = Random.nextDouble(0.0, 2 * PI)
-        val radius = shape.radius * sqrt(Random.nextDouble())
+        val angle = Rnd.nextDouble(0.0, 2 * PI)
+        val radius = shape.radius * sqrt(Rnd.nextDouble())
         Position2D(
             x = bounds.position.x + radius * cos(angle),
             y = bounds.position.y + radius * sin(angle),
         )
     }
     is HollowCircle -> {
-        val angle = Random.nextDouble(0.0, 2 * PI)
+        val angle = Rnd.nextDouble(0.0, 2 * PI)
         val innerSquared = shape.innerRadius * shape.innerRadius
         val outerSquared = shape.outerRadius * shape.outerRadius
-        val radius = sqrt(Random.nextDouble(innerSquared, outerSquared))
+        val radius = sqrt(Rnd.nextDouble(innerSquared, outerSquared))
         Position2D(
             x = bounds.position.x + radius * cos(angle),
             y = bounds.position.y + radius * sin(angle),

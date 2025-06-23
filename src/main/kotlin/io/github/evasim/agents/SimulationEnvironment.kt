@@ -89,7 +89,6 @@ class SimulationEnvironment(
     @Suppress("UNCHECKED_CAST")
     override fun updateData(newData: Map<String, Any>): Environment {
         val collectedFoods = data["collectedFood"] as? MutableMap<Blob, Pair<Food, List<Blob>>> ?: mutableMapOf()
-
         if (update in newData) {
             val (agentID, velocity, _) = newData[update] as Triple<String, Vector2D, Time>
             round.world.findBlob(agentID)?.let { blob ->
@@ -101,18 +100,14 @@ class SimulationEnvironment(
             val (agentID, foodID) = newData[collect] as Pair<String, String>
             round.world.findBlob(agentID)?.let { blob ->
                 round.world.findFood(foodID)?.let { food ->
-                    collectedFoods[blob] = food to food.attemptCollecting(blob).orEmpty()
+                    collectedFoods[blob] = food to food.attemptCollecting(blob).toList()
                 }
             }
         }
-
         if (remove_food in newData) {
             val foodId = newData[remove_food] as String
-            round.world.findFood(foodId)?.let {
-                round.world.removeFood(it)
-            }
+            round.world.findFood(foodId)?.let { round.world.removeFood(it) }
         }
-
         if (update_energy in newData) {
             val energyMap = newData[update_energy] as Map<String, Energy>
             energyMap.forEach { (agentId, energy) ->

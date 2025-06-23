@@ -55,8 +55,6 @@ internal val bounce by OwnName
 
 internal val inverse_direction by OwnName
 
-internal val ended_round by OwnName
-
 internal val check_contention by OwnName
 
 internal val solve_contention by OwnName
@@ -71,5 +69,8 @@ internal val update_energy by OwnName
 
 internal val source by OwnName
 
-/** The perception `end_round/0` literal sent by the environment when the round has ended. */
-internal val end_round by OwnName
+/** The perception `ended_round/0` literal sent by the environment when the round has ended. */
+internal val ended_round by OwnName
+
+/** The internal action `stop_agent/0` that stops the agent. */
+internal val stop_agent by OwnName

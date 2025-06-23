@@ -173,9 +173,9 @@ private data class BlobImpl(
         post(UpdatedBlob(copy()))
     }
 
-    override fun isDead(): Boolean = reproductionStrategy.invoke(health.current) == State.Dead
+    override fun isAlive(): Boolean = !isDead()
 
-    override fun isAlive(): Boolean = reproductionStrategy.invoke(health.current) == State.Alive
+    override fun isDead(): Boolean = reproductionStrategy.invoke(health.current) == State.Dead
 
     override fun canReproduce(): Boolean = reproductionStrategy.invoke(health.current) == State.Reproducing
 

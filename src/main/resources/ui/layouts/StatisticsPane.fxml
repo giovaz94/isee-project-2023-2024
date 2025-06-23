@@ -14,13 +14,21 @@
     <!-- Collapsible content -->
     <VBox spacing="16.0" styleClass="panel-content">
         <!-- Statistics content -->
+        <VBox spacing="8.0">
+            <HBox spacing="8.0" alignment="CENTER">
+                <Label text="Dove Blobs:" />
+                <Label fx:id="doveBlobsLabel" />
+                <Label text="Hawk Blobs:" />
+                <Label fx:id="hawkyBlobsLabel" />
+            </HBox>
+        </VBox>
         <VBox spacing="8.0" styleClass="">
-            <AreaChart fx:id="areaChart" layoutX="50.0" layoutY="50.0" prefHeight="400.0" prefWidth="500.0">
+            <AreaChart fx:id="areaChart" layoutX="50.0" layoutY="50.0" prefHeight="400.0" prefWidth="300.0">
                 <xAxis>
-                    <NumberAxis fx:id="xAxis" label="Round" />
+                    <NumberAxis label="Round" />
                 </xAxis>
                 <yAxis>
-                    <NumberAxis fx:id="yAxis" label="#Blobs" />
+                    <NumberAxis label="#Blobs" />
                 </yAxis>
             </AreaChart>
         </VBox>

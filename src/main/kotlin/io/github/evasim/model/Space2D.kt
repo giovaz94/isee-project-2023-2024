@@ -1,14 +1,11 @@
 package io.github.evasim.model
 
+import io.github.evasim.utils.Rnd
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
 import kotlin.math.sqrt
-import kotlin.random.Random
-
-/** A pose in a two-dimensional space, represented as a pair of [Position2D] and [Vector2D]. */
-typealias Pose = Pair<Position2D, Vector2D>
 
 /** A position in a two-dimensional space. */
 interface Position2D {
@@ -122,7 +119,7 @@ private data class Vector2DImpl(override val x: Double, override val y: Double) 
         require(minDegrees <= maxDegrees) { "minDegrees must be <= maxDegrees" }
 
         val inverted = -this
-        val randomAngleDegrees = Random.nextDouble(minDegrees, maxDegrees)
+        val randomAngleDegrees = Rnd.nextDouble(minDegrees, maxDegrees)
         val randomAngleRadians = Math.toRadians(randomAngleDegrees)
 
         val cosA = cos(randomAngleRadians)

@@ -36,10 +36,10 @@
             </VBox>
         </VBox>
         <!-- Separator line -->
-        <Line endX="200" stroke="#e5e5e7" strokeWidth="0.5"/>
+        <!--<Line endX="200" stroke="#e5e5e7" strokeWidth="0.5"/>-->
         <!-- Simulation controls -->
         <VBox spacing="8.0">
-            <HBox spacing="8.0" alignment="CENTER_RIGHT">
+            <HBox spacing="8.0" alignment="CENTER">
                 <Button fx:id="startButton" text="Start" styleClass="panel-button"/>
                 <Button fx:id="stopButton" text="Stop" styleClass="panel-button"/>
             </HBox>

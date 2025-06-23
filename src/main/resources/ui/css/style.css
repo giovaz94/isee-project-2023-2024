@@ -17,8 +17,7 @@
     -fx-border-color: rgba(255, 255, 255, 0.3);
     -fx-border-width: 1;
     -fx-border-radius: 12;
-    -fx-min-width: 240;
-    -fx-max-width: 240;
+    -fx-min-width: 200;
 }
 
 /* Panel header styling */

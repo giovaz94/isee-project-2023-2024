@@ -36,5 +36,5 @@ internal val blobRenderable = RenderableWithContext<Blob, BlobRenderableConfig, 
         }
         group.children.add(nameLabel)
     }
-    group
+    group.also { it.viewOrder = blob.position.y }
 }

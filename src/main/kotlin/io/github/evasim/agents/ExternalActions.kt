@@ -3,7 +3,6 @@ package io.github.evasim.agents
 import io.github.evasim.model.contentionRule
 import io.github.evasim.model.toPersonality
 import io.github.evasim.model.zero
-import io.github.evasim.utils.Logic.castToEnergy
 import io.github.evasim.utils.Logic.castToVector2D
 import it.unibo.jakta.agents.bdi.actions.ExternalRequest
 import it.unibo.jakta.agents.bdi.actions.impl.AbstractExternalAction
@@ -13,6 +12,7 @@ import it.unibo.tuprolog.core.Real
 import it.unibo.tuprolog.core.Struct
 import it.unibo.tuprolog.core.Substitution
 
+/** An `update(+Direction, +NewSpeed)` external action that updates the blob's position and velocity. */
 internal object Update : AbstractExternalAction(name = update, arity = 2) {
     override fun action(request: ExternalRequest) {
         val direction = request.arguments[0].castToTuple().castToVector2D().normalized() ?: zero
@@ -22,6 +22,7 @@ internal object Update : AbstractExternalAction(name = update, arity = 2) {
     }
 }
 
+/** `collect_food(+FoodId)` external action that collects food. */
 internal object CollectFood : AbstractExternalAction(name = collect, arity = 1) {
     override fun action(request: ExternalRequest) {
         val foodId = request.arguments[0].castToAtom().value
@@ -36,7 +37,6 @@ internal object CheckContention : AbstractExternalAction(check_contention, arity
         val personality = request.arguments[1].castToAtom()
         val energy = request.arguments[2].castToReal()
         val foodId = request.arguments[3].castToAtom()
-
         if (blobList.size == MAX_CONTESTANT_NUMBER) {
             val sender = request.sender
             val message = Message(
@@ -61,8 +61,7 @@ internal object SolveContention : AbstractExternalAction(solve_contention, arity
         val contenderId = request.arguments[1].castToAtom().value
         val solverPersonality = request.arguments[2].castToAtom().value.toPersonality()!!
         val contenderPersonality = request.arguments[3].castToAtom().value.toPersonality()!!
-
-        val totalEnergy = request.arguments[4].castToReal().value.toDouble().castToEnergy()
+        val totalEnergy = request.arguments[4].castToReal().value.toDouble()
         val solverEnergy = request.arguments[5].castToVar()
         val ruleOutput = contentionRule(solverPersonality, contenderPersonality, totalEnergy)
         val contenderEnergy = ruleOutput.second

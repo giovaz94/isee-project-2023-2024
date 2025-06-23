@@ -6,6 +6,8 @@ import io.github.evasim.model.EventBusPublisher
 import io.github.evasim.model.EventPublisher
 import io.github.evasim.model.Round
 import io.github.evasim.model.World
+import io.github.evasim.utils.RandomConfig
+import io.github.evasim.utils.Rnd
 import io.github.evasim.utils.logger
 import it.unibo.jakta.agents.bdi.dsl.mas
 import it.unibo.jakta.agents.bdi.executionstrategies.ExecutionStrategy
@@ -38,6 +40,7 @@ object SimulatorController : Controller, EventBusPublisher() {
     @Synchronized
     override fun start(configuration: World.Companion.Configuration, roundTimeout: Duration?) {
         check(activeSimulation == null) { "A simulation is already running. Please, stop it first." }
+        Rnd.configure(RandomConfig.withTimeSeed())
         World.fromConfiguration(configuration).also { world ->
             val initialRound = Round.byCriteria(world) {
                 it.elapsedTime >= (roundTimeout ?: Duration.INFINITE) || it.world.foods.toSet().isEmpty()

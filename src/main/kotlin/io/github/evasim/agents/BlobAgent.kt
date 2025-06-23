@@ -88,7 +88,6 @@ private fun PlansScope.collectFood(blob: Blob) {
     +achieve(collect_food) onlyIf { status(reached(F)).fromSelf } then {
         execute(collect(F))
     }
-
     +food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
         update(status(targeting(P)).fromSelf)
     }
@@ -112,12 +111,10 @@ private fun PlansScope.contention(blob: Blob) {
         execute(solve_contention(F, S, Atom.of(blob.personality.toString()), P, E, N))
         achieve(update_energy(N))
     }
-
     +contention_result(source(S), E) onlyIf { energy(Y).fromSelf and (N `is` Y + E) } then {
         update(energy(N).fromSelf)
         achieve(forage)
     }
-
     +achieve(update_energy(E)) onlyIf { energy(Y).fromSelf and (N `is` Y + E) } then {
         update(energy(N).fromSelf)
         achieve(forage)
@@ -126,6 +123,6 @@ private fun PlansScope.contention(blob: Blob) {
 
 private fun PlansScope.endedRound() {
     +ended_round.fromPercept then {
-        execute(end_round)
+        execute(stop_agent)
     }
 }

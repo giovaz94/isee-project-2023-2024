@@ -64,7 +64,7 @@ interface World : EventPublisher {
             val spawnZones: Set<SpawnZone>,
             val hawkyBlobs: Int,
             val doveBlobs: Int,
-            val foodsAmount: Int = hawkyBlobs + doveBlobs,
+            val foodsAmount: Int = (hawkyBlobs + doveBlobs) / 2,
         )
 
         /** Creates a new world instance based on the provided [configuration]. */
@@ -84,26 +84,24 @@ interface World : EventPublisher {
         /** Creates a new world instance from the given round. */
         fun from(round: Round): World = with(round.world) {
             val blobs = blobs
-                .flatMap { b ->
-                    when {
-                        b.canReproduce() -> listOf(
-                            b.clone(health = Health(min = 0.0, max = 2.0)),
-                            Blob(
-                                id = Entity.Id("${b.id.value}-${round.number}"),
-                                personality = b.personality,
-                                position = b.position,
-                            ),
-                        )
-                        b.isAlive() -> listOf(b.clone(health = Health(min = 0.0, max = 2.0)))
-                        else -> emptyList()
+                .filter { it.isAlive() }
+                .flatMap {
+                    buildList {
+                        add(it.clone(health = Health(min = 0.0, max = 2.0)))
+                        if (it.canReproduce()) {
+                            add(
+                                it.clone(
+                                    Entity.Id("${it.id.value}-${round.number}"),
+                                    health = Health(min = 0.0, max = 2.0),
+                                ),
+                            )
+                        }
                     }
                 }.associateBy { it.id }
                 .toMap(ConcurrentHashMap())
 
             val newShape = Circle.scaleFromInnerElements(blobs.count())
-            val newSpawnZone = setOf(
-                SpawnZone(HollowCircle.fromCircle(newShape), origin),
-            )
+            val newSpawnZone = setOf(SpawnZone(HollowCircle.fromCircle(newShape), origin))
             val foods = generateFoods(newShape, newSpawnZone, blobs.count())
             WorldImpl(newShape, initialFoods, foods, blobs, CopyOnWriteArraySet(newSpawnZone))
         }

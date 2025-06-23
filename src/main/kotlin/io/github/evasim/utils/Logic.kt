@@ -1,6 +1,5 @@
 package io.github.evasim.utils
 
-import io.github.evasim.model.Energy
 import io.github.evasim.model.Position2D
 import io.github.evasim.model.Vector2D
 import io.github.evasim.model.asVector2D
@@ -8,19 +7,11 @@ import it.unibo.jakta.agents.bdi.beliefs.Belief
 import it.unibo.tuprolog.core.Atom
 import it.unibo.tuprolog.core.Real
 import it.unibo.tuprolog.core.Struct
+import it.unibo.tuprolog.core.Term
 import it.unibo.tuprolog.core.Tuple
 
 /** Utility functions for logic programming in the BDI Jakta framework. */
 object Logic {
-
-//    /**
-//     * Execute `this` [ExternalAction] with the given arguments.
-//     * This is a shorthand for `execute(<action_literal>(arg, *args))` and can be called from a [BodyScope].
-//     */
-//    context (body: BodyScope)
-//    operator fun <T : ExternalAction> T.invoke(arg: Any, vararg args: Any) = with (body) {
-//        execute(this@invoke.signature.name(arg, *args))
-//    }
 
     /** Builds a [Struct] from the given [Position2D]. */
     operator fun String.invoke(p: Position2D): Struct = invoke(p.asVector2D())
@@ -44,6 +35,9 @@ object Logic {
     /** Builds a [Tuple] out of this [Vector2D]. */
     fun Vector2D.castToVector2D(): Tuple = Tuple.of(Real.of(x), Real.of(y))
 
-    /**  Builds a [Energy] out of this  [Double]. */
-    fun Double.castToEnergy(): Energy = this
+    /** Cast to an integer this [Term], possibly throwing an exception. */
+    fun Term.castToInt(): Int = castToInteger().value.toIntExact()
+
+    /** Cast to a double this [Term], possibly throwing an exception. */
+    fun Term.castToDouble(): Double = castToReal().value.toDouble()
 }

@@ -33,5 +33,5 @@ internal val foodRenderable = Renderable<Food, Node> { food ->
             """.trimIndent(),
         )
     }
-    root
+    root.also { it.viewOrder = 0.0 }
 }
