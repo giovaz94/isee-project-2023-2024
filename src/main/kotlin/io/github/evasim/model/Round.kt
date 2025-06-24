@@ -47,7 +47,7 @@ interface Round {
          * @param criteria A function that takes a [World] and returns true if the round should end.
          * @return A new [Round] instance.
          */
-        fun byCriteria(world: World, criteria: (Round) -> Boolean): Round = RoundImpl(0, world, criteria)
+        fun byCriteria(world: World, criteria: (Round) -> Boolean): Round = RoundImpl(1, world, criteria)
     }
 }
 
