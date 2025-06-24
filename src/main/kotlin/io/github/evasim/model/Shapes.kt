@@ -23,6 +23,11 @@ sealed interface Shape {
      * To check for containment in world space use [Placed.contains] instead.
      */
     fun locallyContains(p2D: Position2D, direction: Direction? = null): Boolean
+
+    /**
+     * Scales the shape by the given [factor], returning a new shape instance.
+     */
+    fun scale(factor: Double): Shape
 }
 
 /** A circular shape defined by its [radius]. */
@@ -30,12 +35,7 @@ data class Circle(val radius: Double) : Shape {
     override fun locallyContains(p2D: Position2D, direction: Direction?): Boolean =
         p2D.let { (x, y) -> x * x + y * y <= radius * radius }
 
-    /** [Circle] factory methods. */
-    companion object {
-        /** Create a scaling [Circle] that will contain a certain number of elements inside. */
-        fun scaleFromInnerElements(num: Int, baseRadius: Double = 200.0, scale: Double = 5.0): Circle =
-            Circle(baseRadius + (num) * scale)
-    }
+    override fun scale(factor: Double): Shape = Circle(radius * factor)
 }
 
 /** A rectangular shape defined by its [width], and [height]. */
@@ -48,6 +48,8 @@ data class Rectangle(val width: Double, val height: Double) : Shape {
 
     override fun locallyContains(p2D: Position2D, direction: Direction?): Boolean =
         p2D.x in -halfWidth..halfWidth && p2D.y in -halfHeight..halfHeight
+
+    override fun scale(factor: Double): Shape = Rectangle(width * factor, height * factor)
 }
 
 /**
@@ -63,6 +65,8 @@ data class Cone(val radius: Double, val fovDegrees: Degrees) : Shape {
         val cosHalfFOV = cos(Math.toRadians(fovDegrees.value / 2.0))
         return Circle(radius).locallyContains(p2D) && cosAngle >= cosHalfFOV
     }
+
+    override fun scale(factor: Double): Shape = Cone(radius * factor, fovDegrees)
 }
 
 /** A hollow circular shape defined by its [innerRadius] and [outerRadius]. */
@@ -74,12 +78,7 @@ data class HollowCircle(val innerRadius: Double, val outerRadius: Double) : Shap
     override fun locallyContains(p2D: Position2D, direction: Direction?): Boolean =
         p2D.let { (x, y) -> x * x + y * y in (innerRadius * innerRadius)..(outerRadius * outerRadius) }
 
-    /** [HollowCircle] factory methods. */
-    companion object {
-        /** Create an [HollowCircle] that is contained in a [Circle]. */
-        fun fromCircle(circle: Circle, scaleMinRadius: Double = 0.80, scaleMaxRadius: Double = 1.0): HollowCircle =
-            HollowCircle(circle.radius * scaleMinRadius, circle.radius * scaleMaxRadius)
-    }
+    override fun scale(factor: Double): Shape = HollowCircle(innerRadius * factor, outerRadius * factor)
 }
 
 /** Creates a [Placed] shape at the given position. */
@@ -95,29 +94,6 @@ data class Placed<S : Shape>(val shape: S, var position: Position2D, var directi
     fun update(position: Position2D, direction: Direction? = null) {
         this.position = position
         this.direction = direction
-    }
-}
-
-/** Check if a [Placed] shape collides with a container [Shape]. */
-infix fun Placed<out Shape>.collidesWith(shape: Shape): Boolean = !isFullyContainedIn(shape)
-
-/** Check if two [Placed] shapes collide with each other. */
-infix fun Placed<out Shape>.collidesWith(other: Placed<out Shape>): Boolean {
-    return when (shape) {
-        is Circle -> when (other.shape) {
-            is Circle -> shape at position circleIntersect (other.shape at other.position)
-            is Rectangle -> shape at position circleRectIntersect (other.shape at other.position)
-            is Cone -> TODO("No collisions with cones yet")
-            is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
-        }
-        is Rectangle -> when (other.shape) {
-            is Circle -> other.shape at other.position circleRectIntersect (shape at position)
-            is Rectangle -> shape at position rectIntersect (other.shape at other.position)
-            is Cone -> TODO("No collisions with cones yet")
-            is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
-        }
-        is Cone -> TODO("No collisions with cones yet")
-        is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
     }
 }
 
@@ -145,7 +121,30 @@ fun Placed<out Shape>.isFullyContainedIn(other: Shape): Boolean = when (shape) {
         }
         (arcPoints + position).all { other.locallyContains(it) }
     }
-    else -> error("Not implemented for ${shape::class.simpleName}")
+    else -> TODO("Not implemented for ${shape::class.simpleName}")
+}
+
+/** Check if a [Placed] shape collides with a container [Shape]. */
+infix fun Placed<out Shape>.collidesWith(shape: Shape): Boolean = !isFullyContainedIn(shape)
+
+/** Check if two [Placed] shapes collide with each other. */
+infix fun Placed<out Shape>.collidesWith(other: Placed<out Shape>): Boolean {
+    return when (shape) {
+        is Circle -> when (other.shape) {
+            is Circle -> shape at position circleIntersect (other.shape at other.position)
+            is Rectangle -> shape at position circleRectIntersect (other.shape at other.position)
+            is Cone -> TODO("No collisions with cones yet")
+            is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
+        }
+        is Rectangle -> when (other.shape) {
+            is Circle -> other.shape at other.position circleRectIntersect (shape at position)
+            is Rectangle -> shape at position rectIntersect (other.shape at other.position)
+            is Cone -> TODO("No collisions with cones yet")
+            is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
+        }
+        is Cone -> TODO("No collisions with cones yet")
+        is HollowCircle -> TODO("No collisions with hollow circle intersect yet")
+    }
 }
 
 internal infix fun Placed<Circle>.circleIntersect(other: Placed<Circle>): Boolean {

@@ -195,11 +195,7 @@ private data class BlobImpl(
         shape,
         personality,
         position, velocity, defaultDirection,
-        Sight(
-            sightShape,
-            position,
-            defaultDirection,
-        ),
+        Sight(sightShape, position, defaultDirection),
         health,
         reproductionStrategy,
     )

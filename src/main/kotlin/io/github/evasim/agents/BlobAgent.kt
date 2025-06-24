@@ -15,7 +15,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     beliefs {
         fact { energy(0.0) }
         fact { direction(tupleOf(0.0, 0.0)) }
-        fact { speed(term = 20.0) }
+        fact { speed(term = 25.0) }
         fact { status(exploring) }
     }
     actions {

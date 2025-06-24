@@ -59,11 +59,11 @@ internal class ControlsPaneController : Initializable {
         val hawkyBlobs = hawkCountField.text.toInt()
         val doveBlobs = doveCountField.text.toInt()
         val maxRoundDuration = roundMaxDuration.text.toIntOrNull()?.toDuration(DurationUnit.SECONDS)
-        val shape = Circle.scaleFromInnerElements(hawkyBlobs + doveBlobs)
+        val shape = Circle(radius = 200 + (hawkyBlobs + doveBlobs) * 5.0)
         val config = World.Companion.Configuration(
             shape = shape,
             spawnZones = setOf(
-                SpawnZone(HollowCircle.fromCircle(shape), origin),
+                SpawnZone(HollowCircle(innerRadius = shape.radius * 0.8, outerRadius = shape.radius), origin),
             ),
             hawkyBlobs = hawkyBlobs,
             doveBlobs = doveBlobs,

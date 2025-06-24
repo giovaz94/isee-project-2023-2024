@@ -2,6 +2,7 @@ package io.github.evasim.model
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.math.sqrt
 
 /**
  * Represents the simulation world that encompasses all entities, foods, and blobs
@@ -83,7 +84,7 @@ interface World : EventPublisher {
 
         /** Creates a new world instance from the given round. */
         fun from(round: Round): World = with(round.world) {
-            val blobs = blobs
+            val newBlobs = blobs
                 .filter { it.isAlive() }
                 .flatMap {
                     buildList {
@@ -99,11 +100,11 @@ interface World : EventPublisher {
                     }
                 }.associateBy { it.id }
                 .toMap(ConcurrentHashMap())
-
-            val newShape = Circle.scaleFromInnerElements(blobs.count())
-            val newSpawnZone = setOf(SpawnZone(HollowCircle.fromCircle(newShape), origin))
-            val foods = generateFoods(newShape, newSpawnZone, blobs.count())
-            WorldImpl(newShape, initialFoods, foods, blobs, CopyOnWriteArraySet(newSpawnZone))
+            val scaleFactor = sqrt(newBlobs.count().toDouble() / blobs.count())
+            val newShape = shape.scale(scaleFactor)
+            val newSpawnZone = spawnZones.map { it.shape.scale(scaleFactor) }.map { SpawnZone(it, origin) }.toSet()
+            val foods = generateFoods(newShape, newSpawnZone, round.world.initialFoods)
+            WorldImpl(newShape, initialFoods, foods, newBlobs, CopyOnWriteArraySet(newSpawnZone))
         }
 
         private fun generateFoods(
