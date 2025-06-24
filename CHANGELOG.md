@@ -1,3 +1,17 @@
+## [0.6.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.5.0...0.6.0) (2025-06-24)
+
+### Features
+
+* **gui:** add elapsed time field ([c54b81d](https://github.com/giovaz94/isee-project-2023-2024/commit/c54b81d0908cbdf9760f2026480f9c57446b3e73))
+
+### Dependency updates
+
+* **deps:** update plugin org.danilopianini.gradle-pre-commit-git-hooks to v2.0.27 ([#44](https://github.com/giovaz94/isee-project-2023-2024/issues/44)) ([a0f5349](https://github.com/giovaz94/isee-project-2023-2024/commit/a0f53497e6156402bf9874e21c7498a7fd7873d4))
+
+### Refactoring
+
+* initial round start from 1 ([a46bcd0](https://github.com/giovaz94/isee-project-2023-2024/commit/a46bcd0528ae197f0bfdadfe1676cd98fc34528b))
+
 ## [0.5.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.4.0...0.5.0) (2025-06-23)
 
 ### Features
