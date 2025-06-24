@@ -2,6 +2,7 @@ $dokka.format:html-v1
 $dokka.linkExtension:html
 $dokka.location:io.github.evasim.agents////PointingToDeclaration/evasim/io.github.evasim.agents/index.html
 $dokka.location:io.github.evasim.agents//blobAgent/it.unibo.jakta.agents.bdi.dsl.MasScope#io.github.evasim.model.Blob/PointingToDeclaration/evasim/io.github.evasim.agents/blob-agent.html
+$dokka.location:io.github.evasim.agents/Contenders///PointingToDeclaration/evasim/io.github.evasim.agents/-contenders/index.html
 $dokka.location:io.github.evasim.agents/SimulationEnvironment///PointingToDeclaration/evasim/io.github.evasim.agents/-simulation-environment/index.html
 $dokka.location:io.github.evasim.agents/SimulationEnvironment/SimulationEnvironment/#io.github.evasim.model.Round#kotlin.collections.Map[kotlin.String,it.unibo.jakta.agents.bdi.AgentID]#kotlin.collections.Map[kotlin.String,it.unibo.jakta.agents.bdi.actions.ExternalAction]#kotlin.collections.Map[it.unibo.jakta.agents.bdi.AgentID,kotlin.collections.List[it.unibo.jakta.agents.bdi.messages.Message]]#it.unibo.jakta.agents.bdi.perception.Perception#kotlin.collections.Map[kotlin.String,kotlin.Any]/PointingToDeclaration/evasim/io.github.evasim.agents/-simulation-environment/-simulation-environment.html
 $dokka.location:io.github.evasim.agents/SimulationEnvironment/copy/#kotlin.collections.Map[kotlin.String,it.unibo.jakta.agents.bdi.AgentID]#kotlin.collections.Map[kotlin.String,it.unibo.jakta.agents.bdi.actions.ExternalAction]#kotlin.collections.Map[it.unibo.jakta.agents.bdi.AgentID,kotlin.collections.List[it.unibo.jakta.agents.bdi.messages.Message]]#it.unibo.jakta.agents.bdi.perception.Perception#kotlin.collections.Map[kotlin.String,kotlin.Any]/PointingToDeclaration/evasim/io.github.evasim.agents/-simulation-environment/copy.html
@@ -167,6 +168,8 @@ $dokka.location:io.github.evasim.model/Sight///PointingToDeclaration/evasim/io.
 $dokka.location:io.github.evasim.model/Sight/contains/#io.github.evasim.model.Entity/PointingToDeclaration/evasim/io.github.evasim.model/-sight/contains.html
 $dokka.location:io.github.evasim.model/Sight/update/#io.github.evasim.model.Position2D#io.github.evasim.model.Versor2D/PointingToDeclaration/evasim/io.github.evasim.model/-sight/update.html
 $dokka.location:io.github.evasim.model/Sight/visibilityArea/#/PointingToDeclaration/evasim/io.github.evasim.model/-sight/visibility-area.html
+$dokka.location:io.github.evasim.model/SimulationEnded///PointingToDeclaration/evasim/io.github.evasim.model/-simulation-ended/index.html
+$dokka.location:io.github.evasim.model/SimulationStarted///PointingToDeclaration/evasim/io.github.evasim.model/-simulation-started/index.html
 $dokka.location:io.github.evasim.model/SpawnZone.Companion///PointingToDeclaration/evasim/io.github.evasim.model/-spawn-zone/-companion/index.html
 $dokka.location:io.github.evasim.model/SpawnZone.Companion/invoke/#io.github.evasim.model.Shape#io.github.evasim.model.Position2D/PointingToDeclaration/evasim/io.github.evasim.model/-spawn-zone/-companion/invoke.html
 $dokka.location:io.github.evasim.model/SpawnZone///PointingToDeclaration/evasim/io.github.evasim.model/-spawn-zone/index.html
