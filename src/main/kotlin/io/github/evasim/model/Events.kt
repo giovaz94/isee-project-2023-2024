@@ -48,3 +48,9 @@ data class UpdatedFood(val food: Food) : Event
 
 /** A [food] removal event. */
 data class RemoveFood(val food: Food) : Event
+
+/** An event indicating that a simulation has started. */
+data object SimulationStarted : Event
+
+/** An event indicating that a simulation has ended. */
+data object SimulationEnded : Event

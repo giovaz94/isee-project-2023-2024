@@ -70,11 +70,7 @@ internal class ControlsPaneController : Initializable {
             foodsAmount = foodPiecesField.text.toInt(),
         )
         SimulatorController.start(config, maxRoundDuration)
-        simulationPaneController?.newSimulationState(SimulationState.RUNNING)
     }
 
-    private fun onStop() {
-        SimulatorController.stop()
-        simulationPaneController?.newSimulationState(SimulationState.READY)
-    }
+    private fun onStop() = SimulatorController.stop()
 }

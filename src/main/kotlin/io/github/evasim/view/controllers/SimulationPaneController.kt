@@ -9,6 +9,8 @@ import io.github.evasim.model.EventSubscriber
 import io.github.evasim.model.Food
 import io.github.evasim.model.Hawk
 import io.github.evasim.model.RemoveFood
+import io.github.evasim.model.SimulationEnded
+import io.github.evasim.model.SimulationStarted
 import io.github.evasim.model.UpdatedBlob
 import io.github.evasim.model.UpdatedFood
 import io.github.evasim.model.UpdatedWorld
@@ -17,12 +19,15 @@ import io.github.evasim.view.renderables.BlobRenderableConfig
 import io.github.evasim.view.renderables.blobRenderable
 import io.github.evasim.view.renderables.foodRenderable
 import io.github.evasim.view.renderables.worldRenderable
+import javafx.animation.AnimationTimer
 import javafx.animation.Interpolator
 import javafx.animation.ParallelTransition
 import javafx.animation.ScaleTransition
 import javafx.animation.TranslateTransition
 import javafx.application.Platform
+import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.geometry.Point2D
@@ -37,8 +42,12 @@ import javafx.util.Duration
 import java.net.URL
 import java.util.*
 import kotlin.math.abs
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
-@Suppress("detekt:VarCouldBeVal")
+@Suppress("detekt:VarCouldBeVal", "detekt:UnusedParameter")
+@OptIn(ExperimentalTime::class)
 internal class SimulationPaneController : Initializable, EventSubscriber {
 
     internal var statisticsPaneController: StatisticsPaneController? = null
@@ -51,6 +60,8 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
 
     @FXML private lateinit var simulationStateLabel: Label
 
+    @FXML private lateinit var elapsedTimeLabel: Label
+
     private val simulationGroup = Pane()
     private var scale = DEFAULT_SCALE
     private var lastMousePoint = Point2D.ZERO
@@ -58,6 +69,8 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
     private var translation = Point2D.ZERO
     private var showBlobNames = false
     private val roundNumber = SimpleIntegerProperty(0)
+    private var startedRoundInstant: ObjectProperty<Instant?> = SimpleObjectProperty(null)
+    private var activeAnimationTimer: AnimationTimer? = null
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         SimulatorController.register(this)
@@ -136,23 +149,42 @@ internal class SimulationPaneController : Initializable, EventSubscriber {
         roundNumber.addListener { _, _, newValue ->
             onFx { roundLabel.text = newValue.toString() }
         }
+        fun startTimer(initialInstant: Instant) = object : AnimationTimer() {
+            override fun handle(now: Long) {
+                val millis = (Clock.System.now() - initialInstant).inWholeMilliseconds
+                elapsedTimeLabel.text = "%02d.%02ds".format(millis / 1_000, (millis % 1_000) / 10)
+            }
+        }
+        startedRoundInstant.addListener { _, oldValue, newValue ->
+            activeAnimationTimer?.stop()
+            when {
+                newValue == null -> onFx { elapsedTimeLabel.text = "00.00s" }
+                else -> activeAnimationTimer = startTimer(newValue).also { it.start() }
+            }
+        }
     }
 
     internal fun toggleShowBlobNames() {
         showBlobNames = !showBlobNames
     }
 
-    internal fun newSimulationState(newState: SimulationState) {
-        simulationStateLabel.text = newState.name
-        when (newState) {
-            SimulationState.READY -> roundNumber.set(0)
-            SimulationState.RUNNING -> statisticsPaneController?.clearData()
-        }
+    @Subscribe
+    fun update(simulationStartedEvent: SimulationStarted) = onFx {
+        simulationStateLabel.text = "Running"
+        statisticsPaneController?.clearData()
+    }
+
+    @Subscribe
+    fun update(simulationEndedEvent: SimulationEnded) {
+        roundNumber.set(0)
+        startedRoundInstant.set(null)
+        onFx { simulationStateLabel.text = "Ready" }
     }
 
     @Subscribe
     fun update(updatedWorldEvent: UpdatedWorld) {
         clearView()
+        startedRoundInstant.set(Clock.System.now())
         roundNumber.set(roundNumber.get() + 1)
         val hawky = updatedWorldEvent.world.blobs.count { it.personality is Hawk }
         val doves = updatedWorldEvent.world.blobs.count { it.personality is Dove }

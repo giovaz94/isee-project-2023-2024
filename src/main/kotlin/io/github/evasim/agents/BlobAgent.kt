@@ -33,9 +33,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         contention(blob)
         endedRound()
     }
-    timeDistribution {
-        Time.real(value = 50) // TODO
-    }
+    timeDistribution { Time.real(value = 50) }
 }
 
 private fun PlansScope.forage() {

@@ -3,6 +3,7 @@ package io.github.evasim.model
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
 
 /** A blob in the simulation. */
@@ -40,7 +41,7 @@ interface Blob : Entity, EventPublisher {
     fun updateVelocity(newVelocity: Vector2D)
 
     /** Updates the blob internal position based on the current velocity and elapsed time. */
-    fun update(elapsedTime: Duration)
+    fun update(elapsedTime: Duration = 50.milliseconds)
 
     /** Returns whether the blob is alive. Dual to [isDead]. */
     fun isAlive(): Boolean

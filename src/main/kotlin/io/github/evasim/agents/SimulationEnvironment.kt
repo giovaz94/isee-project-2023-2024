@@ -23,8 +23,12 @@ import it.unibo.tuprolog.core.Atom
 import it.unibo.tuprolog.core.Real
 import it.unibo.tuprolog.core.Struct
 import it.unibo.tuprolog.core.toTerm
-import kotlin.time.Duration.Companion.milliseconds
 import it.unibo.tuprolog.core.List as TpList
+
+/**
+ * The list of blob contending for a piece of food.
+ */
+typealias Contenders = List<Blob>
 
 /**
  * Simulation agent environment.
@@ -40,7 +44,7 @@ class SimulationEnvironment(
     ),
     messageBoxes: Map<AgentID, MessageQueue> = emptyMap(),
     perception: Perception = Perception.empty(),
-    data: Map<String, Any> = mapOf("collectedFood" to mutableMapOf<Blob, Pair<Food, Boolean>>()),
+    data: Map<String, Any> = mapOf("collectedFood" to mutableMapOf<Blob, Pair<Food, Contenders>>()),
 ) : EnvironmentImpl(externalActions, agentIDs, messageBoxes, perception, data) {
 
     override fun percept(agent: Agent): BeliefBase = round.world.findBlob(agent.name)?.let { blob ->
@@ -70,18 +74,16 @@ class SimulationEnvironment(
         .orEmpty()
 
     @Suppress("UNCHECKED_CAST")
-    private fun collectedFood(blob: Blob): Belief? = (data["collectedFood"] as? Map<Blob, Pair<Food, List<Blob>>>)
-        ?.let {
-            it[blob]?.let { (food, blobList) ->
-                val terms = blobList.map { it.id.value.toTerm() }.toSet()
-                val energy = food.totalEnergy
-                Struct.of(
-                    collected_food,
-                    Atom.of(food.id.value),
-                    TpList.from(terms.asSequence()),
-                    Real.of(energy),
-                ).asBelief()
-            }
+    private fun collectedFood(blob: Blob): Belief? = (data["collectedFood"] as? Map<Blob, Pair<Food, Contenders>>)
+        ?.get(blob)
+        ?.let { (food, contenders) ->
+            val contendersTerms = contenders.map { it.id.value.toTerm() }.toSet()
+            Struct.of(
+                collected_food,
+                Atom.of(food.id.value),
+                TpList.from(contendersTerms.asSequence()),
+                Real.of(food.totalEnergy),
+            ).asBelief()
         }
 
     private fun endedRound(): Belief? = if (round.isEnded()) ended_round().asBelief() else null
@@ -93,7 +95,7 @@ class SimulationEnvironment(
             val (agentID, velocity, _) = newData[update] as Triple<String, Vector2D, Time>
             round.world.findBlob(agentID)?.let { blob ->
                 blob.updateVelocity(velocity)
-                blob.update(50.milliseconds) // TODO!!!
+                blob.update()
             }
         }
         if (collect in newData) {

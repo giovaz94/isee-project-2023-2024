@@ -39,42 +39,31 @@ internal object CheckContention : AbstractExternalAction(check_contention, arity
         val foodId = request.arguments[3].castToAtom()
         if (blobList.size == MAX_CONTESTANT_NUMBER) {
             val sender = request.sender
-            val message = Message(
-                sender,
-                Tell,
-                Struct.Companion.of(contention, personality, energy, foodId),
-            )
-            blobList
-                .map { it.toString().removeSurrounding("'") }
+            val message = Message(sender, Tell, Struct.of(contention, personality, energy, foodId))
+            blobList.map { it.toString().removeSurrounding("'") }
                 .filter { it != sender }
-                .forEach {
-                    sendMessage(it, message)
-                }
+                .forEach { sendMessage(it, message) }
         }
     }
 }
 
-@Suppress("detekt:all")
 internal object SolveContention : AbstractExternalAction(solve_contention, arity = 6) {
     override fun action(request: ExternalRequest) {
         val foodId = request.arguments[0].castToAtom().value
         val contenderId = request.arguments[1].castToAtom().value
-        val solverPersonality = request.arguments[2].castToAtom().value.toPersonality()!!
-        val contenderPersonality = request.arguments[3].castToAtom().value.toPersonality()!!
+        val solverPersonality = request.arguments[2].castToAtom().value
+            .let { it.toPersonality() ?: error("Invalid personality: $it") }
+        val contenderPersonality = request.arguments[3].castToAtom().value
+            .let { it.toPersonality() ?: error("Invalid personality: $it") }
         val totalEnergy = request.arguments[4].castToReal().value.toDouble()
         val solverEnergy = request.arguments[5].castToVar()
         val ruleOutput = contentionRule(solverPersonality, contenderPersonality, totalEnergy)
         val contenderEnergy = ruleOutput.second
         updateData(
             remove_food to foodId,
-            update_energy to mapOf(
-                contenderId to ruleOutput.second,
-                request.sender to ruleOutput.first,
-            ),
+            update_energy to mapOf(contenderId to ruleOutput.second, request.sender to ruleOutput.first),
         )
         sendMessage(contenderId, Message(request.sender, Tell, Struct.of(contention_result, Real.of(contenderEnergy))))
-        addResults(
-            Substitution.unifier(solverEnergy to Real.of(ruleOutput.first)),
-        )
+        addResults(Substitution.unifier(solverEnergy to Real.of(ruleOutput.first)))
     }
 }

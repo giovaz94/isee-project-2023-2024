@@ -5,6 +5,8 @@ import io.github.evasim.agents.blobAgent
 import io.github.evasim.model.EventBusPublisher
 import io.github.evasim.model.EventPublisher
 import io.github.evasim.model.Round
+import io.github.evasim.model.SimulationEnded
+import io.github.evasim.model.SimulationStarted
 import io.github.evasim.model.World
 import io.github.evasim.utils.RandomConfig
 import io.github.evasim.utils.Rnd
@@ -45,7 +47,11 @@ object SimulatorController : Controller, EventBusPublisher() {
             val initialRound = Round.byCriteria(world) {
                 it.elapsedTime >= (roundTimeout ?: Duration.INFINITE) || it.world.foods.toSet().isEmpty()
             }
-            thread { simulationLoop(initialRound) }
+            thread {
+                post(SimulationStarted)
+                simulationLoop(initialRound)
+                post(SimulationEnded)
+            }
             activeSimulation = initialRound
         }
     }

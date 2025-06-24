@@ -28,6 +28,11 @@
                 <Label text="Status:" />
                 <Label fx:id="simulationStateLabel" text="Ready" />
             </HBox>
+            <Label text=" | " />
+            <HBox spacing="5.0">
+                <Label text="Elapsed time:" />
+                <Label fx:id="elapsedTimeLabel" text="0s" />
+            </HBox>
         </HBox>
     </AnchorPane>
 </StackPane>
