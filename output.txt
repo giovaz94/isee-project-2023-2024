@@ -1,0 +1,57 @@
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :
+warning: Dokka Gradle plugin V1 is deprecated
+    
+    Dokka Gradle plugin V1 is deprecated, and will be removed in Dokka version 2.1.0
+    Please migrate to Dokka Gradle plugin V2. This will require updating your project.
+    To learn about migrating read the migration guide https://kotl.in/dokka-gradle-migration
+    
+    To start migrating to Dokka Gradle plugin V2 add
+        org.jetbrains.dokka.experimental.gradle.pluginMode=V2EnabledWithHelpers
+    into your project's `gradle.properties` file.
+    
+    We would appreciate your feedback!
+     - Please report any feedback or problems https://kotl.in/dokka-issues
+     - Chat with the community visit #dokka in https://kotlinlang.slack.com/ (To sign up visit https://kotl.in/slack)
+    
+
+> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :processResources UP-TO-DATE
+> Task :compileKotlin
+> Task :compileJava NO-SOURCE
+> Task :classes UP-TO-DATE
+
+> Task :run
+[blob-0] Foraging...
+[blob-1] Foraging...
+[blob-2] Foraging...
+[blob-3] Foraging...
+[blob-4] Foraging...
+[blob-1] Food removed  (137.585181610788964690073044039309024810791015625, -111.015176221874327211480704136192798614501953125)
+[blob-1] Reached food  food@148.8847641446315--92.91896469295101
+[blob-1] Collecting food  food@148.8847641446315--92.91896469295101
+[blob-4] Reached food  food@-5.657924619863224--117.30149334900047
+[blob-4] Collecting food  food@-5.657924619863224--117.30149334900047
+[blob-3] Reached food  food@-86.83916960208492-64.68541303798402
+[blob-3] Collecting food  food@-86.83916960208492-64.68541303798402
+[blob-0] Reached food  food@127.76363058066067--70.40039325677039
+[blob-0] Collecting food  food@127.76363058066067--70.40039325677039
+
+[Incubating] Problems report is available at: file:///Users/giovanniantonioni/isee-project-2023-2024/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.2/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 19s
+6 actionable tasks: 2 executed, 4 up-to-date

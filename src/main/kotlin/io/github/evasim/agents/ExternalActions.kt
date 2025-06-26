@@ -39,10 +39,16 @@ internal object CheckContention : AbstractExternalAction(check_contention, arity
         val foodId = request.arguments[3].castToAtom()
         if (blobList.size == MAX_CONTESTANT_NUMBER) {
             val sender = request.sender
-            val message = Message(sender, Tell, Struct.of(contention, personality, energy, foodId))
-            blobList.map { it.toString().removeSurrounding("'") }
-                .filter { it != sender }
-                .forEach { sendMessage(it, message) }
+            val message = Message(
+                sender,
+                Tell,
+                Struct.Companion.of(contention, personality, energy, foodId),
+            )
+            blobList
+                .map { it.toString().removeSurrounding("'") }
+                .forEach {
+                    sendMessage(it, message)
+                }
         }
     }
 }
