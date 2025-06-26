@@ -17,23 +17,32 @@
         <!-- Parameters section -->
         <VBox spacing="12.0">
             <CheckBox fx:id="showBlobInfoCheckBox" text="Show blobs' info"/>
-            <HBox spacing="8.0" alignment="CENTER_LEFT">
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
                 <Label text="Dove blobs: *"/>
-                <TextField fx:id="doveCountField" promptText="e.g. 10" text="5" maxWidth="80"/>
+                <TextField fx:id="doveCountField" promptText="e.g. 10" text="5" maxWidth="50"/>
             </HBox>
-            <HBox spacing="8.0" alignment="CENTER_LEFT">
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
                 <Label text="Hawk blobs: *"/>
-                <TextField fx:id="hawkCountField" promptText="e.g. 5" text="5" maxWidth="80"/>
+                <TextField fx:id="hawkCountField" promptText="e.g. 5" text="5" maxWidth="50"/>
+            </HBox>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Label text="Food pieces: *"/>
+                <TextField fx:id="foodPiecesField" promptText="e.g. 20" text="10" maxWidth="50"/>
+            </HBox>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <VBox>
+                    <Label text="Round duration [sec]:"/>
+                    <Label text="Default: no limit" styleClass="panel-section"/>
+                </VBox>
+                <TextField fx:id="roundMaxDuration" promptText="e.g. 15" text="--" maxWidth="50"/>
             </HBox>
             <HBox spacing="8.0" alignment="CENTER_LEFT">
-                <Label text="Food pieces: *"/>
-                <TextField fx:id="foodPiecesField" promptText="e.g. 20" text="10" maxWidth="80"/>
+                <VBox>
+                    <Label text="Reproducibility seed:"/>
+                    <Label text="Default: by timestamp" styleClass="panel-section"/>
+                </VBox>
+                <TextField fx:id="reproducibilitySeed" promptText="e.g. 42" text="--" maxWidth="50"/>
             </HBox>
-            <VBox spacing="8.0" alignment="CENTER_LEFT">
-                <Label text="Round max duration in sec:"/>
-                <TextField fx:id="roundMaxDuration" promptText="e.g. 15" text="--" maxWidth="80"/>
-                <Label text="Leave empty for no limit" styleClass="panel-section"/>
-            </VBox>
         </VBox>
         <!-- Separator line -->
         <!--<Line endX="200" stroke="#e5e5e7" strokeWidth="0.5"/>-->

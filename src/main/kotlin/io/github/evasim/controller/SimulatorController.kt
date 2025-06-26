@@ -23,10 +23,15 @@ import kotlin.time.Duration
 interface Controller : EventPublisher {
 
     /**
-     * Starts the simulation with the given [configuration],
-     * possibly giving a [roundTimeout] to limit the duration of each round.
+     * Starts the simulation with the given [worldConfiguration],
+     * possibly giving a [roundTimeout] to limit the duration of each round and an optional [runSeed]
+     * to which is possible to control the reproducibility of the simulation.
      */
-    fun start(configuration: World.Companion.Configuration, roundTimeout: Duration? = null)
+    fun start(
+        worldConfiguration: World.Companion.Configuration,
+        roundTimeout: Duration = Duration.INFINITE,
+        runSeed: Long = System.currentTimeMillis(),
+    )
 
     /**
      * Stops the current simulation.
@@ -40,12 +45,12 @@ object SimulatorController : Controller, EventBusPublisher() {
     private var activeSimulation: Round? = null
 
     @Synchronized
-    override fun start(configuration: World.Companion.Configuration, roundTimeout: Duration?) {
+    override fun start(worldConfiguration: World.Companion.Configuration, roundTimeout: Duration, runSeed: Long) {
         check(activeSimulation == null) { "A simulation is already running. Please, stop it first." }
-        Rnd.configure(RandomConfig.withTimeSeed())
-        World.fromConfiguration(configuration).also { world ->
+        Rnd.configure(RandomConfig.bySeed(runSeed))
+        World.fromConfiguration(worldConfiguration).also { world ->
             val initialRound = Round.byCriteria(world) {
-                it.elapsedTime >= (roundTimeout ?: Duration.INFINITE) || it.world.foods.toSet().isEmpty()
+                it.elapsedTime >= roundTimeout || it.world.foods.toSet().isEmpty()
             }
             thread {
                 post(SimulationStarted)
@@ -69,7 +74,7 @@ object SimulatorController : Controller, EventBusPublisher() {
     }
 
     private fun mas(round: Round) = mas {
-        executionStrategy = ExecutionStrategy.discreteTimeExecution() // TODO!!!
+        executionStrategy = ExecutionStrategy.discreteTimeExecution()
         round.world.blobs.forEach { blobAgent(it) }
         environment(SimulationEnvironment(round))
     }

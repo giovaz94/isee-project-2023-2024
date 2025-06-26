@@ -40,13 +40,7 @@ class RandomConfig private constructor(val rnd: Random) {
     companion object {
 
         /** Creates a [RandomConfig] using a specific seed. */
-        fun withSeed(seed: Long) = RandomConfig(Random(seed))
-
-        /** Creates a [RandomConfig] using the current time as seed. */
-        fun withTimeSeed() = RandomConfig(Random(System.currentTimeMillis()))
-
-        /** Creates a [RandomConfig] using a string as seed, which is converted to a hash code. */
-        fun withStringSeed(str: String) = RandomConfig(Random(str.hashCode().toLong()))
+        fun bySeed(seed: Long) = RandomConfig(Random(seed))
 
         /** Creates a default [RandomConfig] with no specific seed, fallback to [Random.Default]. */
         fun default() = RandomConfig(Random.Default)

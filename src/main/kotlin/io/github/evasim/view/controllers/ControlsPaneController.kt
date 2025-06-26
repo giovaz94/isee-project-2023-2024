@@ -14,6 +14,7 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.VBox
 import java.net.URL
 import java.util.*
+import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -40,6 +41,8 @@ internal class ControlsPaneController : Initializable {
 
     @FXML private lateinit var roundMaxDuration: TextField
 
+    @FXML private lateinit var reproducibilitySeed: TextField
+
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         ToggleController(toggleButton, controlsPanel)
         doveCountField.textProperty().addListener { recomputeFoodField() }
@@ -58,7 +61,10 @@ internal class ControlsPaneController : Initializable {
     private fun onStart() {
         val hawkyBlobs = hawkCountField.text.toInt()
         val doveBlobs = doveCountField.text.toInt()
-        val maxRoundDuration = roundMaxDuration.text.toIntOrNull()?.toDuration(DurationUnit.SECONDS)
+        val maxRoundDuration = roundMaxDuration.text.toIntOrNull()
+            ?.toDuration(DurationUnit.SECONDS)
+            ?: Duration.INFINITE
+        val runSeed = reproducibilitySeed.text.toLongOrNull() ?: System.currentTimeMillis()
         val shape = Circle(radius = 200 + (hawkyBlobs + doveBlobs) * 5.0)
         val config = World.Companion.Configuration(
             shape = shape,
@@ -69,7 +75,7 @@ internal class ControlsPaneController : Initializable {
             doveBlobs = doveBlobs,
             foodsAmount = foodPiecesField.text.toInt(),
         )
-        SimulatorController.start(config, maxRoundDuration)
+        SimulatorController.start(config, maxRoundDuration, runSeed)
     }
 
     private fun onStop() = SimulatorController.stop()
