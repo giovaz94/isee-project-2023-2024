@@ -46,6 +46,7 @@ internal object CheckContention : AbstractExternalAction(check_contention, arity
             )
             blobList
                 .map { it.toString().removeSurrounding("'") }
+                .filter { it != sender }
                 .forEach {
                     sendMessage(it, message)
                 }
@@ -69,7 +70,10 @@ internal object SolveContention : AbstractExternalAction(solve_contention, arity
             remove_food to foodId,
             update_energy to mapOf(contenderId to ruleOutput.second, request.sender to ruleOutput.first),
         )
-        sendMessage(contenderId, Message(request.sender, Tell, Struct.of(contention_result, Real.of(contenderEnergy))))
+        sendMessage(
+            contenderId,
+            Message(request.sender, Tell, Struct.of(contention_result, Real.of(contenderEnergy))),
+        )
         addResults(Substitution.unifier(solverEnergy to Real.of(ruleOutput.first)))
     }
 }

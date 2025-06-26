@@ -38,7 +38,6 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
 
 private fun PlansScope.forage() {
     +achieve(forage) then {
-        execute(print("Foraging..."))
         update(status(exploring).fromSelf)
         achieve(find_food)
         achieve(collect_food)
@@ -85,7 +84,6 @@ private fun PlansScope.movement(minValue: Double = -1.0, maxValue: Double = 1.0)
 
 private fun PlansScope.collectFood(blob: Blob) {
     +achieve(collect_food) onlyIf { status(reached(F)).fromSelf } then {
-        execute(print("Collecting food ", F))
         execute(collect(F))
     }
     +food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
@@ -93,10 +91,8 @@ private fun PlansScope.collectFood(blob: Blob) {
     }
     -food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
         update(status(exploring).fromSelf)
-        execute(print("Food removed ", P))
     }
     +reached_food(F).fromPercept then {
-        execute(print("Reached food ", F))
         update(status(reached(F)).fromSelf)
     }
     +collected_food(F, List.empty(), `_`).fromPercept onlyIf { status(reached(F)).fromSelf } then {
@@ -109,34 +105,16 @@ private fun PlansScope.collectFood(blob: Blob) {
 }
 
 private fun PlansScope.contention(blob: Blob) {
-    +contention(source(blob.id.value), P, E, F) then {
-        execute(print("Status contending (i'm the one who started it)", F))
-        update(status("contending").fromSelf)
-    }
-
     +contention(source(S), P, E, F) then {
-        execute(print("Status contending (i'm the one who solve it)", F))
-        update(status("contending").fromSelf)
         execute(solve_contention(F, S, Atom.of(blob.personality.toString()), P, E, N))
         achieve(update_energy(N))
     }
-
-    +contention_result(source(S), E) onlyIf {
-        energy(Y).fromSelf and (N `is` Y + E) and status("contending").fromSelf
-    } then {
-        execute(print("now contention ended"))
+    +contention_result(source(S), E) onlyIf { energy(Y).fromSelf and (N `is` Y + E) } then {
         update(energy(N).fromSelf)
         achieve(forage)
+        remove(contention_result(source(S), E))
     }
-    +contention_result(source(S), E) onlyIf { energy(Y).fromSelf and (N `is` Y + E) and (status(S).fromSelf) } then {
-        execute(print("sfigato"))
-        execute(print("my status is ", S))
-    }
-
-    +achieve(update_energy(E)) onlyIf {
-        energy(Y).fromSelf and (N `is` Y + E) and status("contending").fromSelf
-    } then {
-        execute(print("now contention ended"))
+    +achieve(update_energy(E)) onlyIf { energy(Y).fromSelf and (N `is` Y + E) } then {
         update(energy(N).fromSelf)
         achieve(forage)
     }
