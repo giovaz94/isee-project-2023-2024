@@ -1,3 +1,18 @@
+## [0.7.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.6.0...0.7.0) (2025-06-26)
+
+### Features
+
+* add rnd config ([6e08d8d](https://github.com/giovaz94/isee-project-2023-2024/commit/6e08d8d1d4be00fbe3edcd480150ad619453ca9e))
+* print on code ([7f1145b](https://github.com/giovaz94/isee-project-2023-2024/commit/7f1145b7bfb11e738150aa2f94027f9280aa5ca8))
+
+### Bug Fixes
+
+* blocking blobs ([9373c0a](https://github.com/giovaz94/isee-project-2023-2024/commit/9373c0a5f166b98ffa245db87a00bffb7ea9d537))
+
+### Refactoring
+
+* scaling is a feature of all the shapes ([2da7388](https://github.com/giovaz94/isee-project-2023-2024/commit/2da73885b9b031a7288b937831f74a264a821759))
+
 ## [0.6.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.5.0...0.6.0) (2025-06-24)
 
 ### Features
