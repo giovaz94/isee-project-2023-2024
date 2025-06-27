@@ -78,7 +78,7 @@ interface Blob : Entity, EventPublisher {
             shape: Shape = Circle(radius = 20.0),
             velocity: Vector2D = Vector2D.ZERO,
             defaultDirection: Direction = Direction.DOWN,
-            sightShape: Shape = Cone(radius = 100.0, fovDegrees = Degrees(value = 90.0)),
+            sightShape: Shape = Cone(radius = 80.0, fovDegrees = Degrees(value = 90.0)),
             health: Health = Health(min = 0.0, max = 2.0),
             reproductionRule: ReproductionStrategy = reproductionRule(),
         ): Blob = BlobImpl(

@@ -44,7 +44,7 @@ class SimulationEnvironment(
     ),
     messageBoxes: Map<AgentID, MessageQueue> = emptyMap(),
     perception: Perception = Perception.empty(),
-    data: Map<String, Any> = mapOf("collectedFood" to mutableMapOf<Blob, Pair<Food, Contenders>>()),
+    data: Map<String, Any> = mapOf("collectedFood" to mutableMapOf<Blob, Pair<Food?, Contenders>>()),
 ) : EnvironmentImpl(externalActions, agentIDs, messageBoxes, perception, data) {
 
     override fun percept(agent: Agent): BeliefBase = round.world.findBlob(agent.name)?.let { blob ->
@@ -74,9 +74,10 @@ class SimulationEnvironment(
         .orEmpty()
 
     @Suppress("UNCHECKED_CAST")
-    private fun collectedFood(blob: Blob): Belief? = (data["collectedFood"] as? Map<Blob, Pair<Food, Contenders>>)
+    private fun collectedFood(blob: Blob): Belief? = (data["collectedFood"] as? Map<Blob, Pair<Food?, Contenders>>)
         ?.get(blob)
         ?.let { (food, contenders) ->
+            if (food == null || contenders.isEmpty()) return@let "not_collected_food"().asBelief()
             val contendersTerms = contenders.map { it.id.value.toTerm() }.toSet()
             Struct.of(
                 collected_food,
@@ -90,7 +91,7 @@ class SimulationEnvironment(
 
     @Suppress("UNCHECKED_CAST")
     override fun updateData(newData: Map<String, Any>): Environment {
-        val collectedFoods = data["collectedFood"] as? MutableMap<Blob, Pair<Food, List<Blob>>> ?: mutableMapOf()
+        val collectedFoods = data["collectedFood"] as? MutableMap<Blob, Pair<Food?, List<Blob>>> ?: mutableMapOf()
         if (update in newData) {
             val (agentID, velocity, _) = newData[update] as Triple<String, Vector2D, Time>
             round.world.findBlob(agentID)?.let { blob ->
@@ -103,6 +104,8 @@ class SimulationEnvironment(
             round.world.findBlob(agentID)?.let { blob ->
                 round.world.findFood(foodID)?.let { food ->
                     collectedFoods[blob] = food to food.attemptCollecting(blob).toList()
+                } ?: run {
+                    collectedFoods[blob] = null to emptyList()
                 }
             }
         }

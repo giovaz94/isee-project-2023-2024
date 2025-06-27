@@ -5,7 +5,6 @@ import it.unibo.jakta.agents.bdi.dsl.MasScope
 import it.unibo.jakta.agents.bdi.dsl.plans.PlansScope
 import it.unibo.jakta.agents.fsm.time.Time
 import it.unibo.tuprolog.core.Atom
-import it.unibo.tuprolog.core.List
 import it.unibo.tuprolog.core.Var
 
 /**
@@ -15,7 +14,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     beliefs {
         fact { energy(0.0) }
         fact { direction(tupleOf(0.0, 0.0)) }
-        fact { speed(term = 25.0) }
+        fact { speed(term = 20.0) }
         fact { status(exploring) }
     }
     actions {
@@ -95,7 +94,7 @@ private fun PlansScope.collectFood(blob: Blob) {
     +reached_food(F).fromPercept then {
         update(status(reached(F)).fromSelf)
     }
-    +collected_food(F, List.empty(), `_`).fromPercept onlyIf { status(reached(F)).fromSelf } then {
+    +"not_collected_food".fromPercept onlyIf { status(reached(`_`)).fromSelf } then {
         update(status(exploring).fromSelf)
         achieve(forage)
     }
