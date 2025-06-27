@@ -1,3 +1,13 @@
+## [0.8.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.7.0...0.8.0) (2025-06-27)
+
+### Features
+
+* **utils:** add file logger ([37d5b1e](https://github.com/giovaz94/isee-project-2023-2024/commit/37d5b1e7bb5ccc1a5ef79d4b4e83cc3e11001df3))
+
+### Dependency updates
+
+* **deps:** update node.js to 22.17 ([#45](https://github.com/giovaz94/isee-project-2023-2024/issues/45)) ([6c7185d](https://github.com/giovaz94/isee-project-2023-2024/commit/6c7185df82dd272da890b26bd5ed0f6aa7130090))
+
 ## [0.7.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.6.0...0.7.0) (2025-06-26)
 
 ### Features
