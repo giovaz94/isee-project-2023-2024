@@ -1,3 +1,9 @@
+## [0.8.1](https://github.com/giovaz94/isee-project-2023-2024/compare/0.8.0...0.8.1) (2025-06-27)
+
+### Bug Fixes
+
+* finally blobs do not blocks (hopefully) ([92ac0e4](https://github.com/giovaz94/isee-project-2023-2024/commit/92ac0e481d9255010c1d0815c04dea024d514b5d))
+
 ## [0.8.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.7.0...0.8.0) (2025-06-27)
 
 ### Features
