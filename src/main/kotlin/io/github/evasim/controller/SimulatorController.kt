@@ -8,6 +8,7 @@ import io.github.evasim.model.Round
 import io.github.evasim.model.SimulationEnded
 import io.github.evasim.model.SimulationStarted
 import io.github.evasim.model.World
+import io.github.evasim.utils.FileLogger
 import io.github.evasim.utils.RandomConfig
 import io.github.evasim.utils.Rnd
 import io.github.evasim.utils.logger
@@ -53,23 +54,30 @@ object SimulatorController : Controller, EventBusPublisher() {
                 it.elapsedTime >= roundTimeout || it.world.foods.toSet().isEmpty()
             }
             thread {
+                val fileLogger = FileLogger.defaultRoundLogger("rounds.log")
                 post(SimulationStarted)
-                simulationLoop(initialRound)
+                simulationLoop(initialRound, fileLogger)
                 post(SimulationEnded)
+                fileLogger.close()
             }
             activeSimulation = initialRound
         }
     }
 
-    private tailrec fun simulationLoop(round: Round, shouldStop: (Round) -> Boolean = { activeSimulation == null }) {
+    private tailrec fun simulationLoop(
+        round: Round,
+        fileLogger: FileLogger<Round>,
+        shouldStop: (Round) -> Boolean = { activeSimulation == null },
+    ) {
         logger.info { "Starting round ${round.number}..." }
+        fileLogger.write(round)
         subscribers.forEach { round.world.register(it) }
         mas(round).start()
         logger.info { "Round ${round.number} ended." }
         if (!shouldStop(round) && !round.world.blobs.toSet().isEmpty()) {
             val nextRound = round.next()
             activeSimulation = nextRound
-            simulationLoop(nextRound)
+            simulationLoop(nextRound, fileLogger)
         }
     }
 

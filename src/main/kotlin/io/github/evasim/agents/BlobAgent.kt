@@ -36,7 +36,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
 }
 
 private fun PlansScope.forage() {
-    +achieve(forage) then {
+    +achieve(forage) onlyIf { energy(E).fromSelf and (E lowerThan 2.0) } then {
         update(status(exploring).fromSelf)
         achieve(find_food)
         achieve(collect_food)

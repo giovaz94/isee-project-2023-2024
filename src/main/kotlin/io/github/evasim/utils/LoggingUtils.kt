@@ -1,5 +1,6 @@
 package io.github.evasim.utils
 
+import io.github.evasim.model.Hawk
 import io.github.evasim.model.Round
 import java.io.BufferedWriter
 import java.io.File
@@ -14,9 +15,9 @@ val Any.logger: Logger
 /**
  * A file logger that calls hooks before and after each round and streams logs to a file.
  */
-class RoundLogger(
+class FileLogger<A>(
     logFile: File = File("rounds.log"),
-    private val logContentFunction: (Round) -> String,
+    private val logContentFunction: (A) -> String,
 ) {
     private val writer: BufferedWriter
 
@@ -28,10 +29,8 @@ class RoundLogger(
         }
     }
 
-    /** Manually trigger the start of a round. */
-    fun write(round: Round) {
-        writeLog(logContentFunction(round))
-    }
+    /** Write the content of an object to a File. */
+    fun write(from: A) = writeLog(logContentFunction(from))
 
     /** Writes a log line to the file. */
     private fun writeLog(message: String) {
@@ -49,6 +48,21 @@ class RoundLogger(
             writer.close()
         } catch (e: IOException) {
             logger.severe("Failed to close log writer: ${e.message}")
+        }
+    }
+
+    /** Companion object for the logger. */
+    companion object {
+
+        /** Default logger for the simulation. */
+        fun defaultRoundLogger(file: String): FileLogger<Round> {
+            val defaultRoundLoggingFunction: (Round) -> String = {
+                val hawkBlob = it.world.blobs.filter { it.personality == Hawk }.count()
+                val doveBlob = it.world.blobs.count() - hawkBlob
+                "Round N°: ${it.number} Hawk: $hawkBlob Dove: $doveBlob"
+            }
+
+            return FileLogger(File(file), defaultRoundLoggingFunction)
         }
     }
 }
