@@ -295,3 +295,16 @@ Alternatively you can build the project using Gradle and run it from the command
 ```
 
 ## Conclusions
+
+### JakTa suggested improvements
+
+### Future work 
+
+Possible extensions:
+
+- food discovery by "tips" from other agents
+  - _doves_ provide correct tips
+  - while _hawks_ provide wrong tips
+  - only _doves_ listen to the correct tips
+
+- _doves_ network among themselves by "shouting" when they have been hawked
