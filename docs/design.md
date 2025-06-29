@@ -2,9 +2,11 @@
 
 ## Goals of the project
 
-> The goal of the project is to simulate an environment using a BDI Agent framework in which we have agents simulating two types of creatures, doves and hawks, that compete for survival based on their behaviors, observing how the evolution of the species unfolds.
+> The goal of the project is to simulate an environment using a BDI Agent framework in which agents simulate two types of creatures, doves and hawks, that compete for survival based on their behaviors, observing how the evolution of the species unfolds.
 
 ## Requirements Analysis
+
+### Functional requirements
 
 - The simulation is composed of a sequence of days / rounds;
 - Food is spawned casually inside the map;
@@ -24,29 +26,33 @@
   - Creatures explore the map using random movements.
   - They have a limited sight of the environment that they’re exploring. If they find a piece of food they proceed to move towards it.
 
+### Non-functional requirements
+
+`TODO`
 
 ## Design
+
+### Domain model
 
 ```mermaid
 classDiagram
     direction TB
 
-    class Simulation {
-        <<interface>>
-        +start() Job
-        +stop()
-        +pause()
-        +resume()
-    }
-
     class Round {
         <<interface>>
+        +number: Int
+        +elapsedTime: Duration
+        +world: World
+        +isEnded() Boolean
+        +forceEnd()
+        +next() Round
     }
-    Simulation *--> "*" Round
 
     class SpawnZone {
         <<interface>>
         +shape: Shape
+        +position: Position2D
+        +place: Placed~Shape~
     }
     SpawnZone *--> "1" Shape
 
@@ -65,14 +71,22 @@ classDiagram
 
     class Shape {
         <<interface>>
-        +contains(p2D: Position2D) Boolean
-        +intersect(s: Shape) Boolean
+        +locallyContains(p2D: Position2D) Boolean
+        +scale(factor: Double) Shape
     }
     class Circle
     Shape <|-- Circle
     class Rectangle
     Shape <|-- Rectangle
+    class Cone
+    Shape <|-- Cone
     World *--> "*" Shape
+    
+    class Placed~S : Shape~ {
+        +shape: S
+        +position: Position2D
+        +direction: Direction? = null
+    }
 
     class CollisionDetector {
         <<interface>>
@@ -84,10 +98,13 @@ classDiagram
     
     class Entity {
         <<interface>>
+        +id: EntityId
         +position: Position2D
         +shape: Shape
+        +place: Placed~Shape~
+        +collidingWith(other: Entity) Boolean
     }
-    Entity *--> "*" Shape
+    Entity *--> "1" Placed
     
     class EntityId {
         +value: String
@@ -96,26 +113,31 @@ classDiagram
 
     class Food {
         <<interface>>
-        -acquiredBy: Set~Blob~
-        +energy: Int
-        +attemptToGet(Blob b) Boolean
+        +totalEnergy: Energy
+        +pieces: Set~Piece~
+        +hasUncollectedPieces() Boolean
+        +attemptCollecting(b: Blob) Set~Blob~
     }
     Entity <|-- Food
     Food *--> "0..2" Blob
     
-%%    class Piece {
-%%        <<interface>>
-%%    }
-%%    Food *--> "2" Piece
+    class Piece {
+        <<interface>>
+        +energy: Energy
+        +collectedBy() Blob?
+    }
+    Food *--> "2" Piece
     
     class Blob {
         <<interface>>
-        +initialPosition: Position2D
+        +initialPlace: Placed~Shape~
         +velocity: Vector2D
+        +direction: Direction
         +health: Health
         +sight: Sight
         +personality: Personality
         +applyForce(v2D: Vector2D)
+        +updateVelocity(newVelocity: Vector2D)
         +update(Δt: Duration)
         +canReproduce() Boolean
         +isDead() Boolean
@@ -132,10 +154,17 @@ classDiagram
     class Dove 
     Personality <|-- Dove
     
+    class Energy {
+        <<typealias>>
+        +value: Double
+    }
+    
     class Health {
-        +health: Int
-        +increase(quantity: Double)
-        +decrease(quantity: Double)
+        +current: Energy
+        +min: Energy
+        +max: Energy
+        +plus(quantity: Double)
+        +minus(quantity: Double)
     }
     Blob *--> Health
     
@@ -158,7 +187,7 @@ classDiagram
 %%    Blob *--> Vector2D
 ```
 
-### Agents
+### Agents design
 
 <!--
 
@@ -177,7 +206,6 @@ del semplice continuare a muoversi verso la direzione prestabilita iniziale per 
 - `move_towards(X, Y)`: agents move towards the given coordinates (X, Y)
 - `collect_food(Food_ID)`: agents collect the given food
 
--->
 
 ```jason
 direction(0, 0).
@@ -243,18 +271,27 @@ status(exploring).
 +reached_food(F) : status(targeting(F)) <- // Belief added from the environment
   status(reached(F)).
 
-  
-------
-
-
-  
-
 ```
+
+-->
 
 ## Salient implementation details
 
+## Results
+
 ## Deployment instructions
 
-## Usage examples
+The application is [distributed as a `jar` on GitHub releases](https://github.com/giovaz94/isee-project-2023-2024/releases/latest).
+To run the application, you can simply execute the following command:
+
+```bash
+java -jar <path-to-jar>/evasim-<version>-all.jar
+```
+
+Alternatively you can build the project using Gradle and run it from the command line:
+
+```bash
+./gradlew run
+```
 
 ## Conclusions
