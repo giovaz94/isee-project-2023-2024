@@ -1,3 +1,19 @@
+## [0.9.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.8.1...0.9.0) (2025-06-30)
+
+### Features
+
+* **analysis:** add notebook with plots and simulation data ([de9c887](https://github.com/giovaz94/isee-project-2023-2024/commit/de9c887ba8775d60bc9feecca2960dced5977341))
+* **logger:** Add file logger ([0b7d21f](https://github.com/giovaz94/isee-project-2023-2024/commit/0b7d21f5601b6f61b14ad4eccac0b518664646e7))
+
+### Documentation
+
+* fix desing schema with implementation modifications ([845e21e](https://github.com/giovaz94/isee-project-2023-2024/commit/845e21e0a7b235ef48f5bff8c45e6e5cc16f59a6))
+* rename report md file ([b157a53](https://github.com/giovaz94/isee-project-2023-2024/commit/b157a537c999839a2aa51cf6f51cceb2f08f8f33))
+
+### Style improvements
+
+* filter + count can be reduced to only count ([e423c2a](https://github.com/giovaz94/isee-project-2023-2024/commit/e423c2ac400df1cc196d5f0f7621fe21f1dbd303))
+
 ## [0.8.1](https://github.com/giovaz94/isee-project-2023-2024/compare/0.8.0...0.8.1) (2025-06-27)
 
 ### Bug Fixes
