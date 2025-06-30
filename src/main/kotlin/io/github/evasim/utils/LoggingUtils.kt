@@ -57,11 +57,10 @@ class FileLogger<A>(
         /** Default logger for the simulation. */
         fun defaultRoundLogger(file: String): FileLogger<Round> {
             val defaultRoundLoggingFunction: (Round) -> String = {
-                val hawkBlob = it.world.blobs.filter { it.personality == Hawk }.count()
+                val hawkBlob = it.world.blobs.count { blob -> blob.personality == Hawk }
                 val doveBlob = it.world.blobs.count() - hawkBlob
                 "Round N°: ${it.number} Hawk: $hawkBlob Dove: $doveBlob"
             }
-
             return FileLogger(File(file), defaultRoundLoggingFunction)
         }
     }
