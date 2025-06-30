@@ -245,6 +245,12 @@ $dokka.location:io.github.evasim.model/World/spawnZones/#/PointingToDeclaration/
 $dokka.location:io.github.evasim.utils////PointingToDeclaration/evasim/io.github.evasim.utils/index.html
 $dokka.location:io.github.evasim.utils//logger/kotlin.Any#/PointingToDeclaration/evasim/io.github.evasim.utils/logger.html
 $dokka.location:io.github.evasim.utils//resource/#kotlin.String#kotlin.String/PointingToDeclaration/evasim/io.github.evasim.utils/resource.html
+$dokka.location:io.github.evasim.utils/FileLogger.Companion///PointingToDeclaration/evasim/io.github.evasim.utils/-file-logger/-companion/index.html
+$dokka.location:io.github.evasim.utils/FileLogger.Companion/defaultRoundLogger/#kotlin.String/PointingToDeclaration/evasim/io.github.evasim.utils/-file-logger/-companion/default-round-logger.html
+$dokka.location:io.github.evasim.utils/FileLogger///PointingToDeclaration/evasim/io.github.evasim.utils/-file-logger/index.html
+$dokka.location:io.github.evasim.utils/FileLogger/FileLogger/#java.io.File#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),kotlin.String]/PointingToDeclaration/evasim/io.github.evasim.utils/-file-logger/-file-logger.html
+$dokka.location:io.github.evasim.utils/FileLogger/close/#/PointingToDeclaration/evasim/io.github.evasim.utils/-file-logger/close.html
+$dokka.location:io.github.evasim.utils/FileLogger/write/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/evasim/io.github.evasim.utils/-file-logger/write.html
 $dokka.location:io.github.evasim.utils/Logic///PointingToDeclaration/evasim/io.github.evasim.utils/-logic/index.html
 $dokka.location:io.github.evasim.utils/Logic/asBelief/it.unibo.tuprolog.core.Struct#/PointingToDeclaration/evasim/io.github.evasim.utils/-logic/as-belief.html
 $dokka.location:io.github.evasim.utils/Logic/castToDouble/it.unibo.tuprolog.core.Term#/PointingToDeclaration/evasim/io.github.evasim.utils/-logic/cast-to-double.html
@@ -268,10 +274,6 @@ $dokka.location:io.github.evasim.utils/Rnd/isConfigured/#/PointingToDeclaration/
 $dokka.location:io.github.evasim.utils/Rnd/nextDouble/#kotlin.Double#kotlin.Double/PointingToDeclaration/evasim/io.github.evasim.utils/-rnd/next-double.html
 $dokka.location:io.github.evasim.utils/Rnd/nextInt/#kotlin.Int#kotlin.Int/PointingToDeclaration/evasim/io.github.evasim.utils/-rnd/next-int.html
 $dokka.location:io.github.evasim.utils/Rnd/reset/#/PointingToDeclaration/evasim/io.github.evasim.utils/-rnd/reset.html
-$dokka.location:io.github.evasim.utils/RoundLogger///PointingToDeclaration/evasim/io.github.evasim.utils/-round-logger/index.html
-$dokka.location:io.github.evasim.utils/RoundLogger/RoundLogger/#java.io.File#kotlin.Function1[io.github.evasim.model.Round,kotlin.String]/PointingToDeclaration/evasim/io.github.evasim.utils/-round-logger/-round-logger.html
-$dokka.location:io.github.evasim.utils/RoundLogger/close/#/PointingToDeclaration/evasim/io.github.evasim.utils/-round-logger/close.html
-$dokka.location:io.github.evasim.utils/RoundLogger/write/#io.github.evasim.model.Round/PointingToDeclaration/evasim/io.github.evasim.utils/-round-logger/write.html
 $dokka.location:io.github.evasim.view////PointingToDeclaration/evasim/io.github.evasim.view/index.html
 $dokka.location:io.github.evasim.view/FXSimulatorView///PointingToDeclaration/evasim/io.github.evasim.view/-f-x-simulator-view/index.html
 $dokka.location:io.github.evasim.view/FXSimulatorView/FXSimulatorView/#/PointingToDeclaration/evasim/io.github.evasim.view/-f-x-simulator-view/-f-x-simulator-view.html

@@ -2,7 +2,7 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>RoundLogger</title>
+    <title>FileLogger</title>
     <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
     <script>var pathToRoot = "../../../";</script>
     <script>document.documentElement.classList.replace("no-js","js");</script>
@@ -46,7 +46,7 @@
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
         <div class="library-version" id="library-version">
-0.8.1        </div>
+0.9.0        </div>
         <div class="navigation-controls">
         <div class="filter-section filter-section_loading" id="filter-section">
                 <button class="platform-tag platform-selector jvm-like" data-active=""
@@ -104,28 +104,47 @@
                 </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageIds="evasim::io.github.evasim.utils/RoundLogger///PointingToDeclaration//769193423">
-  <div class="breadcrumbs"><a href="../../../index.html">evasim</a><span class="delimiter">/</span><a href="../index.html">io.github.evasim.utils</a><span class="delimiter">/</span><span class="current">RoundLogger</span></div>
+<div class="main-content" data-page-type="classlike" id="content" pageIds="evasim::io.github.evasim.utils/FileLogger///PointingToDeclaration//769193423">
+  <div class="breadcrumbs"><a href="../../../index.html">evasim</a><span class="delimiter">/</span><a href="../index.html">io.github.evasim.utils</a><span class="delimiter">/</span><span class="current">FileLogger</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Round</span><wbr></wbr><span><span>Logger</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">RoundLogger</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">logFile<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html">File</a><span class="token operator"> = </span>File(&quot;rounds.log&quot;)<span class="token punctuation">, </span></span><span class="parameter ">logContentFunction<span class="token operator">: </span><span class="token punctuation">(</span><a href="../../io.github.evasim.model/-round/index.html">Round</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">A file logger that calls hooks before and after each round and streams logs to a file.</p></div></div>
+    <h1 class="cover"><span>File</span><wbr></wbr><span><span>Logger</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">FileLogger</a><span class="token operator">&lt;</span><a href="index.html">A</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">logFile<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html">File</a><span class="token operator"> = </span>File(&quot;rounds.log&quot;)<span class="token punctuation">, </span></span><span class="parameter ">logContentFunction<span class="token operator">: </span><span class="token punctuation">(</span><a href="index.html">A</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">A file logger that calls hooks before and after each round and streams logs to a file.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="-878663730%2FConstructors%2F769193423" anchor-label="RoundLogger" id="-878663730%2FConstructors%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+        <div class="table"><a data-name="1377604677%2FConstructors%2F769193423" anchor-label="FileLogger" id="1377604677%2FConstructors%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-round-logger.html"><span>Round</span><wbr></wbr><span><span>Logger</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-878663730%2FConstructors%2F769193423"></span>
+                  <div><a href="-file-logger.html"><span>File</span><wbr></wbr><span><span>Logger</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1377604677%2FConstructors%2F769193423"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">logFile<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html">File</a><span class="token operator"> = </span>File(&quot;rounds.log&quot;)<span class="token punctuation">, </span></span><span class="parameter ">logContentFunction<span class="token operator">: </span><span class="token punctuation">(</span><a href="../../io.github.evasim.model/-round/index.html">Round</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">logFile<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html">File</a><span class="token operator"> = </span>File(&quot;rounds.log&quot;)<span class="token punctuation">, </span></span><span class="parameter ">logContentFunction<span class="token operator">: </span><span class="token punctuation">(</span><a href="index.html">A</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-429817467%2FClasslikes%2F769193423" anchor-label="Companion" id="-429817467%2FClasslikes%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-429817467%2FClasslikes%2F769193423"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div><div class="brief "><p class="paragraph">Companion object for the logger.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -134,12 +153,12 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-2071019720%2FFunctions%2F769193423" anchor-label="close" id="-2071019720%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+        <div class="table"><a data-name="1256088006%2FFunctions%2F769193423" anchor-label="close" id="1256088006%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="close.html"><span><span>close</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2071019720%2FFunctions%2F769193423"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1256088006%2FFunctions%2F769193423"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
@@ -149,17 +168,17 @@
               </div>
             </div>
           </div>
-<a data-name="-510874516%2FFunctions%2F769193423" anchor-label="write" id="-510874516%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+<a data-name="1550425183%2FFunctions%2F769193423" anchor-label="write" id="1550425183%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="write.html"><span><span>write</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-510874516%2FFunctions%2F769193423"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1550425183%2FFunctions%2F769193423"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="write.html"><span class="token function">write</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">round<span class="token operator">: </span><a href="../../io.github.evasim.model/-round/index.html">Round</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Manually trigger the start of a round.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="write.html"><span class="token function">write</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">from<span class="token operator">: </span><a href="index.html">A</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Write the content of an object to a File.</p></div></div></div>
                 </div>
               </div>
             </div>
