@@ -1,3 +1,14 @@
+## [0.9.1](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.0...0.9.1) (2025-07-01)
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.134 ([#47](https://github.com/giovaz94/isee-project-2023-2024/issues/47)) ([7cd1189](https://github.com/giovaz94/isee-project-2023-2024/commit/7cd11896575aece7d4a6ea6766c200ab8986c662))
+* **deps:** update plugin git-semantic-versioning to v5.1.6 ([#46](https://github.com/giovaz94/isee-project-2023-2024/issues/46)) ([0adf4e4](https://github.com/giovaz94/isee-project-2023-2024/commit/0adf4e4032e10fa6cdbad5a4c368fd262a9b5f41))
+
+### Documentation
+
+* more on report ([2034f27](https://github.com/giovaz94/isee-project-2023-2024/commit/2034f276145d0e1c8785b64989bbaee70c876ede))
+
 ## [0.9.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.8.1...0.9.0) (2025-06-30)
 
 ### Features
