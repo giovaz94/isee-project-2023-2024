@@ -8,19 +8,20 @@
 
 ### Functional requirements
 
-- The simulation is composed of a sequence of days / rounds;
+- The simulation is composed of a sequence of rounds;
 - Food is spawned casually inside the map;
 - Food pieces come in pairs and each one of them can be further split in half.
 - Survival and reproduction rules:
-  - eating one piece of food lets a creature survive to the next day and eating two piece of food allows a blob to both survive and reproduce;
-  - a creature of one kind always reproduce itself (if they’re able to do it) in another creature of the same kind
+  - eating one piece of food lets a creature survive to the next day;
+  - eating two pieces of food allows a blob to both survive and reproduce;
+  - a creature always reproduces itself (if they’re able to do it) in another creature of the same kind (i.e., doves reproduce doves, hawks reproduce hawks);
   - each creature continues to search for food until they have reached the capacity to reproduce themselves. If the day is over or they have eaten enough food to reproduce they return home.
 - Contention rules:
-  - if a single entity tries to pick up a pair of food it will succeed if no other entities are also trying to take the same pair.
-  - if another entity is trying to take the same pair of food the following scenarios applies, depending on the other creature:
-    - If both are doves they share the food, each taking a piece of food;
+  - if a single entity tries to pick up a pair of food, it will succeed if no other entities are also trying to take the same pair.
+  - if another entity is trying to take the same pair of food, the following scenarios apply, depending on the other creature:
+    - If both are doves, they share the food, each taking a piece of food;
     - If one is a dove and one is a hawk, then the hawk shares half of a food piece with the dove and then it immediately steals the other before the dove can take it;
-    - If both are hawks then they fight over the food both gaining a piece of it. But, since fighting requires energy they consume all the benefits from eating the food, acquiring 0 food.
+    - If both are hawks they fight over the food, both gaining a piece of it. But since fighting requires energy, they consume all the benefits from eating the food, acquiring zero food.
   - If two entities are competing over a pair of food and a third tries to join then the latter notices the other two and gives up taking that food.
 - Movements:
   - Creatures explore the map using random movements.
@@ -120,6 +121,7 @@ classDiagram
     }
     Entity <|-- Food
     Food *--> "0..2" Blob
+    Food *--> "1" Energy
     
     class Piece {
         <<interface>>
@@ -167,6 +169,7 @@ classDiagram
         +minus(quantity: Double)
     }
     Blob *--> Health
+    Energy <--* Health
     
     class Sight {
         <<interface>>
@@ -187,7 +190,42 @@ classDiagram
 %%    Blob *--> Vector2D
 ```
 
+### Architecture
+
+The architecture follows the classic Model-View-Controller (MVC) pattern.
+
 ### Agents design
+
+### Food search
+
+```mermaid
+stateDiagram
+    direction LR
+    [*] --> exploring
+    state foraging {
+        exploring --> targeting : +food
+        targeting --> exploring: -food
+        targeting --> reached : +reached_food
+    }
+```
+
+```mermaid
+graph TD
+    A["Forage"] --> B{"energy"}
+    B -- ">= reproduction threshold" --> C["find_food"]
+    C --> D{"status"}
+    D -- "exploring" --> E["change direction"]
+    E --> F["move on N steps"]
+    F --> C
+    
+    D -- "targeting(F)" --> G["waypoint direction"]
+    G --> H["move towards food"]
+    H --> C
+
+    B -- "< reproduction threshold" --> J["Stop"]
+```
+
+### Contention
 
 <!--
 
