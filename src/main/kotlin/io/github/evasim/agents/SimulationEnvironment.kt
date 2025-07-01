@@ -57,9 +57,9 @@ class SimulationEnvironment(
     } ?: BeliefBase.empty()
 
     private fun foodsSurrounding(blob: Blob): Belief? = round.world.foods
-        .filter { it in blob.sight }
-        .filter { it.hasUncollectedPieces() }
-        .minByOrNull { blob.distanceTo(it) }
+        .filter { it in blob.sight && it.hasUncollectedPieces() }
+        .sortedWith(compareBy<Food> { if (it.hasCollectedPieces()) 0 else 1 }.thenBy { it.distanceTo(blob) })
+        .firstOrNull()
         ?.let { food(it.position).asBelief() }
 
     private fun foodsCollidingWith(blob: Blob): Set<Belief> = round.world.foods

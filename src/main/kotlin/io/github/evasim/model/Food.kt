@@ -24,6 +24,9 @@ interface Food : Entity, EventPublisher {
     /** The set of pieces that make up this food item. */
     val pieces: Set<Piece>
 
+    /** @return true if this food item has at least one piece collected, false otherwise. */
+    fun hasCollectedPieces(): Boolean = pieces.any { it.collectedBy() != null }
+
     /** @return true if this food item has at least one uncollected piece, false otherwise. */
     fun hasUncollectedPieces(): Boolean = pieces.any { it.collectedBy() == null }
 

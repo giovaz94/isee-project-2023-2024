@@ -1,6 +1,7 @@
 package io.github.evasim.agents
 
 import io.github.evasim.model.Blob
+import io.github.evasim.model.Hawk
 import it.unibo.jakta.agents.bdi.dsl.MasScope
 import it.unibo.jakta.agents.bdi.dsl.plans.PlansScope
 import it.unibo.jakta.agents.fsm.time.Time
@@ -12,6 +13,7 @@ import it.unibo.tuprolog.core.Var
  */
 fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     beliefs {
+        fact { "personality"(if (blob.personality is Hawk) "hawk" else "dove") }
         fact { energy(0.0) }
         fact { direction(tupleOf(0.0, 0.0)) }
         fact { speed(term = 20.0) }
@@ -23,7 +25,10 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
         action(InverseDirection)
         action(EndRound)
     }
-    goals { achieve(forage) }
+    goals {
+        achieve(change_direction)
+        achieve(forage)
+    }
     plans {
         forage()
         findFood()
@@ -36,7 +41,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
 }
 
 private fun PlansScope.forage() {
-    +achieve(forage) onlyIf { energy(E).fromSelf and (E lowerThan 2.0) } then {
+    +achieve(forage) onlyIf { "personality"("hawk").fromSelf or (energy(E).fromSelf and (E lowerThan 2.0)) } then {
         update(status(exploring).fromSelf)
         achieve(find_food)
         achieve(collect_food)
@@ -45,9 +50,9 @@ private fun PlansScope.forage() {
 
 private fun PlansScope.findFood(minSteps: Int = 100, maxSteps: Int = 200) {
     +achieve(find_food) onlyIf { status(exploring).fromSelf } then {
-        achieve(change_direction)
         execute(random(N, minSteps, maxSteps))
         achieve(move_on(N))
+        achieve(change_direction)
         achieve(find_food)
     }
     +achieve(find_food) onlyIf { status(targeting(T)).fromSelf and position(P).fromPercept } then {
