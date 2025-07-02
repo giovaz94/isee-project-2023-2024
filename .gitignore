@@ -54,5 +54,8 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+### Analysis notebooks ###
+**/.ipynb_checkpoints/
+
 ### Utilities ###
 .DS_Store

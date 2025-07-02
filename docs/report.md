@@ -1,5 +1,22 @@
 # Evolutionary Agent-based Aggression Simulation - EvASim
 
+1. [Goals of the project](#goals-of-the-project)
+2. [Requirements Analysis](#requirements-analysis)
+   1. [Functional requirements](#functional-requirements)
+   2. [Non-functional requirements](#non-functional-requirements)
+3. [Design](#design)
+   1. [Domain model](#domain-model)
+   2. [Architecture](#architecture)
+   3. [Agents design](#agents-design)
+      1. [Food search and collection](#food-search-and-collection)
+      2. [Contention](#contention)
+4. [Salient implementation details](#salient-implementation-details)
+5. [Results](#results)
+6. [Deployment instructions](#deployment-instructions)
+7. [Conclusions](#conclusions)
+   1. [JakTa suggested improvements](#jakta-suggested-improvements)
+   2. [Future work](#future-work)
+
 ## Goals of the project
 
 > The goal of the project is to simulate an environment using a BDI Agent framework in which agents simulate two types of creatures, doves and hawks, that compete for survival based on their behaviors, observing how the evolution of the species unfolds.
@@ -11,21 +28,22 @@
 - The simulation is composed of a sequence of rounds;
 - Food is spawned casually inside the map;
 - Food pieces come in pairs and each one of them can be further split in half.
+- Each food can be eaten only when two blob creatures are in contact with it: this to simulate access to resources requires group effort;
 - Survival and reproduction rules:
   - eating one piece of food lets a creature survive to the next day;
   - eating two pieces of food allows a blob to both survive and reproduce;
-  - a creature always reproduces itself (if they’re able to do it) in another creature of the same kind (i.e., doves reproduce doves, hawks reproduce hawks);
-  - each creature continues to search for food until they have reached the capacity to reproduce themselves. If the day is over or they have eaten enough food to reproduce they return home.
+  - a creature always reproduces itself (if they're able to do it) in another creature of the same kind (i.e., doves reproduce doves, hawks reproduce hawks);
+  - each creature continues to search for food until they have reached the capacity to reproduce themselves;
+    - doves creatures, if they have reached enough food to reproduce will stop searching and wait for the next round to reproduce;
+    - hawks creatures, if they have reached enough food to reproduce will continue searching for food until the end of the round to steal food from other creatures as much as possible;
 - Contention rules:
-  - if a single entity tries to pick up a pair of food, it will succeed if no other entities are also trying to take the same pair.
-  - if another entity is trying to take the same pair of food, the following scenarios apply, depending on the other creature:
-    - If both are doves, they share the food, each taking a piece of food;
-    - If one is a dove and one is a hawk, then the hawk shares half of a food piece with the dove and then it immediately steals the other before the dove can take it;
-    - If both are hawks they fight over the food, both gaining a piece of it. But since fighting requires energy, they consume all the benefits from eating the food, acquiring zero food.
+  - If both the creatures are doves, they share the food, each taking a piece of food;
+  - If one is a dove and one is a hawk, then the hawk shares half of a food piece with the dove and then it immediately steals the other before the dove can take it;
+  - If both are hawks they fight over the food, both gaining a piece of it. But since fighting requires energy, they consume all the benefits from eating the food, acquiring zero food.
   - If two entities are competing over a pair of food and a third tries to join then the latter notices the other two and gives up taking that food.
 - Movements:
   - Creatures explore the map using random movements.
-  - They have a limited sight of the environment that they’re exploring. If they find a piece of food they proceed to move towards it.
+  - They have a limited sight of the environment that they're exploring. If they find a piece of food they proceed to move towards it.
 
 ### Non-functional requirements
 
@@ -82,7 +100,7 @@ classDiagram
     class Cone
     Shape <|-- Cone
     World *--> "*" Shape
-    
+
     class Placed~S : Shape~ {
         +shape: S
         +position: Position2D
@@ -96,7 +114,7 @@ classDiagram
         +check(e1: Entity, e2: Entity) Boolean
     }
     World *--> "1" CollisionDetector
-    
+
     class Entity {
         <<interface>>
         +id: EntityId
@@ -106,7 +124,7 @@ classDiagram
         +collidingWith(other: Entity) Boolean
     }
     Entity *--> "1" Placed
-    
+
     class EntityId {
         +value: String
     }
@@ -122,14 +140,14 @@ classDiagram
     Entity <|-- Food
     Food *--> "0..2" Blob
     Food *--> "1" Energy
-    
+
     class Piece {
         <<interface>>
         +energy: Energy
         +collectedBy() Blob?
     }
     Food *--> "2" Piece
-    
+
     class Blob {
         <<interface>>
         +initialPlace: Placed~Shape~
@@ -153,14 +171,14 @@ classDiagram
     Blob *--> Personality
     class Hawk
     Personality <|-- Hawk
-    class Dove 
+    class Dove
     Personality <|-- Dove
-    
+
     class Energy {
         <<typealias>>
         +value: Double
     }
-    
+
     class Health {
         +current: Energy
         +min: Energy
@@ -170,20 +188,20 @@ classDiagram
     }
     Blob *--> Health
     Energy <--* Health
-    
+
     class Sight {
         <<interface>>
         +visibilityArea: Shape
     }
     Blob *--> Sight
-    
+
 %%    class Position2D {
 %%        <<interface>>
 %%        +x: Double
 %%        +y: Double
 %%    }
 %%    Entity *--> Position2D
-%%    
+%%
 %%    class Vector2D {
 %%        <<interface>>
 %%    }
@@ -193,10 +211,76 @@ classDiagram
 ### Architecture
 
 The architecture follows the classic Model-View-Controller (MVC) pattern.
+Domain Model updates are reified in events that are published towards subscribed boundaries through an event bus.
+
+An overview of the architecture is shown in the following diagram:
+
+```mermaid
+classDiagram
+    class EventSubscriber {
+        <<interface>>
+    }
+
+    class EventPublisher {
+        <<interface>>
+        +post(event: Event)
+        +register(subscriber: EventSubscriber)
+        +unregister(subscriber: EventSubscriber)
+    }
+    class EventBusPublisher
+    EventPublisher <|.. EventBusPublisher
+
+    note for Controller "Main Controller"
+    class Controller {
+        <<interface>>
+        +start(configuration: World.Configuration)
+        +stop()
+    }
+    class SimulatorController {
+        -round: Round?
+    }
+    Controller <|.. SimulatorController
+    EventBusPublisher <|-- SimulatorController
+    EventPublisher <|-- Controller
+
+    note for Round "Simulation domain Aggregate Root"
+    class Round {
+        <<interface>>
+    }
+    SimulatorController *--> "0..1" Round
+
+    note for Boundary "Any external presentation layer"
+    class Boundary {
+        <<interface>>
+        +launch()
+    }
+    Controller "1" <--* Boundary
+
+    class FXSimulatorView
+    Boundary <|-- FXSimulatorView
+    class SimulatorPaneController
+    SimulatorPaneController --|> EventSubscriber
+    FXSimulatorView *--> SimulatorPaneController
+```
 
 ### Agents design
 
-### Food search
+The simulation is composed of a moltitude of `Blob` agents, each one simulating the behavior of a blob creature in the simulation world environment depending on its personality.
+
+In the following sections are described the behaviors of the agents in terms of their beliefs, desires and intentions (BDI) and the actions they can perform on the environment, affecting the world state.
+
+The primary goal of each agent is to obtain enough food each day to survive and reproduce, thereby driving the evolution of its species.
+
+#### Food search and collection
+
+As the simulation starts, each agent is spawned in a random position inside the world and its goal is to find food and collect it.
+Since the agents are not aware of their position in the world and they have a limited sight, they explore the world randomly until they find a food.
+Once found a food, the agent will try to move towards it in order to attempt to collect it.
+In case multiple foods are present in the agent's sight, the agent will priviledge the one already collected by other agents to obey the general assumption of need of cooperation to collect food.
+
+...
+
+A punti?
 
 ```mermaid
 stateDiagram
@@ -207,25 +291,35 @@ stateDiagram
         targeting --> exploring: -food
         targeting --> reached : +reached_food
     }
+    reached --> collected : +collected_food
+    reached --> exploring : +not_collected_food
 ```
 
 ```mermaid
 graph TD
-    A["Forage"] --> B{"energy"}
+    A["Forage"] --> Z{"personality"}
+
+    Z -- "dove" --> B{"energy"}
+
+    Z -- "hawk" --> C
+
     B -- ">= reproduction threshold" --> C["find_food"]
     C --> D{"status"}
-    D -- "exploring" --> E["change direction"]
-    E --> F["move on N steps"]
+
+    D -- "exploring" --> E["move on N steps"]
+    E --> F["change direction"]
     F --> C
-    
+
     D -- "targeting(F)" --> G["waypoint direction"]
-    G --> H["move towards food"]
+    G --> H["move towards target position using waypoint direction"]
     H --> C
+
+    D -- "reached(F)" --> I["collect food F"]
 
     B -- "< reproduction threshold" --> J["Stop"]
 ```
 
-### Contention
+#### Contention
 
 <!--
 
@@ -336,11 +430,12 @@ Alternatively you can build the project using Gradle and run it from the command
 
 ### JakTa suggested improvements
 
-### Future work 
+### Future work
 
 Possible extensions:
 
 - food discovery by "tips" from other agents
+
   - _doves_ provide correct tips
   - while _hawks_ provide wrong tips
   - only _doves_ listen to the correct tips
