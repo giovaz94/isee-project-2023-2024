@@ -1,3 +1,10 @@
+## [0.9.2](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.1...0.9.2) (2025-07-02)
+
+### Documentation
+
+* analysis ([18658bd](https://github.com/giovaz94/isee-project-2023-2024/commit/18658bd1908ee52776482138c111c2881a33e1ef))
+* more on report ([a55b19d](https://github.com/giovaz94/isee-project-2023-2024/commit/a55b19da8c0757bad36979d9282b17d7785afecd))
+
 ## [0.9.1](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.0...0.9.1) (2025-07-01)
 
 ### Dependency updates
