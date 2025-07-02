@@ -95,6 +95,7 @@ $dokka.location:io.github.evasim.model/Food.Piece/collectedBy/#/PointingToDeclar
 $dokka.location:io.github.evasim.model/Food.Piece/energy/#/PointingToDeclaration/evasim/io.github.evasim.model/-food/-piece/energy.html
 $dokka.location:io.github.evasim.model/Food///PointingToDeclaration/evasim/io.github.evasim.model/-food/index.html
 $dokka.location:io.github.evasim.model/Food/attemptCollecting/#io.github.evasim.model.Blob/PointingToDeclaration/evasim/io.github.evasim.model/-food/attempt-collecting.html
+$dokka.location:io.github.evasim.model/Food/hasCollectedPieces/#/PointingToDeclaration/evasim/io.github.evasim.model/-food/has-collected-pieces.html
 $dokka.location:io.github.evasim.model/Food/hasUncollectedPieces/#/PointingToDeclaration/evasim/io.github.evasim.model/-food/has-uncollected-pieces.html
 $dokka.location:io.github.evasim.model/Food/pieces/#/PointingToDeclaration/evasim/io.github.evasim.model/-food/pieces.html
 $dokka.location:io.github.evasim.model/Food/totalEnergy/#/PointingToDeclaration/evasim/io.github.evasim.model/-food/total-energy.html
