@@ -4,6 +4,7 @@
 
 # Log file
 *.log
+!analysis/**/*.log
 
 # BlueJ files
 *.ctxt
