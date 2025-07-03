@@ -1,3 +1,17 @@
+## [0.9.3](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.2...0.9.3) (2025-07-03)
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.135 ([#48](https://github.com/giovaz94/isee-project-2023-2024/issues/48)) ([bf9b5df](https://github.com/giovaz94/isee-project-2023-2024/commit/bf9b5df234ab6c10fee8b786fbd7cfc2d9f04b55))
+
+### Bug Fixes
+
+* do not spawn blobs outside the world ([1e6dfd1](https://github.com/giovaz94/isee-project-2023-2024/commit/1e6dfd1fd973093c7822e07d18b81ad56f1b186e))
+
+### General maintenance
+
+* add log analysis files ([e5e4541](https://github.com/giovaz94/isee-project-2023-2024/commit/e5e45417a6979def87e0f213e98df2b369601c7b))
+
 ## [0.9.2](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.1...0.9.2) (2025-07-02)
 
 ### Documentation
