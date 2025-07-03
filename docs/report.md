@@ -2,8 +2,6 @@
 
 1. [Goals of the project](#goals-of-the-project)
 2. [Requirements Analysis](#requirements-analysis)
-   1. [Functional requirements](#functional-requirements)
-   2. [Non-functional requirements](#non-functional-requirements)
 3. [Design](#design)
    1. [Domain model](#domain-model)
    2. [Architecture](#architecture)
@@ -19,11 +17,11 @@
 
 ## Goals of the project
 
-> The goal of the project is to simulate an environment using a BDI Agent framework in which agents simulate two types of creatures, doves and hawks, that compete for survival based on their behaviors, observing how the evolution of the species unfolds.
+> The goal of the project is to simulate an environment using a BDI Agent framework in which agents simulate two types of creatures, doves and hawks, that compete for survival based on their behaviors, observing how the evolution of the species unfolds. [^1]
+
+[^1]: The project has been taken inspiration from the [Simulating the Evolution of Aggression, by Primer](https://www.youtube.com/watch?app=desktop&v=YNMkADpvO4w&t=5s)'s video.
 
 ## Requirements Analysis
-
-### Functional requirements
 
 - The simulation is composed of a sequence of rounds;
 - Food is spawned casually inside the map;
@@ -44,10 +42,6 @@
 - Movements:
   - Creatures explore the map using random movements.
   - They have a limited sight of the environment that they're exploring. If they find a piece of food they proceed to move towards it.
-
-### Non-functional requirements
-
-`TODO`
 
 ## Design
 
@@ -273,16 +267,18 @@ The primary goal of each agent is to obtain enough food each day to survive and 
 
 #### Food search and collection
 
-As the simulation starts, each agent is spawned in a random position inside the world and its goal is to find food and collect it.
-Since the agents are not aware of their position in the world and they have a limited sight, they explore the world randomly until they find a food.
-Once found a food, the agent will try to move towards it in order to attempt to collect it.
-In case multiple foods are present in the agent's sight, the agent will priviledge the one already collected by other agents to obey the general assumption of need of cooperation to collect food.
+The high level behavior of the agents is described in the following UML state diagram that shows the main states the agents can be in during the simulation.
 
-...
-
-A punti?
+- At the start of the simulation, each agent is spawned at a random position within the world and their goal is to find and collect food. Since they do not know their exact position and have limited sight, they explore the world randomly (`exploring` state).
+- When an agent finds food, it moves toward it, entering the `targeting` state.
+- Upon reaching the food, the agent tries to collect it (`reached` state). Depending on the number of agents trying to collect the same food, an agent may either:
+  - Successfully collect the food (`collected` state), or
+  - Fail to collect it and return to the `exploring` state to continue searching.
 
 ```mermaid
+---
+title: Blob agent state diagram
+---
 stateDiagram
     direction LR
     [*] --> exploring
@@ -295,6 +291,15 @@ stateDiagram
     reached --> exploring : +not_collected_food
 ```
 
+More specifically:
+
+- depending on the agent's personality, the agent stops searching for food when it has enough energy to reproduce itself: _doves_ stop searching, while _hawks_ continue searching until the end of the round
+  - this is to simulate the fact that _hawks_ are more aggressive and will try to steal food from other agents as much as possible, while _doves_ are more peaceful and will not try to steal food from others that is unused;
+- the exploration is performed by moving in a random direction for a certain number of steps (drawn randomly from a range of values), followed by a change of direction;
+- when an agent "sees" a food in its sight that still has uncollected pieces it starts moving towards it, one step at a time, changing its direction to point towards the food;
+  - if multiple foods with uncollected pieces are in the agent's sight, the one that has some uncollected pieces, yet not completely collected, is chosen as the target, fallbacking to the closest one if all are not fully collected;
+- when the agent reaches the food, it tries to collect it;
+
 ```mermaid
 graph TD
     A["Forage"] --> Z{"personality"}
@@ -306,106 +311,21 @@ graph TD
     B -- ">= reproduction threshold" --> C["find_food"]
     C --> D{"status"}
 
-    D -- "exploring" --> E["move on N steps"]
-    E --> F["change direction"]
+    D -- "exploring" --> E0["draw random number N"]
+    E0 --> E1["move on N steps"]
+    E1 --> F["change direction"]
     F --> C
 
-    D -- "targeting(F)" --> G["waypoint direction"]
-    G --> H["move towards target position using waypoint direction"]
-    H --> C
-
     D -- "reached(F)" --> I["collect food F"]
+
+    D -- "targeting(F)" --> G["direction towards target F"]
+    G --> H["move on 1 step towards F"]
+    H --> C
 
     B -- "< reproduction threshold" --> J["Stop"]
 ```
 
 #### Contention
-
-<!--
-
-#### Goals
-
-- `+!find_food`: reazione dell'agente: in futuro può essere programmato un comportamento più intelligente
-del semplice continuare a muoversi verso la direzione prestabilita iniziale per cercare di "spottare" il cibo
-
-#### Belief
-
-+ `food` => viene aggiunto alla belief base quando il food è nel sight dell'agente
-+ `reached_food` => viene aggiunto quando l'agente ha raggiunto il food
-
-#### Actions
-
-- `move_towards(X, Y)`: agents move towards the given coordinates (X, Y)
-- `collect_food(Food_ID)`: agents collect the given food
-
-
-```jason
-direction(0, 0).
-speed(0).
-status(exploring).
-
-!round.
-
-+!round <-
-  !find_food;
-  !collect_food;
-  !contention;
-  !back_home.
-
-+!find_food : status(exploring) <-
-  !change_direction;
-  random(N, 1, 20); // N is the number of steps to take following the direction
-  !move_on(N);
-  !find_food.
-
-+!find_food : status(targeting(F)) & position(PosX, PosY) <-
-  waypoint_direction(PosX, PosY, F, DirX, DirY);
-  -+direction(DirX, DirY);
-  !move.
-  !find_food.
-
-+!find_food : status(reached(F)) <- true.
-
-+!move_on(0) <- true.
-
-+!move_on(N) : N > 0 & status(exploring) <-
-  !move;
-  !move_on(N - 1).
-
-+!move_on(N) : N > 0 & (obstacle(X, Y) | not(status(exploring))) <- true.
-
-// TODO: obstacle avoidance. How to deal with multiple obstacles?
-+!change_direction : not(obstacle)) <-
-  random(X, -1, 1);
-  random(Y, -1, 1);
-  -+direction(X, Y).
-
-+!change_direction : obstacle() & direction(X, Y) <-
-  // TODO...
-  -+direction(-X, -Y); // Reverse direction when an obstacle is detected
-
-+!move : direction(X, Y) & speed(V) <-
-  !update_position(X, Y, V); // External action
-
-+!collect_food : food(F) <-
-  collect_food(F, IsCollected); // External action
-  if (IsCollected) {
-    -+status(contending(F));
-    !contention;
-  } else {
-    -+status(exploring);
-    !find_food;
-  }
-
-+target_food(F) <- // Belief added from the environment
-  status(targeting(F)).
-
-+reached_food(F) : status(targeting(F)) <- // Belief added from the environment
-  status(reached(F)).
-
-```
-
--->
 
 ## Salient implementation details
 
@@ -429,6 +349,10 @@ Alternatively you can build the project using Gradle and run it from the command
 ## Conclusions
 
 ### JakTa suggested improvements
+
+- [Bug] sleep and stop bugs
+- [Improvement] use thread pool to run the simulation
+- [Improvement] let updateData return an outcome that can be used agent-side (in Jason a boolean in the actions)
 
 ### Future work
 

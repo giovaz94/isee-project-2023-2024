@@ -84,25 +84,23 @@ interface World : EventPublisher {
 
         /** Creates a new world instance from the given round. */
         fun from(round: Round): World = with(round.world) {
-            val newBlobs = blobs
+            val blobCandidates = blobs
                 .filter { it.isAlive() }
                 .flatMap {
                     buildList {
                         add(it.clone(health = Health(min = 0.0, max = 2.0)))
                         if (it.canReproduce()) {
-                            add(
-                                it.clone(
-                                    Entity.Id("${it.id.value}-${round.number}"),
-                                    health = Health(min = 0.0, max = 2.0),
-                                ),
-                            )
+                            add(it.clone(Entity.Id("${it.id.value}-${round.number}"), Health(min = 0.0, max = 2.0)))
                         }
                     }
-                }.associateBy { it.id }
-                .toMap(ConcurrentHashMap())
-            val scaleFactor = sqrt(newBlobs.count().toDouble() / blobs.count())
+                }
+            val scaleFactor = sqrt(blobCandidates.count().toDouble() / blobs.count()).let { if (it == 0.0) 1.0 else it }
             val newShape = shape.scale(scaleFactor)
-            val newSpawnZone = spawnZones.map { it.shape.scale(scaleFactor) }.map { SpawnZone(it, origin) }.toSet()
+            val newSpawnZone = spawnZones.map { SpawnZone(it.shape.scale(scaleFactor), origin) }.toSet()
+            val newBlobs = blobCandidates
+                .map { if (newShape.locallyContains(it.position)) it else it.clone(position = origin) }
+                .associateBy { it.id }
+                .toMap(ConcurrentHashMap())
             val foods = generateFoods(newShape, newSpawnZone, round.world.initialFoods)
             WorldImpl(newShape, initialFoods, foods, newBlobs, CopyOnWriteArraySet(newSpawnZone))
         }

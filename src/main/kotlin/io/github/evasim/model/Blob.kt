@@ -55,13 +55,13 @@ interface Blob : Entity, EventPublisher {
     /** Clones this blob, creating a new instance with the specified parameters. */
     fun clone(
         id: Entity.Id = this.id,
+        health: Health = this.health,
         personality: Personality = this.personality,
         position: Position2D = this.position,
         shape: Shape = this.shape,
         velocity: Vector2D = this.velocity,
         defaultDirection: Direction = this.defaultDirection,
         sightShape: Shape = this.sight.visibilityArea.shape,
-        health: Health = this.health,
         reproductionStrategy: ReproductionStrategy = this.reproductionStrategy,
     ): Blob
 
@@ -182,13 +182,13 @@ private data class BlobImpl(
 
     override fun clone(
         id: Entity.Id,
+        health: Health,
         personality: Personality,
         position: Position2D,
         shape: Shape,
         velocity: Vector2D,
         defaultDirection: Direction,
         sightShape: Shape,
-        health: Health,
         reproductionStrategy: ReproductionStrategy,
     ): Blob = copy(
         id,
