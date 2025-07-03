@@ -35,7 +35,7 @@ $dokka.location:io.github.evasim.model/Blob.Companion/invoke/#io.github.evasim.m
 $dokka.location:io.github.evasim.model/Blob///PointingToDeclaration/evasim/io.github.evasim.model/-blob/index.html
 $dokka.location:io.github.evasim.model/Blob/applyForce/#io.github.evasim.model.Vector2D/PointingToDeclaration/evasim/io.github.evasim.model/-blob/apply-force.html
 $dokka.location:io.github.evasim.model/Blob/canReproduce/#/PointingToDeclaration/evasim/io.github.evasim.model/-blob/can-reproduce.html
-$dokka.location:io.github.evasim.model/Blob/clone/#io.github.evasim.model.Entity.Id#io.github.evasim.model.Personality#io.github.evasim.model.Position2D#io.github.evasim.model.Shape#io.github.evasim.model.Vector2D#io.github.evasim.model.Versor2D#io.github.evasim.model.Shape#io.github.evasim.model.Health#io.github.evasim.model.ReproductionStrategy/PointingToDeclaration/evasim/io.github.evasim.model/-blob/clone.html
+$dokka.location:io.github.evasim.model/Blob/clone/#io.github.evasim.model.Entity.Id#io.github.evasim.model.Health#io.github.evasim.model.Personality#io.github.evasim.model.Position2D#io.github.evasim.model.Shape#io.github.evasim.model.Vector2D#io.github.evasim.model.Versor2D#io.github.evasim.model.Shape#io.github.evasim.model.ReproductionStrategy/PointingToDeclaration/evasim/io.github.evasim.model/-blob/clone.html
 $dokka.location:io.github.evasim.model/Blob/defaultDirection/#/PointingToDeclaration/evasim/io.github.evasim.model/-blob/default-direction.html
 $dokka.location:io.github.evasim.model/Blob/direction/#/PointingToDeclaration/evasim/io.github.evasim.model/-blob/direction.html
 $dokka.location:io.github.evasim.model/Blob/health/#/PointingToDeclaration/evasim/io.github.evasim.model/-blob/health.html
