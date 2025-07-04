@@ -1,3 +1,9 @@
+## [0.9.5](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.4...0.9.5) (2025-07-04)
+
+### Documentation
+
+* document literals ([144333a](https://github.com/giovaz94/isee-project-2023-2024/commit/144333ad3bbcd613988f58cfec1c780ca6d1c9a5))
+
 ## [0.9.4](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.3...0.9.4) (2025-07-04)
 
 ### Documentation
