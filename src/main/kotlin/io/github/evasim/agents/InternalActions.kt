@@ -13,7 +13,10 @@ import it.unibo.tuprolog.core.Substitution
 import it.unibo.tuprolog.core.Tuple
 
 /**
- * `random(-RandomValue, +LowerBound, +UpperBound)` internal action that generates a random value.
+ * `random(-RandomValue, +LowerBound, +UpperBound)` internal action that generates a random value in the range
+ * `[LowerBound, UpperBound)`.
+ * `Lowerbound` and `UpperBound` can be either integers or doubles; generated `RandomValue` will be of the same
+ * type.
  */
 internal object Random : AbstractInternalAction(random, arity = 3) {
     override fun action(request: InternalRequest) {
@@ -32,6 +35,7 @@ internal object Random : AbstractInternalAction(random, arity = 3) {
 /**
  * `waypoint_direction(+BlobPosition, +TargetPosition, -NewDirection)` internal action that calculates
  * the direction that the blob should take to reach the target position.
+ * Both `BlobPosition`, `TargetPosition`, and `NewDirection` are [Tuple] representing 2D vectors.
  */
 internal object WaypointDirection : AbstractInternalAction(waypoint_direction, arity = 6) {
     override fun action(request: InternalRequest) {
@@ -49,7 +53,7 @@ internal object WaypointDirection : AbstractInternalAction(waypoint_direction, a
 
 /**
  * `inverse_direction(+OldDirection, -NewDirection)` internal action that calculates the inverse direction with
- * a refracted angle between -45 and +45 degrees.
+ * a refracted angle between -45 and +45 degrees, randomly chosen.
  */
 internal object InverseDirection : AbstractInternalAction(inverse_direction, arity = 2) {
     override fun action(request: InternalRequest) {

@@ -15,3 +15,6 @@ fun String.toPersonality(): Personality? = when (this) {
     "Dove" -> Dove
     else -> null
 }
+
+/** Cast a String to a Personality, throwing an exception if the String is not a valid personality. */
+fun String.castToPersonality(): Personality = toPersonality() ?: error("Invalid personality: $this")

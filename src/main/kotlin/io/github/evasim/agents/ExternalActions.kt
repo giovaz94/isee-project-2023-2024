@@ -1,7 +1,7 @@
 package io.github.evasim.agents
 
+import io.github.evasim.model.castToPersonality
 import io.github.evasim.model.contentionRule
-import io.github.evasim.model.toPersonality
 import io.github.evasim.model.zero
 import io.github.evasim.utils.Logic.castToVector2D
 import it.unibo.jakta.agents.bdi.actions.ExternalRequest
@@ -12,17 +12,23 @@ import it.unibo.tuprolog.core.Real
 import it.unibo.tuprolog.core.Struct
 import it.unibo.tuprolog.core.Substitution
 
-/** An `update(+Direction, +NewSpeed)` external action that updates the blob's position and velocity. */
+/**
+ * An `update(+Direction, +NewSpeed)` external action that updates the blob's position and velocity.
+ * Direction is a [it.unibo.tuprolog.core.Tuple] representing a 2D vector, and NewSpeed is a [Real] value.
+ */
 internal object Update : AbstractExternalAction(name = update, arity = 2) {
     override fun action(request: ExternalRequest) {
         val direction = request.arguments[0].castToTuple().castToVector2D().normalized() ?: zero
         val speed = request.arguments[1].castToReal().value.toDouble()
         val velocity = direction * speed
-        updateData(update to Triple(request.sender, velocity, request.requestTimestamp))
+        updateData(update to Pair(request.sender, velocity))
     }
 }
 
-/** `collect_food(+FoodId)` external action that collects food. */
+/**
+ * `collect_food(+FoodId)` external action where the running agent attempts to collect the food identified by `FoodId`.
+ * `FoodId` is an [it.unibo.tuprolog.core.Atom] representing the ID of the food to be collected.
+ */
 internal object CollectFood : AbstractExternalAction(name = collect, arity = 1) {
     override fun action(request: ExternalRequest) {
         val foodId = request.arguments[0].castToAtom().value
@@ -30,38 +36,41 @@ internal object CollectFood : AbstractExternalAction(name = collect, arity = 1) 
     }
 }
 
-internal object CheckContention : AbstractExternalAction(check_contention, arity = 4) {
-    private const val MAX_CONTESTANT_NUMBER = 2
+/**
+ * TODO: appropriate documentation
+ * `check_contention(+BlobList, +Personality, +Energy, +FoodId)` external action that ...
+ */
+internal class CheckContention(
+    private val maxContenders: Int = 2,
+) : AbstractExternalAction(check_contention, arity = 4) {
     override fun action(request: ExternalRequest) {
-        val blobList = request.arguments[0].castToList().toList()
+        val contendersId = request.arguments[0].castToList().toList()
         val personality = request.arguments[1].castToAtom()
         val energy = request.arguments[2].castToReal()
         val foodId = request.arguments[3].castToAtom()
-        if (blobList.size == MAX_CONTESTANT_NUMBER) {
+        if (contendersId.size == maxContenders) {
             val sender = request.sender
-            val message = Message(
-                sender,
-                Tell,
-                Struct.Companion.of(contention, personality, energy, foodId),
-            )
-            blobList
+            val message = Message(sender, Tell, Struct.of(contention, personality, energy, foodId))
+            contendersId
                 .map { it.toString().removeSurrounding("'") }
                 .filter { it != sender }
-                .forEach {
-                    sendMessage(it, message)
-                }
+                .forEach { sendMessage(it, message) }
         }
     }
 }
 
+/**
+ * TODO: appropriate documentation
+ * `solve_contention(+FoodId, +ContenderId, +SolverPersonality, +ContenderPersonality, +TotalEnergy, -SolverEnergy)`
+ * external action that resolves contention for food identified by `FoodId` between the agent executing it and the
+ * contender identified by `ContenderId`, using the personalities of both agents and the total energy available.
+ */
 internal object SolveContention : AbstractExternalAction(solve_contention, arity = 6) {
     override fun action(request: ExternalRequest) {
         val foodId = request.arguments[0].castToAtom().value
         val contenderId = request.arguments[1].castToAtom().value
-        val solverPersonality = request.arguments[2].castToAtom().value
-            .let { it.toPersonality() ?: error("Invalid personality: $it") }
-        val contenderPersonality = request.arguments[3].castToAtom().value
-            .let { it.toPersonality() ?: error("Invalid personality: $it") }
+        val solverPersonality = request.arguments[2].castToAtom().value.castToPersonality()
+        val contenderPersonality = request.arguments[3].castToAtom().value.castToPersonality()
         val totalEnergy = request.arguments[4].castToReal().value.toDouble()
         val solverEnergy = request.arguments[5].castToVar()
         val ruleOutput = contentionRule(solverPersonality, contenderPersonality, totalEnergy)

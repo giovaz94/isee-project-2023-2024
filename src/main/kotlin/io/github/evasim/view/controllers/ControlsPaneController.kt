@@ -65,7 +65,7 @@ internal class ControlsPaneController : Initializable {
             ?.toDuration(DurationUnit.SECONDS)
             ?: Duration.INFINITE
         val runSeed = reproducibilitySeed.text.toLongOrNull() ?: System.currentTimeMillis()
-        val shape = Circle(radius = 200 + (hawkyBlobs + doveBlobs) * 5.0)
+        val shape = Circle(radius = 250 + (hawkyBlobs + doveBlobs) * 5.0)
         val config = World.Companion.Configuration(
             shape = shape,
             spawnZones = setOf(

@@ -116,21 +116,12 @@ private data class Vector2DImpl(override val x: Double, override val y: Double) 
     override operator fun unaryMinus(): Vector2D = Vector2D(-x, -y)
     override fun isZero(): Boolean = x == 0.0 && y == 0.0
     override fun invertedWithRandomAngle(minDegrees: Double, maxDegrees: Double): Vector2D {
-        require(minDegrees <= maxDegrees) { "minDegrees must be <= maxDegrees" }
-
+        require(minDegrees <= maxDegrees) { "minDegrees ($minDegrees) must be <= maxDegrees ($maxDegrees)" }
         val inverted = -this
-        val randomAngleDegrees = Rnd.nextDouble(minDegrees, maxDegrees)
-        val randomAngleRadians = Math.toRadians(randomAngleDegrees)
-
-        val cosA = cos(randomAngleRadians)
-        val sinA = sin(randomAngleRadians)
-
-        val rotatedX = inverted.x * cosA - inverted.y * sinA
-        val rotatedY = inverted.x * sinA + inverted.y * cosA
-
-        return Vector2D(rotatedX, rotatedY)
+        val angle = Math.toRadians(Rnd.nextDouble(minDegrees, maxDegrees))
+        val (cosA, sinA) = cos(angle) to sin(angle)
+        return Vector2D(inverted.x * cosA - inverted.y * sinA, inverted.x * sinA + inverted.y * cosA)
     }
-
     override fun magnitude(): Double = hypot(x, y)
     override fun normalized(): Versor2D? = takeUnless { it.isZero() }?.let { Versor2D.from(it / it.magnitude()) }
     override infix fun dot(v2D: Vector2D): Double = x * v2D.x + y * v2D.y
