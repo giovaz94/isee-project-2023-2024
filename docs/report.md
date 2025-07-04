@@ -48,6 +48,9 @@
 ### Domain model
 
 ```mermaid
+---
+title: (Diagram 1) UML class diagram of the domain model of the simulation.
+---
 classDiagram
     direction TB
 
@@ -210,6 +213,9 @@ Domain Model updates are reified in events that are published towards subscribed
 An overview of the architecture is shown in the following diagram:
 
 ```mermaid
+---
+title: (Diagram 2) UML class diagram of the simulation architecture, illustrating the Model-View-Controller (MVC) pattern and its principal components.
+---
 classDiagram
     class EventSubscriber {
         <<interface>>
@@ -268,6 +274,7 @@ The primary goal of each agent is to obtain enough food each day to survive and 
 #### Food search and collection
 
 The high level behavior of the agents is described in the following UML state diagram that shows the main states the agents can be in during the simulation.
+State transitions events in the diagram reflect updates to the agent's belief base, triggered by environmental changes during the perception phase of the agent's reasoning cycle (`+belief` means `belief` has been added, while `-belief` means `belief` has been removed).
 
 - At the start of the simulation, each agent is spawned at a random position within the world and their goal is to find and collect food. Since they do not know their exact position and have limited sight, they explore the world randomly (`exploring` state).
 - When an agent finds food, it moves toward it, entering the `targeting` state.
@@ -277,7 +284,7 @@ The high level behavior of the agents is described in the following UML state di
 
 ```mermaid
 ---
-title: Blob agent state diagram
+title: (Diagram 3) Blob agent state diagram for foraging food.
 ---
 stateDiagram
     direction LR
@@ -294,13 +301,23 @@ stateDiagram
 More specifically:
 
 - depending on the agent's personality, the agent stops searching for food when it has enough energy to reproduce itself: _doves_ stop searching, while _hawks_ continue searching until the end of the round
-  - this is to simulate the fact that _hawks_ are more aggressive and will try to steal food from other agents as much as possible, while _doves_ are more peaceful and will not try to steal food from others that is unused;
+  - this is to simulate the fact that _hawks_ are more aggressive and will try to steal food from other agents as much as possible, while _doves_ are more peaceful and will not try to steal food from others that are unused;
 - the exploration is performed by moving in a random direction for a certain number of steps (drawn randomly from a range of values), followed by a change of direction;
-- when an agent "sees" a food in its sight that still has uncollected pieces it starts moving towards it, one step at a time, changing its direction to point towards the food;
-  - if multiple foods with uncollected pieces are in the agent's sight, the one that has some uncollected pieces, yet not completely collected, is chosen as the target, fallbacking to the closest one if all are not fully collected;
+- when an agent "sees" food in its sight that still has uncollected pieces, it starts moving towards it, one step at a time, changing its direction to point towards the food;
+  - if multiple foods with uncollected pieces are in the agent's sight, the one that has some uncollected pieces, yet not completely collected is chosen as the target, fallback to the closest one if all are not fully collected;
 - when the agent reaches the food, it tries to collect it;
+  - depending on the outcome of the collection attempt, the agent may either:
+    - proceed to the contention phase (described in the next section);
+    - return to exploring searching for food.
+
+In the following diagram is shown more in detail the plan of the agent.
+Jason syntax is used to differentiate between goals (`!`), belief updates (`+`/`-`) and actions (no special prefix). 
+Decision nodes represented by diamond in the flowchart are used to represent guards in the agent's plan.
 
 ```mermaid
+---
+title: (Diagram 4) Blob agent foraging plan goals and actions.
+---
 graph TD
     A["Forage"] --> Z{"personality"}
 
@@ -308,18 +325,21 @@ graph TD
 
     Z -- "hawk" --> C
 
-    B -- ">= reproduction threshold" --> C["find_food"]
+    B -- "\>= reproduction threshold" --> C["!find_food"]
     C --> D{"status"}
 
-    D -- "exploring" --> E0["draw random number N"]
-    E0 --> E1["move on N steps"]
-    E1 --> F["change direction"]
+    D -- "exploring" --> E0["!draw_random(Extracted, Min, Max)"]
+    E0 --> E1["!move_on(Extracted steps)"]
+    E1 --> F["!change_direction"]
     F --> C
 
     D -- "reached(F)" --> I["collect food F"]
+    I --> L{"outcome"}
+    L -- "+collected(Food, Energy, Blobs)" --> M["!check_contention(Food, Energy, Blobs)"]
+    L -- "+not_collected" --> C
 
-    D -- "targeting(F)" --> G["direction towards target F"]
-    G --> H["move on 1 step towards F"]
+    D -- "targeting(Food)" --> G["!update_direction_towards(Food)"]
+    G --> H["!move_on(1 steps)"]
     H --> C
 
     B -- "< reproduction threshold" --> J["Stop"]
