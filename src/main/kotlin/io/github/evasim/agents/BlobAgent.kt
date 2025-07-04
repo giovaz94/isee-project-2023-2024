@@ -13,7 +13,7 @@ import it.unibo.tuprolog.core.Var
  */
 fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     beliefs {
-        fact { "personality"(if (blob.personality is Hawk) "hawk" else "dove") }
+        fact { personality(if (blob.personality is Hawk) "hawk" else "dove") }
         fact { energy(0.0) }
         fact { direction(tupleOf(0.0, 0.0)) }
         fact { speed(term = 20.0) }
@@ -41,7 +41,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
 }
 
 private fun PlansScope.forage() {
-    +achieve(forage) onlyIf { "personality"("hawk").fromSelf or (energy(E).fromSelf and (E lowerThan 2.0)) } then {
+    +achieve(forage) onlyIf { personality("hawk").fromSelf or (energy(E).fromSelf and (E lowerThan 2.0)) } then {
         update(status(exploring).fromSelf)
         achieve(find_food)
         achieve(collect_food)
@@ -99,7 +99,7 @@ private fun PlansScope.collectFood(blob: Blob) {
     +reached_food(F).fromPercept then {
         update(status(reached(F)).fromSelf)
     }
-    +"not_collected_food".fromPercept onlyIf { status(reached(`_`)).fromSelf } then {
+    +not_collected_food.fromPercept onlyIf { status(reached(`_`)).fromSelf } then {
         update(status(exploring).fromSelf)
         achieve(forage)
     }

@@ -77,7 +77,7 @@ class SimulationEnvironment(
     private fun collectedFood(blob: Blob): Belief? = (data["collectedFood"] as? Map<Blob, Pair<Food?, Contenders>>)
         ?.get(blob)
         ?.let { (food, contenders) ->
-            if (food == null || contenders.isEmpty()) return@let "not_collected_food"().asBelief()
+            if (food == null || contenders.isEmpty()) return@let not_collected_food().asBelief()
             val contendersTerms = contenders.map { it.id.value.toTerm() }.toSet()
             Struct.of(
                 collected_food,

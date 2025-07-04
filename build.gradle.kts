@@ -33,14 +33,6 @@ dependencies {
     }
 }
 
-sourceSets {
-    main {
-        resources {
-            srcDir("src/main/asl")
-        }
-    }
-}
-
 kotlin {
     compilerOptions {
         allWarningsAsErrors = true

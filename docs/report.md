@@ -328,7 +328,7 @@ graph TD
     B -- "\>= reproduction threshold" --> C["!find_food"]
     C --> D{"status"}
 
-    D -- "exploring" --> E0["!draw_random(Extracted, Min, Max)"]
+    D -- "exploring" --> E0["draw_random(Extracted, Min, Max)"]
     E0 --> E1["!move_on(Extracted steps)"]
     E1 --> F["!change_direction"]
     F --> C
