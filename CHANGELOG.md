@@ -1,3 +1,9 @@
+## [0.9.4](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.3...0.9.4) (2025-07-04)
+
+### Documentation
+
+* ended foraging design ([7d13bc1](https://github.com/giovaz94/isee-project-2023-2024/commit/7d13bc1f55ea829485edc3b7c43a7d3cbc98bc66))
+
 ## [0.9.3](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.2...0.9.3) (2025-07-03)
 
 ### Dependency updates
