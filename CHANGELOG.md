@@ -1,3 +1,9 @@
+## [0.9.7](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.6...0.9.7) (2025-07-05)
+
+### Bug Fixes
+
+* **build:** build and publish different jars based on the os ([63bf477](https://github.com/giovaz94/isee-project-2023-2024/commit/63bf47760af38f611abe9fdb35b0de4939b6b58a))
+
 ## [0.9.6](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.5...0.9.6) (2025-07-05)
 
 ### Dependency updates
