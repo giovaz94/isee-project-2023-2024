@@ -16,7 +16,7 @@
 5. [Results](#results)
 6. [Deployment instructions](#deployment-instructions)
 7. [Conclusions](#conclusions)
-   1. [JakTa suggested improvements](#jakta-suggested-improvements)
+   1. [JaKtA suggested improvements](#jakta-suggested-improvements)
    2. [Future work](#future-work)
 
 ## Goals of the project
@@ -53,7 +53,7 @@
 
 ### Implementation requirements
 
-- TODO: [JakTa framework](https://jakta-bdi.github.io).
+- TODO: [JaKtA framework](https://JaKtA-bdi.github.io).
 
 ## Design
 
@@ -413,7 +413,7 @@ internal object CollectFood : AbstractExternalAction(name = collect, arity = 1) 
 ```
 
 However, one important aspect to take into consideration is that the outcome of that action may or not, depending on the environment, fail.
-Unfortunately, the JakTa framework does not provide a way to return an outcome as a result of an external action.
+Unfortunately, the JaKtA framework does not provide a way to return an outcome as a result of an external action.
 To address this, the environment store in a `Map` the outcome of the collection attempts performed by each blob so that in the succeeding reasoning cycle the agent can check the outcome and update its belief base accordingly.
 
 <div align="center" style="font-size: 0.9em; color: gray;">
@@ -525,9 +525,9 @@ Alternatively, you can build the project using Gradle and run it from the comman
 
 ## Conclusions
 
-Using JakTa as a BDI framework allowed to meld together the passive OOP design
+Using JaKtA as a BDI framework allowed to meld together the passive OOP design
 
-### JakTa suggested improvements
+### JaKtA suggested improvements
 
 In this section we summarize the suggested improvements that have been identified during the project development, which could enhance the usability and functionality of the framework:
 
