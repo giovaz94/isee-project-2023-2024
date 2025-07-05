@@ -1,3 +1,9 @@
+## [0.9.11](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.10...0.9.11) (2025-07-05)
+
+### Bug Fixes
+
+* **ci:** make the generated jars to have same version of the release ([5054107](https://github.com/giovaz94/isee-project-2023-2024/commit/50541070649330f2e85ee8d4bfe3b84c5f4a52f0))
+
 ## [0.9.10](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.9...0.9.10) (2025-07-05)
 
 ### Bug Fixes
