@@ -20,6 +20,7 @@ $dokka.location:io.github.evasim.controller/SimulatorController/stop/#/PointingT
 $dokka.location:io.github.evasim.model////PointingToDeclaration/evasim/io.github.evasim.model/index.html
 $dokka.location:io.github.evasim.model//asVector2D/io.github.evasim.model.Position2D#/PointingToDeclaration/evasim/io.github.evasim.model/as-vector2-d.html
 $dokka.location:io.github.evasim.model//at/TypeParam(bounds=[io.github.evasim.model.Shape])#io.github.evasim.model.Position2D/PointingToDeclaration/evasim/io.github.evasim.model/at.html
+$dokka.location:io.github.evasim.model//castToPersonality/kotlin.String#/PointingToDeclaration/evasim/io.github.evasim.model/cast-to-personality.html
 $dokka.location:io.github.evasim.model//collidesWith/io.github.evasim.model.Placed[io.github.evasim.model.Shape]#io.github.evasim.model.Placed[io.github.evasim.model.Shape]/PointingToDeclaration/evasim/io.github.evasim.model/collides-with.html
 $dokka.location:io.github.evasim.model//collidesWith/io.github.evasim.model.Placed[io.github.evasim.model.Shape]#io.github.evasim.model.Shape/PointingToDeclaration/evasim/io.github.evasim.model/collides-with.html
 $dokka.location:io.github.evasim.model//contentionRule/#/PointingToDeclaration/evasim/io.github.evasim.model/contention-rule.html
