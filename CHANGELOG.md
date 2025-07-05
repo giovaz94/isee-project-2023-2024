@@ -1,3 +1,9 @@
+## [0.9.9](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.8...0.9.9) (2025-07-05)
+
+### Bug Fixes
+
+* **ci:** move all downloaded fatjars into build/libs ([af5601a](https://github.com/giovaz94/isee-project-2023-2024/commit/af5601a677980a1acb68f6a9169673ec860318e8))
+
 ## [0.9.8](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.7...0.9.8) (2025-07-05)
 
 ### Bug Fixes
