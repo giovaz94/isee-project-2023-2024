@@ -2,6 +2,8 @@
 
 1. [Goals of the project](#goals-of-the-project)
 2. [Requirements Analysis](#requirements-analysis)
+   1. [Non functional requirements](#non-functional-requirements)
+   2. [Implementation requirements](#implementation-requirements)
 3. [Design](#design)
    1. [Domain model](#domain-model)
    2. [Architecture](#architecture)
@@ -9,6 +11,8 @@
       1. [Food search and collection](#food-search-and-collection)
       2. [Contention](#contention)
 4. [Salient implementation details](#salient-implementation-details)
+   1. [Food collection](#food-collection)
+   2. [Addressing reproducibility](#addressing-reproducibility)
 5. [Results](#results)
 6. [Deployment instructions](#deployment-instructions)
 7. [Conclusions](#conclusions)
@@ -43,7 +47,17 @@
   - Creatures explore the map using random movements.
   - They have a limited sight of the environment that they're exploring. If they find a piece of food they proceed to move towards it.
 
+### Non functional requirements
+
+- The simulation should be able to run for a long time, simulating the evolution of the species over many rounds, with a decent number of agents (e.g., 60) without crashing or having performance issues.
+
+### Implementation requirements
+
+- TODO: [JakTa framework](https://jakta-bdi.github.io).
+
 ## Design
+
+This section presents the system design, including the domain model, architecture, and agent design, with a particular emphasis on the latter.
 
 ### Domain model
 
@@ -191,18 +205,6 @@ classDiagram
         +visibilityArea: Shape
     }
     Blob *--> Sight
-
-%%    class Position2D {
-%%        <<interface>>
-%%        +x: Double
-%%        +y: Double
-%%    }
-%%    Entity *--> Position2D
-%%
-%%    class Vector2D {
-%%        <<interface>>
-%%    }
-%%    Blob *--> Vector2D
 ```
 
 ### Architecture
@@ -311,7 +313,7 @@ More specifically:
     - return to exploring searching for food.
 
 In the following diagram is shown more in detail the plan of the agent.
-Jason syntax is used to differentiate between goals (`!`), belief updates (`+`/`-`) and actions (no special prefix). 
+Jason syntax is used to differentiate between goals (`!`), belief updates (`+`/`-`) and actions (no special prefix).
 Decision nodes represented by diamond in the flowchart are used to represent guards in the agent's plan.
 
 ```mermaid
@@ -349,6 +351,161 @@ graph TD
 
 ## Salient implementation details
 
+The following sections highlight specific implementation details that are relevant for the application and agent implementation.
+
+The codebase is organized in the following package structure:
+
+- `model` contains the domain model classes, programmed in "plain" Object-Oriented Kotlin;
+- `view` contains the user interface classes, implemented using JavaFX;
+- `controller` contains the main controller bridging the model and the view;
+- `agents` contains the agent classes, implementing the BDI framework using JaKtA.
+
+```plaintext
+.
+└── evasim
+    ├── EvaSimApp.kt
+    ├── agents                          # Agent-oriented components - active entities
+    │   ├── BlobAgent.kt                # The Blob agent specification with its BDI plan
+    │   ├── ExternalActions.kt          # Where external actions affecting the environment are implemented
+    │   ├── InternalActions.kt          # Where internal actions are implemented
+    │   ├── Literals.kt                 # Literals used in the agent's plan
+    │   └── SimulationEnvironment.kt    # The environment where the agents live and interact
+    ├── controller                      # Main simulation controller
+    │   ├── Boundary.kt
+    │   └── SimulatorController.kt
+    ├── model                           # Domain model classes - passive entities
+    │   ├── Round.kt
+    │   ├── World.kt
+    │   ├── Blob.kt
+    │   ├── ...
+    ├── utils                           # Some utility classes and functionalities
+    │   ├── Logic.kt
+    │   ├── ...
+    └── view                            # The user interface classes
+```
+
+### Food collection
+
+As already described in the [Agents design](#agents-design) section, the food collection is a crucial part of the simulation, as it drives the agents' survival and reproduction, and is implemented as a two-phase process: when an agent reaches a food piece, it attempts to collect it.
+If the food has uncollected pieces, the agent proceeds to the contention phase.
+However, if multiple agents simultaneously attempt to collect the same food, the collection fails and the agent returns to the exploration phase.
+
+To program such a behavior, the `CollectFood` external action (as shown in [Listing 1](#listing1)) has been implemented to apply the collection side effect on the simulation world state, calling the `updateData` method on the environment.
+
+<div align="center" style="font-size: 0.9em; color: gray;">
+
+_(<a id="listing1">Listing 1</a>): implementation of the `CollectFood` external action._
+
+</div>
+
+```kotlin
+/**
+ * `collect_food(+FoodId)` external action where the running agent attempts to collect the food
+ * identified by `FoodId`.
+ * `FoodId` is an [it.unibo.tuprolog.core.Atom] representing the ID of the food to be collected.
+ */
+internal object CollectFood : AbstractExternalAction(name = collect, arity = 1) {
+    override fun action(request: ExternalRequest) {
+        val foodId = request.arguments[0].castToAtom().value
+        updateData(collect to Pair(request.sender, foodId))
+    }
+}
+```
+
+However, one important aspect to take into consideration is that the outcome of that action may or not, depending on the environment, fail.
+Unfortunately, the JakTa framework does not provide a way to return an outcome as a result of an external action.
+To address this, the environment store in a `Map` the outcome of the collection attempts performed by each blob so that in the succeeding reasoning cycle the agent can check the outcome and update its belief base accordingly.
+
+<div align="center" style="font-size: 0.9em; color: gray;">
+
+_(<a id="listing2">Listing 2</a>): Definition of the `SimulationEnvironment` class with the data structure used to store the outcomes of the collection attempts._
+
+</div>
+
+```kotlin
+/**
+ * The list of blob contending for a piece of food.
+ */
+typealias Contenders = List<Blob>
+
+/**
+ * Simulation agent environment.
+ */
+class SimulationEnvironment(
+    private val round: Round,
+    agentIDs: Map<String, AgentID> = emptyMap(),
+    externalActions: Map<String, ExternalAction> = mapOf(/*...*/)
+    messageBoxes: Map<AgentID, MessageQueue> = emptyMap(),
+    perception: Perception = Perception.empty(),
+    data: Map<String, Any> = mapOf(collectedFood to mutableMapOf<Blob, Pair<Food?, Contenders>>()),
+) : EnvironmentImpl(externalActions, agentIDs, messageBoxes, perception, data)
+```
+
+[Listing 3](#listing3) shows the implementation of the `updateData` method that updates the environment state storing the outcome of the food collection attempt inside the `data` map.
+Once the outcome is stored, the agent, in the next reasoning cycle, can check the outcome and update its belief base, adding a `not_collected_food` belief if the collection failed, or a `collected_food` with all the relevant information needed to proceed with the contention phase if the contention succeeded.
+
+<div align="center" style="font-size: 0.9em; color: gray;">
+
+_(<a id="listing3">Listing 3</a>): implementation of the `updateData` method that updates the environment state with the outcome of the food collection attempt and the related perception logic._
+
+</div>
+
+```kotlin
+override fun updateData(newData: Map<String, Any>): Environment {
+    val collectedFoods = collectedFoodData.toMutableMap()
+    // ...
+    if (collect in newData) {
+        val (agentID, foodID) = newData[collect] as Pair<String, String>
+        round.world.findBlob(agentID)?.let { blob ->
+            collectedFoods[blob] = round.world.findFood(foodID)
+                ?.let { food -> food to food.attemptCollecting(blob).toList() }
+                ?: (null to emptyList())
+        }
+    }
+    // ...
+    return copy(data = data + (collectedFood to collectedFoods))
+}
+
+override fun percept(agent: Agent): BeliefBase = round.world.findBlob(agent.name)?.let { blob ->
+    BeliefBase.of(
+        buildList {
+            // other beliefs logic...
+            addAll(setOfNotNull(collectedFoodOutcomes(blob)))
+        },
+    )
+} ?: BeliefBase.empty()
+
+private fun collectedFoodOutcomes(blob: Blob): Belief? = collectedFoodData[blob]?.let { (food, contenders) ->
+    when {
+        food == null || contenders.isEmpty() -> not_collected_food().asBelief()
+        else -> Struct.of(
+            collected_food,
+            Atom.of(food.id.value),
+            TpList.from(contenders.map { it.id.value.toTerm() }.asSequence()),
+            Real.of(food.totalEnergy),
+        ).asBelief()
+    }
+}
+```
+
+### Addressing reproducibility
+
+Reproducibility is a crucial aspect of simulations—and of science in general— and is what distinguishes between scientific experiments from anecdotal evidence.
+Therefore, in implementing the simulation, care has been taken to try to guarantee reproducibility of the experiments and, thus, of the results.
+
+The main two problems that can affect reproducibility are:
+
+1. the concurrency platform used by the underlying BDI framework used to carry out the agent reasoning cycle.
+2. random number generation that guides the simulation, e.g., the random placement of the food in the world, the random movements of the agents, and the random decisions made by the agents;
+
+For the first problem, the JaKtA framework allows to choose between different execution strategies, including using one thread per MAS or one thread per agent.
+In our case, since the goal was to been able to simulate the evolution of a discrete number of agents, the choice of using one thread per agent was not suitable, as it would have led to a large number of threads being created, which could lead to performance issues.
+Therefore, the choice was made to use a single thread to run per MAS, which allows to take under control the execution of the agents' lifecycle.
+
+For the second problem, a single random number generator provider has been used throughout the simulation, which can be seeded by the user to ensure reproducibility in the random number generation and guarantee that every action that depends on some randomness can be reproduced by using the same seed.
+
+Random number provider and configuration can be found inside the `utils` package, [here](https://github.com/giovaz94/isee-project-2023-2024/blob/main/src/main/kotlin/io/github/evasim/utils/RandomProvider.kt).
+
 ## Results
 
 ## Deployment instructions
@@ -360,7 +517,7 @@ To run the application, you can simply execute the following command:
 java -jar <path-to-jar>/evasim-<version>-all.jar
 ```
 
-Alternatively you can build the project using Gradle and run it from the command line:
+Alternatively, you can build the project using Gradle and run it from the command line:
 
 ```bash
 ./gradlew run
@@ -368,11 +525,30 @@ Alternatively you can build the project using Gradle and run it from the command
 
 ## Conclusions
 
+Using JakTa as a BDI framework allowed to meld together the passive OOP design
+
 ### JakTa suggested improvements
 
+In this section we summarize the suggested improvements that have been identified during the project development, which could enhance the usability and functionality of the framework:
+
 - [Bug] sleep and stop bugs
+
+  - as already signalled, see [this gist](https://gist.github.com/giovaz94/6261fece98b70abc565ea418db6374d8)
+
+- [Improvement] let the `updateData` return an outcome that can be used agent-side to proceed in their BDI plan
+
+  - as presented in the [Food collection section](#food-collection) there are scenario in which external action may fail in executing side effectful computation on the environment and, therefore, is needed to signal the outcome of the action to the agent that invoked it.
+    In Jason, for this purpose, the `executeAction` method of the `Environment` returns a `Boolean`:
+
+    ```java
+    @Override
+    public boolean executeAction(final String ag, final Structure action) { ... }
+    ```
+
+    Currently, in JaKtA, outcomes of potentially failing actions can be stored in the environment's state and make them accessible to the agents in form of perception beliefs, but this is counterintuitive and detracts from code clarity.
+    From the perspective of a programmer using JaKtA, a cleaner solution would be for `Environment.updateData` to support returning outcomes directly, enabling agents to handle them within their BDI plans—similar to the mechanism used in Jason.
+
 - [Improvement] use thread pool to run the simulation
-- [Improvement] let updateData return an outcome that can be used agent-side (in Jason a boolean in the actions)
 
 ### Future work
 
