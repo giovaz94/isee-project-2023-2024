@@ -1,3 +1,19 @@
+## [0.9.6](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.5...0.9.6) (2025-07-05)
+
+### Dependency updates
+
+* **deps:** update dependency gradle to v8.14.3 ([#49](https://github.com/giovaz94/isee-project-2023-2024/issues/49)) ([b1f0bef](https://github.com/giovaz94/isee-project-2023-2024/commit/b1f0bef80b332c6193fb4bac6d06782708a2cab2))
+* **deps:** update plugin git-semantic-versioning to v5.1.7 ([#50](https://github.com/giovaz94/isee-project-2023-2024/issues/50)) ([46372e0](https://github.com/giovaz94/isee-project-2023-2024/commit/46372e09ca6b66152ea6db5c8ff0cef4c8953801))
+
+### Documentation
+
+* more on implementation details ([13d76c7](https://github.com/giovaz94/isee-project-2023-2024/commit/13d76c7398a3f93c32d60ce3be21ca05b8a38e86))
+* speell correctly jakta ([a730b80](https://github.com/giovaz94/isee-project-2023-2024/commit/a730b804c22914f450e5057bb4c487522ac9e437))
+
+### Refactoring
+
+* nicer code ([f442689](https://github.com/giovaz94/isee-project-2023-2024/commit/f442689dc698757efc73cf7e8371723cdd459911))
+
 ## [0.9.5](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.4...0.9.5) (2025-07-04)
 
 ### Documentation
