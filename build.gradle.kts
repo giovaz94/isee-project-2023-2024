@@ -74,4 +74,6 @@ tasks.withType<JavaExec> {
 // Set the project version based on the git history.
 gitSemVer {
     assignGitSemanticVersion()
+    // the generated version is computed for releases
+    computeReleaseVersion = true
 }
