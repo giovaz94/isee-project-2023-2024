@@ -48,6 +48,10 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
+tasks.withType<Jar> {
+    archiveClassifier.set(platform())
+}
+
 application {
     mainClass.set("io.github.evasim.EvaSimApp")
 }
