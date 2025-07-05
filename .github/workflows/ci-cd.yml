@@ -16,6 +16,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
+          submodules: recursive
+          fetch-depth: 0
           fetch-tags: true
       - name: Set up JDK ${{ matrix.jvm-version }}
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4
@@ -62,7 +64,7 @@ jobs:
         with:
           path: ./build/libs/
       - name: Move fatjars into the build/libs directory
-        run: find ./build/libs -type f -name "*.jar" ! -path "./build/libs/*.jar" -exec mv {} ./build/libs/ \;
+        run: find ./build/libs -mindepth 2 -type f -name "*.jar" -exec mv {} ./build/libs/ \;
       - name: Find the version of Node from package.json
         id: node-version
         run: echo "version=$(jq -r .engines.node package.json)" >> $GITHUB_OUTPUT
