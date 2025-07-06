@@ -1,3 +1,22 @@
+## [0.9.12](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.11...0.9.12) (2025-07-06)
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.136 ([#51](https://github.com/giovaz94/isee-project-2023-2024/issues/51)) ([83bdf24](https://github.com/giovaz94/isee-project-2023-2024/commit/83bdf24a58674d02789e31ab71e6d7253e7eec78))
+
+### Bug Fixes
+
+* **build:** set release compute before assign ([2cda968](https://github.com/giovaz94/isee-project-2023-2024/commit/2cda968cd3462d83db52fc9c7ecbbc8d5008a685))
+* **ui:** update view on energy update ([618a0d9](https://github.com/giovaz94/isee-project-2023-2024/commit/618a0d98a09a643cf534aad939ebc773f914b82b))
+
+### Documentation
+
+* add more analysis and rename the existsing to match analysis regex ([f97b488](https://github.com/giovaz94/isee-project-2023-2024/commit/f97b488133e1765e45c61b4ef87b8628986fa2d2))
+
+### Refactoring
+
+* **ui:** coherent blobs colors in graphs ([1e5221f](https://github.com/giovaz94/isee-project-2023-2024/commit/1e5221f8c977defaa8cf980cc23e05e383096426))
+
 ## [0.9.11](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.10...0.9.11) (2025-07-05)
 
 ### Bug Fixes
