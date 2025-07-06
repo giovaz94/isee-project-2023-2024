@@ -47,6 +47,7 @@ $dokka.location:io.github.evasim.model/Blob/personality/#/PointingToDeclaration/
 $dokka.location:io.github.evasim.model/Blob/reproductionStrategy/#/PointingToDeclaration/evasim/io.github.evasim.model/-blob/reproduction-strategy.html
 $dokka.location:io.github.evasim.model/Blob/sight/#/PointingToDeclaration/evasim/io.github.evasim.model/-blob/sight.html
 $dokka.location:io.github.evasim.model/Blob/update/#kotlin.time.Duration/PointingToDeclaration/evasim/io.github.evasim.model/-blob/update.html
+$dokka.location:io.github.evasim.model/Blob/updateHealth/#kotlin.Double/PointingToDeclaration/evasim/io.github.evasim.model/-blob/update-health.html
 $dokka.location:io.github.evasim.model/Blob/updateVelocity/#io.github.evasim.model.Vector2D/PointingToDeclaration/evasim/io.github.evasim.model/-blob/update-velocity.html
 $dokka.location:io.github.evasim.model/Blob/velocity/#/PointingToDeclaration/evasim/io.github.evasim.model/-blob/velocity.html
 $dokka.location:io.github.evasim.model/Circle///PointingToDeclaration/evasim/io.github.evasim.model/-circle/index.html
