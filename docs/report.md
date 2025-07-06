@@ -57,7 +57,17 @@
 
 ## Design
 
-This section presents the system design, including the domain model, architecture, and agent design, with a particular emphasis on the latter.
+This section presents the system design, covering the domain model, architecture, and agent design — with particular 
+emphasis on the latter.
+
+By working with [JaKtA](https://JaKtA-bdi.github.io), we were able to clearly separate the “passive” and “active” parts 
+of the system. The passive part maintains the domain classes that describe the environment, while the active part 
+manages the agents and their interactions.
+
+The agent management component communicates with the domain layer to update the simulation state, which in turn affects 
+the environment rendered in the GUI.This interaction is handled via an EventBus: domain classes act as event emitters, 
+while the GUI controller subscribes to these events.When an agent updates an entity, it triggers an event, prompting 
+the GUI controller to render the updated entity accordingly.
 
 ### Domain model
 

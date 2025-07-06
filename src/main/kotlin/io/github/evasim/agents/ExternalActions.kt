@@ -37,8 +37,15 @@ internal object CollectFood : AbstractExternalAction(name = collect, arity = 1) 
 }
 
 /**
- * TODO: appropriate documentation
- * `check_contention(+BlobList, +Personality, +Energy, +FoodId)` external action that ...
+ * `check_contention(+BlobList, +Personality, +Energy, +FoodId)` external action that check if a given Food is
+ *  being contented between two agent.
+ *  If the contention is verified the Blob that calls the action starts the contention resolving protocol.
+ *
+ *  `BlobList` is a [it.unibo.tuprolog.core.List] representing the IDs of the agents that are contending the food.
+ *  `Personality` is an [it.unibo.tuprolog.core.Atom] representing the personality of the Blob that's currently checking
+ *  the contention.
+ *  `Energy` is an [it.unibo.tuprolog.core.Real] representing the total energy of the food.
+ *  `FoodId` is an [it.unibo.tuprolog.core.Atom] representing the ID of the contended food .
  */
 internal class CheckContention(
     private val maxContenders: Int = 2,
@@ -60,10 +67,16 @@ internal class CheckContention(
 }
 
 /**
- * TODO: appropriate documentation
  * `solve_contention(+FoodId, +ContenderId, +SolverPersonality, +ContenderPersonality, +TotalEnergy, -SolverEnergy)`
  * external action that resolves contention for food identified by `FoodId` between the agent executing it and the
  * contender identified by `ContenderId`, using the personalities of both agents and the total energy available.
+ *
+ * `FoodId` is an [it.unibo.tuprolog.core.Atom] representing the ID of the contended food .
+ * `ContenderID` an [it.unibo.tuprolog.core.Atom] representing the ID of the contended agent
+ * `SolverPersonality` an [it.unibo.tuprolog.core.Atom] representing the personality of the solver
+ * `ContenderPersonality` an [it.unibo.tuprolog.core.Atom] representing the personality of the contender
+ * `TotalEnergy` is an [it.unibo.tuprolog.core.Real] representing the total energy of the food
+ * `SolverEnergy` is an [it.unibo.tuprolog.core.Var] representing the output variable of resulting solver energy.
  */
 internal object SolveContention : AbstractExternalAction(solve_contention, arity = 6) {
     override fun action(request: ExternalRequest) {
