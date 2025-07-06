@@ -4,6 +4,8 @@ EvASim is an agent-based simulation developed to study the dynamics of aggressio
 
 [^1]: Inspired from the [Simulating the Evolution of Aggression, by Primer](https://www.youtube.com/watch?app=desktop&v=YNMkADpvO4w&t=5s)'s video.
 
+![demo](.resources/demo.gif)
+
 This is part of an academic project for the _Intelligent Systems Engineering_ course @ University of Bologna, Italy.
 
 ## How to run
