@@ -88,9 +88,9 @@ interface World : EventPublisher {
                 .filter { it.isAlive() }
                 .flatMap {
                     buildList {
-                        add(it.clone(health = Health(min = 0.0, max = 2.0)))
+                        add(it.clone())
                         if (it.canReproduce()) {
-                            add(it.clone(Entity.Id("${it.id.value}-${round.number}"), Health(min = 0.0, max = 2.0)))
+                            add(it.clone(Entity.Id("${it.id.value}-${round.number}")))
                         }
                     }
                 }
@@ -164,7 +164,7 @@ private data class WorldImpl(
     override fun register(subscriber: EventSubscriber): Boolean = super.register(subscriber).also {
         if (it) {
             (foods + blobs).forEach { e -> e.register(subscriber) }
-            post(UpdatedWorld(this))
+            post(UpdatedWorld(copy()))
         }
     }
 

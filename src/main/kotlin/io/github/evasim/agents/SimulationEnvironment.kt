@@ -117,11 +117,7 @@ class SimulationEnvironment(
         }
         if (update_energy in newData) {
             val energyMap = newData[update_energy] as Map<String, Energy>
-            energyMap.forEach { (agentId, energy) ->
-                round.world.findBlob(agentId)?.let { blob ->
-                    blob.health + energy
-                }
-            }
+            energyMap.forEach { (agentId, energy) -> round.world.findBlob(agentId)?.updateHealth(energy) }
         }
         return copy(data = data + (collectedFood to collectedFoods))
     }

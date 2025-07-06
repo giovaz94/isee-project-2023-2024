@@ -22,8 +22,8 @@ interface Blob : Entity, EventPublisher {
     val direction: Direction
         get() = velocity.normalized() ?: defaultDirection
 
-    /** The blob current [Health]. */
-    val health: Health
+    /** The blob current health. */
+    val health: Energy
 
     /** The blob current [Sight]. */
     val sight: Sight
@@ -40,6 +40,9 @@ interface Blob : Entity, EventPublisher {
     /** Updates the blob velocity with the given vector. */
     fun updateVelocity(newVelocity: Vector2D)
 
+    /** Updates the blob health by the given delta amount. */
+    fun updateHealth(delta: Energy)
+
     /** Updates the blob internal position based on the current velocity and elapsed time. */
     fun update(elapsedTime: Duration = 50.milliseconds)
 
@@ -55,7 +58,7 @@ interface Blob : Entity, EventPublisher {
     /** Clones this blob, creating a new instance with the specified parameters. */
     fun clone(
         id: Entity.Id = this.id,
-        health: Health = this.health,
+        health: Health = Health(min = 0.0, max = 2.0),
         personality: Personality = this.personality,
         position: Position2D = this.position,
         shape: Shape = this.shape,
@@ -107,10 +110,10 @@ interface Health {
     val max: Energy
 
     /** Increases the current health by the given amount. */
-    operator fun plus(health: Energy)
+    operator fun plus(health: Energy): Health
 
     /** Decreases the current health by the given amount. */
-    operator fun minus(health: Energy)
+    operator fun minus(health: Energy): Health
 
     /** Health factory methods. */
     companion object {
@@ -123,18 +126,12 @@ interface Health {
 }
 
 private data class BasicHealth(
-    private var currentEnergy: Energy,
+    override val current: Energy,
     override val min: Energy,
     override val max: Energy,
 ) : Health {
-    override val current: Energy
-        get() = currentEnergy
-    override fun plus(health: Energy) {
-        currentEnergy = min(currentEnergy + health, max)
-    }
-    override fun minus(health: Energy) {
-        currentEnergy = max(current - health, min)
-    }
+    override fun plus(health: Energy) = BasicHealth(min(current + health, max), min, max)
+    override fun minus(health: Energy) = BasicHealth(max(current - health, min), min, max)
 }
 
 private data class BlobImpl(
@@ -145,7 +142,7 @@ private data class BlobImpl(
     private var currentVelocity: Vector2D,
     override val defaultDirection: Direction,
     override val sight: Sight,
-    override val health: Health,
+    private var currentHealth: Health,
     override val reproductionStrategy: ReproductionStrategy,
 ) : Blob, EventBusPublisher() {
 
@@ -157,9 +154,17 @@ private data class BlobImpl(
     override val velocity: Vector2D
         get() = currentVelocity
 
+    override val health: Energy
+        get() = currentHealth.current
+
     override fun applyForce(force: Vector2D) = update(currentPosition, currentVelocity + force)
 
     override fun updateVelocity(newVelocity: Vector2D) = update(currentPosition, newVelocity)
+
+    override fun updateHealth(delta: Energy) {
+        currentHealth += delta
+        post(UpdatedBlob(copy()))
+    }
 
     override fun update(elapsedTime: Duration) {
         val elapsedSeconds = elapsedTime.toDouble(DurationUnit.SECONDS)
@@ -176,9 +181,9 @@ private data class BlobImpl(
 
     override fun isAlive(): Boolean = !isDead()
 
-    override fun isDead(): Boolean = reproductionStrategy.invoke(health.current) == State.Dead
+    override fun isDead(): Boolean = reproductionStrategy.invoke(health) == State.Dead
 
-    override fun canReproduce(): Boolean = reproductionStrategy.invoke(health.current) == State.Reproducing
+    override fun canReproduce(): Boolean = reproductionStrategy.invoke(health) == State.Reproducing
 
     override fun clone(
         id: Entity.Id,
