@@ -170,3 +170,31 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 16, 0.4, 0, 6);
     -fx-scale-x: 1.05; -fx-scale-y: 1.05;
 }
+
+/* "Dove Blobs" series */
+.chart-series-area-line.series0 {
+    -fx-stroke: #da963b;
+}
+
+.chart-series-area-fill.series0 {
+    -fx-fill: #da963b;
+    -fx-fill-opacity: 0.6;
+}
+
+/* "Hawk Blobs" series */
+.chart-series-area-line.series1 {
+    -fx-stroke: #a5cce0;
+}
+
+.chart-series-area-fill.series1 {
+    -fx-fill:#a5cce0;
+    -fx-fill-opacity: 0.6;
+}
+
+.chart-area-symbol.series0 {
+    -fx-background-color: #da963b;
+}
+
+.chart-area-symbol.series1 {
+    -fx-background-color: #a5cce0;
+}

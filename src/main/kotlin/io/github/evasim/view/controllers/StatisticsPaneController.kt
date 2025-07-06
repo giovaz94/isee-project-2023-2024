@@ -30,7 +30,7 @@ internal class StatisticsPaneController : Initializable {
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         ToggleController(toggleButton, statisticsPanel)
-        areaChart.data.addAll(doveSeries, hawkSeries)
+        areaChart.data.addAll(hawkSeries, doveSeries)
     }
 
     internal fun updateData(roundNumber: Int, doveBlobs: Int, hawkyBlobs: Int) = Platform.runLater {
