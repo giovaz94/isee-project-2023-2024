@@ -511,13 +511,14 @@ Random number provider and configuration can be found inside the `utils` package
 ## Deployment instructions
 
 The application is [distributed as a `jar` on GitHub releases](https://github.com/giovaz94/isee-project-2023-2024/releases/latest).
-To run the application, you can simply execute the following command:
+Choose the appropriate version for your operating system and download it.
+To run the application, you can simply execute the following command (Java 17+ is required):
 
 ```bash
-java -jar <path-to-jar>/evasim-<version>-all.jar
+java -jar <path-to-jar>/evasim-<version>-<os>.jar
 ```
 
-Alternatively, you can build the project using Gradle and run it from the command line:
+Alternatively, you can build the project using Gradle that takes care of all dependencies and configurations, Java included, with:
 
 ```bash
 ./gradlew run
