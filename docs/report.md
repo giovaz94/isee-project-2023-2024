@@ -28,7 +28,7 @@
 ## Requirements Analysis
 
 - The simulation is composed of a sequence of rounds;
-- Food is spawned casually inside the map;
+- A fixed amount of food is spawned casually inside the map;
 - Food pieces come in pairs and each one of them can be further split in half.
 - Each food can be eaten only when two blob creatures are in contact with it: this to simulate access to resources requires group effort;
 - Survival and reproduction rules:
@@ -57,17 +57,13 @@
 
 ## Design
 
-This section presents the system design, covering the domain model, architecture, and agent design — with particular 
+This section presents the system design, covering the domain model, architecture, and agent design with particular 
 emphasis on the latter.
 
 By working with [JaKtA](https://JaKtA-bdi.github.io), we were able to clearly separate the “passive” and “active” parts 
 of the system. The passive part maintains the domain classes that describe the environment, while the active part 
 manages the agents and their interactions.
 
-The agent management component communicates with the domain layer to update the simulation state, which in turn affects 
-the environment rendered in the GUI.This interaction is handled via an EventBus: domain classes act as event emitters, 
-while the GUI controller subscribes to these events.When an agent updates an entity, it triggers an event, prompting 
-the GUI controller to render the updated entity accordingly.
 
 ### Domain model
 
@@ -220,7 +216,10 @@ classDiagram
 ### Architecture
 
 The architecture follows the classic Model-View-Controller (MVC) pattern.
-Domain Model updates are reified in events that are published towards subscribed boundaries through an event bus.
+The agent management component communicates with the domain layer to update the simulation state, which in turn affects
+the environment rendered in the GUI.This interaction is handled via an EventBus: domain classes act as event emitters,
+while the GUI controller subscribes to these events.When an agent updates an entity, it triggers an event, prompting
+the GUI controller to render the updated entity accordingly.
 
 An overview of the architecture is shown in the following diagram:
 
@@ -277,7 +276,7 @@ classDiagram
 
 ### Agents design
 
-The simulation is composed of a moltitude of `Blob` agents, each one simulating the behavior of a blob creature in the simulation world environment depending on its personality.
+The simulation is composed of a multitude of `Blob` agents, each one simulating the behavior of a blob creature in the simulation world environment depending on its personality.
 
 In the following sections are described the behaviors of the agents in terms of their beliefs, desires and intentions (BDI) and the actions they can perform on the environment, affecting the world state.
 
@@ -285,7 +284,7 @@ The primary goal of each agent is to obtain enough food each day to survive and 
 
 #### Food search and collection
 
-The high level behavior of the agents is described in the following UML state diagram that shows the main states the agents can be in during the simulation.
+The high level behavior of the agents is described in the following UML state diagram that shows the main states that agents can assume during the simulation.
 State transitions events in the diagram reflect updates to the agent's belief base, triggered by environmental changes during the perception phase of the agent's reasoning cycle (`+belief` means `belief` has been added, while `-belief` means `belief` has been removed).
 
 - At the start of the simulation, each agent is spawned at a random position within the world and their goal is to find and collect food. Since they do not know their exact position and have limited sight, they explore the world randomly (`exploring` state).
@@ -313,9 +312,9 @@ stateDiagram
 More specifically:
 
 - depending on the agent's personality, the agent stops searching for food when it has enough energy to reproduce itself: _doves_ stop searching, while _hawks_ continue searching until the end of the round
-  - this is to simulate the fact that _hawks_ are more aggressive and will try to steal food from other agents as much as possible, while _doves_ are more peaceful and will not try to steal food from others that are unused;
+  - this is to simulate the fact that _hawks_ are more aggressive and will try to steal food from other agents as much as possible, while _doves_ are more peaceful and will only try to gain the necessary amount of energy in order to reproduce themselves;
 - the exploration is performed by moving in a random direction for a certain number of steps (drawn randomly from a range of values), followed by a change of direction;
-- when an agent "sees" food in its sight that still has uncollected pieces, it starts moving towards it, one step at a time, changing its direction to point towards the food;
+- when an agent "sees" food in its sight that still has uncollected pieces, it starts moving towards it, one step at a time, changing its direction to point towards the food (`waypoint_direction` goal);
   - if multiple foods with uncollected pieces are in the agent's sight, the one that has some uncollected pieces, yet not completely collected is chosen as the target, fallback to the closest one if all are not fully collected;
 - when the agent reaches the food, it tries to collect it;
   - depending on the outcome of the collection attempt, the agent may either:
@@ -340,17 +339,17 @@ graph TD
     B -- "\>= reproduction threshold" --> C["!find_food"]
     C --> D{"status"}
 
-    D -- "exploring" --> E0["draw_random(Extracted, Min, Max)"]
+    D -- "exploring" --> E0["random(Extracted, Min, Max)"]
     E0 --> E1["!move_on(Extracted steps)"]
     E1 --> F["!change_direction"]
     F --> C
 
-    D -- "reached(F)" --> I["collect food F"]
+    D -- "reached(Food)" --> I["collect(Food)"]
     I --> L{"outcome"}
     L -- "+collected(Food, Energy, Blobs)" --> M["!check_contention(Food, Energy, Blobs)"]
     L -- "+not_collected" --> C
 
-    D -- "targeting(Food)" --> G["!update_direction_towards(Food)"]
+    D -- "targeting(Food)" --> G["!waypoint_direction(Food)"]
     G --> H["!move_on(1 steps)"]
     H --> C
 
@@ -358,8 +357,9 @@ graph TD
 ```
 
 #### Contention
-Once two agents reach the same piece of food, they will enter a `contention` phase.Based on their personalities,
-they will begin to gain energy from the shared food source.  
+
+Once two agents reach the same piece of food, they will enter in a `contention` phase. 
+Based on their personalities, they will begin to gain energy from the shared food source.  
 A general overview of this process is shown in the following diagram:
 
 ```mermaid
@@ -382,18 +382,18 @@ sequenceDiagram
     end
 ```
 
-- When a `Blob` reaches a piece of food in the environment and successfully collects it, it will check whether any other
+- When a blob reaches a piece of food in the environment and successfully collects it, it will check whether any other
   Blob has collected the same food.
-    - If another `Blob` is present, the first `Blob` will send a message to the other one containing:
-        - its personality
-        - the total energy of the food
-        - the foodID
+    - If another blob is present, the first blob will send a message to the other one containing:
+        - its personality;
+        - the total energy of the food;
+        - the foodID.
 
-- The `Blob` that receives this message will then _split_ the food’s energy according to a contention rule.This rule  
-  determines how the energy should be divided is based on both `Blob` personalities.
-- The `Blob` will then proceed to assimilate its portion accordingly, eliminating the food from the environment
+- The blob that receives this message will then _split_ the food’s energy according to a contention rule.This rule  
+  determines how the energy should be divided is based on both blob personalities.
+- The blob will then proceed to assimilate its portion accordingly, eliminating the food from the environment
   and sending a message to the other one containing the energy that should assimilate from the contention
-- Finally, the `Blob that ha received the message will proceed to update its energy accordingly.
+- Finally, the blob that ha received the message will proceed to update its energy accordingly.
 
 ## Salient implementation details
 
@@ -430,17 +430,83 @@ The codebase is organized in the following package structure:
     └── view                            # The user interface classes
 ```
 
+### Agent plan specification
+Here is reported the MAS of a blob agent that is defined inside our application 
+
+<div align="center" style="font-size: 0.9em; color: gray;">
+
+_(<a id="listing1">Listing 1</a>): ...
+
+</div>
+
+```kotlin
+fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
+    beliefs {
+        fact { personality(if (blob.personality is Hawk) "Hawk" else "Dove") }
+        fact { energy(0.0) }
+        fact { direction(tupleOf(0.0, 0.0)) }
+        fact { speed(term = 20.0) }
+        fact { status(exploring) }
+    }
+    actions {
+        action(Random)
+        action(WaypointDirection)
+        action(InverseDirection)
+        action(EndRound)
+    }
+    goals {
+        achieve(change_direction)
+        achieve(forage)
+    }
+    plans {
+        forage()
+        findFood()
+        movement()
+        collectFood(blob)
+        contention(blob)
+        endedRound()
+    }
+    timeDistribution { Time.real(value = 50) }
+}
+```
+#### Beliefs
+
+Agents start with the following beliefs:
+
+- `personality(P)`: is the personality of the blob that moves inside the Environment this could be "Hawk" or "Dove";
+- `energy(E)`: is the total energy gained in this round by the agent;
+- `direction(tuple(X,Y))`: is the direction that the agent is traveling in space;
+- `speed(term = 20.0)`: The current speed of the blob;
+- `status(exploring)`: the current status of the agent, initially in `exploring`.
+
+#### Actions
+
+The actions section represents the internal action that an agent can execute during its life cycle:
+
+- `Random`: generates a random value in the range `[LowerBound, UpperBound)`.
+- `WaypointDirection`: internal action that calculates the direction that the blob should take to reach the target position.
+- `InverseDirection`: internal action that calculates the inverse direction with a refracted angle between -45 and +45 degrees, randomly chosen. 
+- `EndRound`: internal action that stops the agent.
+
+#### Initial goals
+
+The goals section in the MAS of the agents represent the initial objectives that an agent aim to achieve during its lifetime.
+
+#### Plans
+
+The `plan` specification list all the available plans the agent can follow as described in the [Agents design](#agents-design) section.
+
 ### Food collection
 
 As already described in the [Agents design](#agents-design) section, the food collection is a crucial part of the simulation, as it drives the agents' survival and reproduction, and is implemented as a two-phase process: when an agent reaches a food piece, it attempts to collect it.
 If the food has uncollected pieces, the agent proceeds to the contention phase.
 However, if multiple agents simultaneously attempt to collect the same food, the collection fails and the agent returns to the exploration phase.
 
-To program such a behavior, the `CollectFood` external action (as shown in [Listing 1](#listing1)) has been implemented to apply the collection side effect on the simulation world state, calling the `updateData` method on the environment.
+To program such a behavior, the `CollectFood` external action (as shown in [Listing 2](#listing2)) has been implemented to apply the collection side effect on the simulation world state, calling the `updateData` method on the environment.
 
 <div align="center" style="font-size: 0.9em; color: gray;">
 
-_(<a id="listing1">Listing 1</a>): implementation of the `CollectFood` external action._
+_(<a id="listing2">Listing 2</a>): implementation of the `CollectFood` external action._
 
 </div>
 
@@ -460,11 +526,11 @@ internal object CollectFood : AbstractExternalAction(name = collect, arity = 1) 
 
 However, one important aspect to take into consideration is that the outcome of that action may or not, depending on the environment, fail.
 Unfortunately, the JaKtA framework does not provide a way to return an outcome as a result of an external action.
-To address this, the environment store in a `Map` the outcome of the collection attempts performed by each blob so that in the succeeding reasoning cycle the agent can check the outcome and update its belief base accordingly.
+To address this, the environment store in a `Map` (see [Listing 3](#listing3))the outcome of the collection attempts performed by each blob so that in the succeeding reasoning cycle the agent can check the outcome and update its belief base accordingly.
 
 <div align="center" style="font-size: 0.9em; color: gray;">
 
-_(<a id="listing2">Listing 2</a>): Definition of the `SimulationEnvironment` class with the data structure used to store the outcomes of the collection attempts._
+_(<a id="listing3">Listing 3</a>): Definition of the `SimulationEnvironment` class with the data structure used to store the outcomes of the collection attempts._
 
 </div>
 
@@ -487,12 +553,12 @@ class SimulationEnvironment(
 ) : EnvironmentImpl(externalActions, agentIDs, messageBoxes, perception, data)
 ```
 
-[Listing 3](#listing3) shows the implementation of the `updateData` method that updates the environment state storing the outcome of the food collection attempt inside the `data` map.
+[Listing 4](#listing4) shows the implementation of the `updateData` method that updates the environment state storing the outcome of the food collection attempt inside the `data` map.
 Once the outcome is stored, the agent, in the next reasoning cycle, can check the outcome and update its belief base, adding a `not_collected_food` belief if the collection failed, or a `collected_food` with all the relevant information needed to proceed with the contention phase if the contention succeeded.
 
 <div align="center" style="font-size: 0.9em; color: gray;">
 
-_(<a id="listing3">Listing 3</a>): implementation of the `updateData` method that updates the environment state with the outcome of the food collection attempt and the related perception logic._
+_(<a id="listing4">Listing 4</a>): implementation of the `updateData` method that updates the environment state with the outcome of the food collection attempt and the related perception logic._
 
 </div>
 
@@ -533,13 +599,19 @@ private fun collectedFoodOutcomes(blob: Blob): Belief? = collectedFoodData[blob]
     }
 }
 ```
+
 ### Contention
-We have already taking care of the aspect of [Contention](#contention), we now proceede to describe in a more detailed fashion
-the various phases that composes this aspect. First of all when an agent reach and collect a piece of food, it will call
-an external action named `check_contention`:
+
+We have already taken care of the aspect of [Contention](#contention) in the design section, we now proceed to describe more in depth the various phases that compose this aspect.
+First of all, when an agent reach and collect a piece of food, it will call an external action named `check_contention` (shown in [Listing 5](#listing5):
+
+<div align="center" style="font-size: 0.9em; color: gray;">
+
+_(<a id="listing5">Listing 5</a>): `CheckContention` external action implementation._
+
+</div>
 
 ```kotlin
-
 internal class CheckContention(
     private val maxContenders: Int = 2,
 ) : AbstractExternalAction(check_contention, arity = 4) {
@@ -559,13 +631,19 @@ internal class CheckContention(
     }
 }
 ```
-This accept as parameter the List of contenders ids that are on the same food, when the fist blob reach it the list is 
-composed only by its IDs, only when a second contendant reaches the piece of food it will send a message to the other 
+
+`CheckContention` accepts as parameter the list of contenders ids that are on the same food: when the fist blob reach it the list is composed only by its ID, only when a second contender reaches the piece of food it will send the following message to the other 
 
 ```kotlin
 Struct.of(contention, personality, energy, foodId)
 ```
-and starts the contention protocol that is taking care by the following external action :
+and starts the contention protocol that is implemented in the [Listing 6](#listing6):
+
+<div align="center" style="font-size: 0.9em; color: gray;">
+
+_(<a id="listing6">Listing 6</a>): `SolveContention` external action implementation._
+
+</div>
 
 ```kotlin
 internal object SolveContention : AbstractExternalAction(solve_contention, arity = 6) {
@@ -591,7 +669,39 @@ internal object SolveContention : AbstractExternalAction(solve_contention, arity
 }
 ```
 
+This will obtain all the necessary information for determining the right amount of energy to send to the contenders, and also will be in charge of removing the food from the Environment.
 
+### Perception
+
+Initially, perception management did not allow information about the percepting agent to be obtained.Following an update to the JaKtA framework API, the `percept` receives as input information about the agent that is performing it.In this way agents are able to perceive a portion of the environment limited to their positioning within the world.
+
+In [Listing 7](#listin7) it is possible to see an example of perception performed by each agent to get the surrounding foods.
+
+<div align="center" style="font-size: 0.9em; color: gray;">
+
+_(<a id="listing7">Listing 7</a>): environment perception implementation._
+
+</div>
+
+```kotlin
+override fun percept(agent: Agent): BeliefBase = round.world.findBlob(agent.name)?.let { blob ->
+    BeliefBase.of(
+        buildList {
+            add(position(blob.position).asBelief())
+            addAll(blobBounce(blob))
+            addAll(foodsCollidingWith(blob))
+            addAll(setOfNotNull(foodsSurrounding(blob), collectedFoodOutcomes(blob), endedRound()))
+        },
+    )
+} ?: BeliefBase.empty()
+
+private fun foodsSurrounding(blob: Blob): Belief? = round.world.foods
+    .filter { it in blob.sight && it.hasUncollectedPieces() }
+    .sortedWith(compareBy<Food> { if (it.hasCollectedPieces()) 0 else 1 }.thenBy { it.distanceTo(blob) })
+    .firstOrNull()
+
+// other perceptions...
+```
 
 ### Addressing reproducibility
 
@@ -613,21 +723,14 @@ Random number provider and configuration can be found inside the `utils` package
 
 ## Results
 
-In the [original experiment](https://www.youtube.com/watch?v=YNMkADpvO4w&t=445s), blobs interact with food, and 
-consequently with each other, in a synchronous manner: pairs of blobs are selected and automatically placed on a shared 
-food item, which they compete over to gain energy.
+In the [original experiment](https://www.youtube.com/watch?v=YNMkADpvO4w&t=445s), blobs interact with food, and consequently with each other, in a synchronous manner: pairs of blobs are selected and automatically placed on a shared food item, which they compete over to gain energy.
 
-Our simulation differs from the original in the following ways:
+Our simulation differs from the original since blobs have the ability to search for food within the environment and will continue searching until they are able to reproduce.
 
-- A fixed amount of food is available in each round and remains constant throughout the simulation.
-- Blobs have the ability to search for food within the environment and will continue searching until they are full 
-  (i.e., they have accumulated enough energy to reproduce).
+These changes can significantly affect the simulation.
+For example, a blob might fail to find any food or could end up competing with the same blob multiple times in a single round.
 
-These changes can significantly affect the simulation.For example, a blob might fail to find any food or could end up
-competing with the same blob multiple times in a single round.
-
-We conducted the experiments by running 5 simulations, each consisting of a maximum of 20 rounds, while varying the number 
-and type of blobs involved:
+We conducted the experiments by running 5 simulations, each consisting of a maximum of 20 rounds, while varying the number and type of blobs involved:
 
 - Equal number of _Hawk_ and _Dove_ blobs 
 - Majority of _Hawk_ blobs
@@ -665,13 +768,17 @@ Once opened, you have to setup the following parameters:
 Then, you can start the simulation by clicking on the "Start" button.
 The simulation can only be stopped and not resumed.
 
-![usage example](../.resources/usage-example.png)
+![usage example](resources/imgs/usage-example.png)
 
 ## Conclusions
 
+This project allowed to us to understand with hand-on-code the agent programming paradigm als  
+
+Moreover, trying to build a simulation, even if simple, exposed us to relevant problems, such as performances issues when dealing with a large number of agents to be simulated and reproducibility of the experiments.
+
 Using JaKtA as a BDI framework allowed to meld together the passive OOP design of the domain model with the active BDI agent-oriented design.
 
-TODO!
+
 
 ### JaKtA suggested improvements
 
