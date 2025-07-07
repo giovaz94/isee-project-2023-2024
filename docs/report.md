@@ -1,5 +1,15 @@
 # Evolutionary Agent-based Aggression Simulation - EvASim
 
+<div align="center">
+
+#### Authors:
+
+Giovanni Antonioni - giovanni.antonioni2@studio.unibo.it
+
+Luca Tassinari - luca.tassinari10@studio.unibo.it
+
+</div>
+
 1. [Goals of the project](#goals-of-the-project)
 2. [Requirements Analysis](#requirements-analysis)
    1. [Non functional requirements](#non-functional-requirements)
