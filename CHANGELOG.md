@@ -1,3 +1,21 @@
+## [0.10.0](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.13...0.10.0) (2025-07-07)
+
+### Features
+
+* update readme and documentation ([a8443c5](https://github.com/giovaz94/isee-project-2023-2024/commit/a8443c577721174dcbe7b86769c755a5aeebebb8))
+
+### Documentation
+
+* re-inserting wrongly deleted parts ([f9dca58](https://github.com/giovaz94/isee-project-2023-2024/commit/f9dca58ddf05221460a7473af1cfcbbd23258f12))
+
+### General maintenance
+
+* adding todos ([7436847](https://github.com/giovaz94/isee-project-2023-2024/commit/7436847513cad80a0ec6a40016c5e14a1e9b0786))
+
+### Style improvements
+
+* change part of the mas file moving parts inside findFood ([c93b4d7](https://github.com/giovaz94/isee-project-2023-2024/commit/c93b4d75e9f665b663f7a11c81b4af5f772d5900))
+
 ## [0.9.13](https://github.com/giovaz94/isee-project-2023-2024/compare/0.9.12...0.9.13) (2025-07-07)
 
 ### Documentation
