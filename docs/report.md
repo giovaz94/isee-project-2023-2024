@@ -719,7 +719,7 @@ Therefore, the choice was made to use a single thread to run per MAS, which allo
 
 For the second problem, a single random number generator provider has been used throughout the simulation, which can be seeded by the user to ensure reproducibility in the random number generation and guarantee that every action that depends on some randomness can be reproduced by using the same seed.
 
-Random number provider and configuration can be found inside the `utils` package, [here](https://github.com/giovaz94/isee-project-2023-2024/blob/main/src/main/kotlin/io/github/evasim/utils/RandomProvider.kt).
+Random number provider and configuration can be found inside the `utils` package, [here](https://github.com/giovaz94/evasim/blob/main/src/main/kotlin/io/github/evasim/utils/RandomProvider.kt).
 
 ## Results
 
@@ -740,7 +740,7 @@ We conducted the experiments by running 5 simulations, each consisting of a maxi
 
 ## Deployment instructions
 
-The application is [distributed as a `jar` on GitHub releases](https://github.com/giovaz94/isee-project-2023-2024/releases/latest).
+The application is [distributed as a `jar` on GitHub releases](https://github.com/giovaz94/evasim/releases/latest).
 Choose the appropriate version for your operating system and download it.
 To run the application, you can simply execute the following command (Java 17+ is required):
 
@@ -771,14 +771,11 @@ The simulation can only be stopped and not resumed.
 ![usage example](resources/imgs/usage-example.png)
 
 ## Conclusions
+This project allowed us to gain a hands-on understanding of the agent programming paradigm through coding.
 
-This project allowed to us to understand with hand-on-code the agent programming paradigm als  
+Using JaKtA, an in-development agent-based programming framework, allowed us to analyze certain aspects of its functionality in more detail, particularly during the debugging phase, as there were some minor shortcomings.
 
 Moreover, attempting to build even a simple simulation exposed us to several important challenges, such as performance issues when handling a large number of agents and difficulties in ensuring the reproducibility of experiments.
-
-Using JaKtA as a BDI framework allowed to meld together the passive OOP design of the domain model with the active BDI agent-oriented design.
-
-
 
 ### JaKtA suggested improvements
 
@@ -807,14 +804,14 @@ _Additional details on each of these suggestions can be provided upon request._
 - **[Improvement]** currently, the JaKtA framework allows choosing between two different concurrency abstractions: either one thread per MAS or one thread per agent. However, in large simulations with many agents, neither the two are optimal.
   Therefore, we believe it would be beneficial to introduce a third execution strategy based on a thread pool—such as Java’s ExecutorService—or by leveraging lightweight concurrency models like Java 21 Virtual Threads or Kotlin Coroutines. This would enable more efficient execution of the agents' reasoning cycles by avoiding the overhead of creating a separate thread for each agent.
 
-### Future work
+- **[Major Feature]** it would be greatly appreciated in a future to have the ability to launch and run JaKtA in a cluster environment using existing orchestrators (such as Kubernetes or Docker Swarm) by splitting the various components into separate services and orchestrating them in a distributed manner
+
+### Future works
 
 Possible extensions that were left out:
 
-- food discovery by "tips" from other agents
+- food discovery by "tips" from other agents:
+  - _doves_ provide correct tips about where other agents can find available foods, while _hawks_ provide wrong tips;
+  - only _doves_ listen to the correct tips.
 
-  - _doves_ provide correct tips
-  - while _hawks_ provide wrong tips
-  - only _doves_ listen to the correct tips
-
-- _doves_ network among themselves by "shouting" when they have been hawked
+- _doves_ make network to defend against _hawks_ by "shouting" when they have been hawked, increasing the belief base of nearby _dove_ agents about the fact a precise blob is acting as a _hawk_. This can be leveraged in future contentions by _doves_ to be "smarter" than the adversary.

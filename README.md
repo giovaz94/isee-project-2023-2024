@@ -10,7 +10,7 @@ This is part of an academic project for the _Intelligent Systems Engineering_ co
 
 ## How to run
 
-The application is [distributed as a `jar` on GitHub releases](https://github.com/giovaz94/isee-project-2023-2024/releases/latest).
+The application is [distributed as a `jar` on GitHub releases](https://github.com/giovaz94/evasim/releases/latest).
 Choose the appropriate version for your operating system and download it.
 To run the application, you can simply execute the following command (Java 17+ is required):
 
@@ -32,6 +32,6 @@ The full project documentation can be found [here](docs/report.md).
 
 ## Authors
 
-<a href="https://github.com/giovaz94/isee-project-2023-2024/graphs/contributors">
-	<img src="https://contributors-img.web.app/image?repo=giovaz94/isee-project-2023-2024" />
+<a href="https://github.com/giovaz94/evasim/graphs/contributors">
+	<img src="https://contributors-img.web.app/image?repo=giovaz94/evasim" />
 </a>
