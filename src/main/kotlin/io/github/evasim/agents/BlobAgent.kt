@@ -13,7 +13,7 @@ import it.unibo.tuprolog.core.Var
  */
 fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     beliefs {
-        fact { personality(if (blob.personality is Hawk) "hawk" else "dove") }
+        fact { personality(if (blob.personality is Hawk) "Hawk" else "Dove") }
         fact { energy(0.0) }
         fact { direction(tupleOf(0.0, 0.0)) }
         fact { speed(term = 20.0) }
@@ -41,7 +41,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
 }
 
 private fun PlansScope.forage() {
-    +achieve(forage) onlyIf { personality("hawk").fromSelf or (energy(E).fromSelf and (E lowerThan 2.0)) } then {
+    +achieve(forage) onlyIf { personality("Hawk").fromSelf or (energy(E).fromSelf and (E lowerThan 2.0)) } then {
         update(status(exploring).fromSelf)
         achieve(find_food)
         achieve(collect_food)
@@ -62,6 +62,16 @@ private fun PlansScope.findFood(minSteps: Int = 100, maxSteps: Int = 200) {
         achieve(find_food)
     }
     +achieve(find_food) onlyIf { status(reached(`_`)).fromSelf }
+
+    +food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
+        update(status(targeting(P)).fromSelf)
+    }
+    -food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
+        update(status(exploring).fromSelf)
+    }
+    +reached_food(F).fromPercept then {
+        update(status(reached(F)).fromSelf)
+    }
 }
 
 private fun PlansScope.movement(minValue: Double = -1.0, maxValue: Double = 1.0) {
@@ -89,15 +99,6 @@ private fun PlansScope.movement(minValue: Double = -1.0, maxValue: Double = 1.0)
 private fun PlansScope.collectFood(blob: Blob) {
     +achieve(collect_food) onlyIf { status(reached(F)).fromSelf } then {
         execute(collect(F))
-    }
-    +food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
-        update(status(targeting(P)).fromSelf)
-    }
-    -food(P).fromPercept onlyIf { not(status(reached(`_`)).fromSelf) } then {
-        update(status(exploring).fromSelf)
-    }
-    +reached_food(F).fromPercept then {
-        update(status(reached(F)).fromSelf)
     }
     +not_collected_food.fromPercept onlyIf { status(reached(`_`)).fromSelf } then {
         update(status(exploring).fromSelf)
