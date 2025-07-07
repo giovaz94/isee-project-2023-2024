@@ -774,7 +774,7 @@ The simulation can only be stopped and not resumed.
 
 This project allowed to us to understand with hand-on-code the agent programming paradigm als  
 
-Moreover, trying to build a simulation, even if simple, exposed us to relevant problems, such as performances issues when dealing with a large number of agents to be simulated and reproducibility of the experiments.
+Moreover, attempting to build even a simple simulation exposed us to several important challenges, such as performance issues when handling a large number of agents and difficulties in ensuring the reproducibility of experiments.
 
 Using JaKtA as a BDI framework allowed to meld together the passive OOP design of the domain model with the active BDI agent-oriented design.
 
@@ -809,7 +809,7 @@ _Additional details on each of these suggestions can be provided upon request._
 
 ### Future work
 
-Possible extensions:
+Possible extensions that were left out:
 
 - food discovery by "tips" from other agents
 
