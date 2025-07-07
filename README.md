@@ -1,12 +1,12 @@
 # Evolutionary Agent-based Aggression Simulation - EvASim
 
-EvASim is an agent-based simulation developed to study the dynamics of aggression in a population consisting of two species—doves and hawks—by modeling their competition for survival and the resulting evolutionary outcomes over time [^1].
+EvASim is an agent-based simulation developed to study the dynamics of aggression in a population consisting of two species—doves and hawks—that compete for survival and examine how their evolution unfolds over time [^1].
 
 [^1]: Inspired from the [Simulating the Evolution of Aggression, by Primer](https://www.youtube.com/watch?app=desktop&v=YNMkADpvO4w&t=5s)'s video.
 
-![demo](.resources/demo.gif)
-
 This is part of an academic project for the _Intelligent Systems Engineering_ course @ University of Bologna, Italy.
+
+![demo](.resources/demo.gif)
 
 ## How to run
 
@@ -29,3 +29,9 @@ For any problem, please fill an [issue](https://github.com/giovaz94/isee-project
 ## Documentation
 
 The full project documentation can be found [here](docs/report.md).
+
+## Authors
+
+<a href="https://github.com/giovaz94/isee-project-2023-2024/graphs/contributors">
+	<img src="https://contributors-img.web.app/image?repo=giovaz94/isee-project-2023-2024" />
+</a>

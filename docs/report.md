@@ -49,11 +49,11 @@
 
 ### Non functional requirements
 
-- The simulation should be able to run for a long time, simulating the evolution of the species over many rounds, with a decent number of agents (e.g., 60) without crashing or having performance issues.
+- The simulation should be able to run for a long time, simulating the evolution of the species over many rounds, with a decent number of agents (> 60) without crashing or having performance issues.
 
 ### Implementation requirements
 
-- TODO: [JaKtA framework](https://JaKtA-bdi.github.io).
+- For what concern the Agent BDI framework, [JaKtA](https://JaKtA-bdi.github.io) has been chosen as it is a Kotlin-based DSL that should allow to implement BDI agents in a declarative way and seamlessly integrate with object-oriented and functional programming paradigms, taking full advantage of Kotlin's modern features and syntax.
 
 ## Design
 
@@ -524,19 +524,40 @@ Alternatively, you can build the project using Gradle that takes care of all dep
 ./gradlew run
 ```
 
+## Usage example
+
+The simulation is really simple to be used.
+Once opened, you have to setup the following parameters:
+
+- number of dove blob agents;
+- number of hawk blob agents;
+- number of food pieces to spawn at each round;
+- optionally, a maximum round duration, expressed in seconds;
+- optionally, a seed for the random number generator to ensure reproducibility of the simulation.
+
+Then, you can start the simulation by clicking on the "Start" button.
+The simulation can only be stopped and not resumed.
+
+![usage example](../.resources/usage-example.png)
+
 ## Conclusions
 
-Using JaKtA as a BDI framework allowed to meld together the passive OOP design
+Using JaKtA as a BDI framework allowed to meld together the passive OOP design of the domain model with the active BDI agent-oriented design.
+
+TODO!
 
 ### JaKtA suggested improvements
 
-In this section we summarize the suggested improvements that have been identified during the project development, which could enhance the usability and functionality of the framework:
+In this section, we summarize the suggested improvements that have been identified during the project development, which could enhance the usability and functionality of the framework.
+_Additional details on each of these suggestions can be provided upon request._
 
-- [Bug] sleep and stop bugs
+- **[Bug]** `sleep` and `stop` agent actions have buggy behavior. 
+  As already reported to the library authors, these actions differ in behavior depending on the execution strategy used. More specifically:
+  - the `sleepAgent` action does not work as expected if used in `discreteTimeExecution` execution strategy where agents get blocked forever;
+  - the `stopAgent` function when invoked in `oneThreadPerMAS` or `discreteTimeExecution` execution strategies does not stop only the agent that invoked it, but all the agents in the MAS.
+  - these bugs have been tracked to make them reproducible in [this gist](https://gist.github.com/giovaz94/6261fece98b70abc565ea418db6374d8).
 
-  - as already signalled, see [this gist](https://gist.github.com/giovaz94/6261fece98b70abc565ea418db6374d8)
-
-- [Improvement] let the `updateData` return an outcome that can be used agent-side to proceed in their BDI plan
+- **[Improvement]** let the `updateData` return an outcome that can be used agent-side to proceed in their BDI plan
 
   - as presented in the [Food collection section](#food-collection) there are scenario in which external action may fail in executing side effectful computation on the environment and, therefore, is needed to signal the outcome of the action to the agent that invoked it.
     In Jason, for this purpose, the `executeAction` method of the `Environment` returns a `Boolean`:
@@ -549,7 +570,8 @@ In this section we summarize the suggested improvements that have been identifie
     Currently, in JaKtA, outcomes of potentially failing actions can be stored in the environment's state and make them accessible to the agents in form of perception beliefs, but this is counterintuitive and detracts from code clarity.
     From the perspective of a programmer using JaKtA, a cleaner solution would be for `Environment.updateData` to support returning outcomes directly, enabling agents to handle them within their BDI plans—similar to the mechanism used in Jason.
 
-- [Improvement] use thread pool to run the simulation
+- **[Improvement]** currently, the JaKtA framework allows choosing between two different concurrency abstractions: either one thread per MAS or one thread per agent. However, in large simulations with many agents, neither the two are optimal.
+  Therefore, we believe it would be beneficial to introduce a third execution strategy based on a thread pool—such as Java’s ExecutorService—or by leveraging lightweight concurrency models like Java 21 Virtual Threads or Kotlin Coroutines. This would enable more efficient execution of the agents' reasoning cycles by avoiding the overhead of creating a separate thread for each agent.
 
 ### Future work
 
