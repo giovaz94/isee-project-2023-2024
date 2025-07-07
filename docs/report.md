@@ -11,13 +11,21 @@
       1. [Food search and collection](#food-search-and-collection)
       2. [Contention](#contention)
 4. [Salient implementation details](#salient-implementation-details)
-   1. [Food collection](#food-collection)
-   2. [Addressing reproducibility](#addressing-reproducibility)
+   1. [Agent plan specification](#agent-plan-specification)
+      1. [Beliefs](#beliefs)
+      2. [Actions](#actions)
+      3. [Initial goals](#initial-goals)
+      4. [Plans](#plans)
+   2. [Food collection](#food-collection)
+   3. [Contention](#contention-1)
+   4. [Perception](#perception)
+   5. [Addressing reproducibility](#addressing-reproducibility)
 5. [Results](#results)
 6. [Deployment instructions](#deployment-instructions)
-7. [Conclusions](#conclusions)
+7. [Usage example](#usage-example)
+8. [Conclusions](#conclusions)
    1. [JaKtA suggested improvements](#jakta-suggested-improvements)
-   2. [Future work](#future-work)
+   2. [Future works](#future-works)
 
 ## Goals of the project
 
@@ -57,13 +65,12 @@
 
 ## Design
 
-This section presents the system design, covering the domain model, architecture, and agent design with particular 
+This section presents the system design, covering the domain model, architecture, and agent design with particular
 emphasis on the latter.
 
-By working with [JaKtA](https://JaKtA-bdi.github.io), we were able to clearly separate the “passive” and “active” parts 
-of the system. The passive part maintains the domain classes that describe the environment, while the active part 
+By working with [JaKtA](https://JaKtA-bdi.github.io), we were able to clearly separate the “passive” and “active” parts
+of the system. The passive part maintains the domain classes that describe the environment, while the active part
 manages the agents and their interactions.
-
 
 ### Domain model
 
@@ -358,7 +365,7 @@ graph TD
 
 #### Contention
 
-Once two agents reach the same piece of food, they will enter in a `contention` phase. 
+Once two agents reach the same piece of food, they will enter in a `contention` phase.
 Based on their personalities, they will begin to gain energy from the shared food source.  
 A general overview of this process is shown in the following diagram:
 
@@ -384,10 +391,11 @@ sequenceDiagram
 
 - When a blob reaches a piece of food in the environment and successfully collects it, it will check whether any other
   Blob has collected the same food.
-    - If another blob is present, the first blob will send a message to the other one containing:
-        - its personality;
-        - the total energy of the food;
-        - the foodID.
+
+  - If another blob is present, the first blob will send a message to the other one containing:
+    - its personality;
+    - the total energy of the food;
+    - the foodID.
 
 - The blob that receives this message will then _split_ the food’s energy according to a contention rule.This rule  
   determines how the energy should be divided is based on both blob personalities.
@@ -431,11 +439,12 @@ The codebase is organized in the following package structure:
 ```
 
 ### Agent plan specification
-Here is reported the MAS of a blob agent that is defined inside our application 
+
+In [Listing 1](#listing1) is reported the MAS of a blob agent that is defined inside our application
 
 <div align="center" style="font-size: 0.9em; color: gray;">
 
-_(<a id="listing1">Listing 1</a>): ...
+_(<a id="listing1">Listing 1</a>): `BlobAgent` MAS specification._
 
 </div>
 
@@ -469,6 +478,7 @@ fun MasScope.blobAgent(blob: Blob) = agent(blob.id.value) {
     timeDistribution { Time.real(value = 50) }
 }
 ```
+
 #### Beliefs
 
 Agents start with the following beliefs:
@@ -485,7 +495,7 @@ The actions section represents the internal action that an agent can execute dur
 
 - `Random`: generates a random value in the range `[LowerBound, UpperBound)`.
 - `WaypointDirection`: internal action that calculates the direction that the blob should take to reach the target position.
-- `InverseDirection`: internal action that calculates the inverse direction with a refracted angle between -45 and +45 degrees, randomly chosen. 
+- `InverseDirection`: internal action that calculates the inverse direction with a refracted angle between -45 and +45 degrees, randomly chosen.
 - `EndRound`: internal action that stops the agent.
 
 #### Initial goals
@@ -578,32 +588,34 @@ override fun updateData(newData: Map<String, Any>): Environment {
     return copy(data = data + (collectedFood to collectedFoods))
 }
 
-override fun percept(agent: Agent): BeliefBase = round.world.findBlob(agent.name)?.let { blob ->
-    BeliefBase.of(
-        buildList {
-            // other beliefs logic...
-            addAll(setOfNotNull(collectedFoodOutcomes(blob)))
-        },
-    )
-} ?: BeliefBase.empty()
+override fun percept(agent: Agent): BeliefBase = round.world.findBlob(agent.name)
+    ?.let { blob ->
+        BeliefBase.of(
+            buildList {
+                // other beliefs logic...
+                addAll(setOfNotNull(collectedFoodOutcomes(blob)))
+            },
+        )
+    } ?: BeliefBase.empty()
 
-private fun collectedFoodOutcomes(blob: Blob): Belief? = collectedFoodData[blob]?.let { (food, contenders) ->
-    when {
-        food == null || contenders.isEmpty() -> not_collected_food().asBelief()
-        else -> Struct.of(
-            collected_food,
-            Atom.of(food.id.value),
-            TpList.from(contenders.map { it.id.value.toTerm() }.asSequence()),
-            Real.of(food.totalEnergy),
-        ).asBelief()
+private fun collectedFoodOutcomes(blob: Blob): Belief? = collectedFoodData[blob]
+    ?.let { (food, contenders) ->
+        when {
+            food == null || contenders.isEmpty() -> not_collected_food().asBelief()
+            else -> Struct.of(
+                collected_food,
+                Atom.of(food.id.value),
+                TpList.from(contenders.map { it.id.value.toTerm() }.asSequence()),
+                Real.of(food.totalEnergy),
+            ).asBelief()
+        }
     }
-}
 ```
 
 ### Contention
 
 We have already taken care of the aspect of [Contention](#contention) in the design section, we now proceed to describe more in depth the various phases that compose this aspect.
-First of all, when an agent reach and collect a piece of food, it will call an external action named `check_contention` (shown in [Listing 5](#listing5):
+First of all, when an agent reach and collect a piece of food, it will call an external action named `check_contention` (shown in [Listing 5](#listing5)):
 
 <div align="center" style="font-size: 0.9em; color: gray;">
 
@@ -632,11 +644,12 @@ internal class CheckContention(
 }
 ```
 
-`CheckContention` accepts as parameter the list of contenders ids that are on the same food: when the fist blob reach it the list is composed only by its ID, only when a second contender reaches the piece of food it will send the following message to the other 
+`CheckContention` accepts as parameter the list of contenders ids that are on the same food: when the fist blob reach it the list is composed only by its ID, only when a second contender reaches the piece of food it will send the following message to the other
 
 ```kotlin
 Struct.of(contention, personality, energy, foodId)
 ```
+
 and starts the contention protocol that is implemented in the [Listing 6](#listing6):
 
 <div align="center" style="font-size: 0.9em; color: gray;">
@@ -675,7 +688,7 @@ This will obtain all the necessary information for determining the right amount 
 
 Initially, perception management did not allow information about the percepting agent to be obtained.Following an update to the JaKtA framework API, the `percept` receives as input information about the agent that is performing it.In this way agents are able to perceive a portion of the environment limited to their positioning within the world.
 
-In [Listing 7](#listin7) it is possible to see an example of perception performed by each agent to get the surrounding foods.
+In [Listing 7](#listing7) it is possible to see an example of perception performed by each agent to get the surrounding foods.
 
 <div align="center" style="font-size: 0.9em; color: gray;">
 
@@ -732,7 +745,7 @@ For example, a blob might fail to find any food or could end up competing with t
 
 We conducted the experiments by running 5 simulations, each consisting of a maximum of 20 rounds, while varying the number and type of blobs involved:
 
-- Equal number of _Hawk_ and _Dove_ blobs 
+- Equal number of _Hawk_ and _Dove_ blobs
 - Majority of _Hawk_ blobs
 - Majority of _Dove_ blobs
 
@@ -771,6 +784,7 @@ The simulation can only be stopped and not resumed.
 ![usage example](resources/imgs/usage-example.png)
 
 ## Conclusions
+
 This project allowed us to gain a hands-on understanding of the agent programming paradigm through coding.
 
 Using JaKtA, an in-development agent-based programming framework, allowed us to analyze certain aspects of its functionality in more detail, particularly during the debugging phase, as there were some minor shortcomings.
@@ -782,8 +796,9 @@ Moreover, attempting to build even a simple simulation exposed us to several imp
 In this section, we summarize the suggested improvements that have been identified during the project development, which could enhance the usability and functionality of the framework.
 _Additional details on each of these suggestions can be provided upon request._
 
-- **[Bug]** `sleep` and `stop` agent actions have buggy behavior. 
+- **[Bug]** `sleep` and `stop` agent actions have buggy behavior.
   As already reported to the library authors, these actions differ in behavior depending on the execution strategy used. More specifically:
+
   - the `sleepAgent` action does not work as expected if used in `discreteTimeExecution` execution strategy where agents get blocked forever;
   - the `stopAgent` function when invoked in `oneThreadPerMAS` or `discreteTimeExecution` execution strategies does not stop only the agent that invoked it, but all the agents in the MAS.
   - these bugs have been tracked to make them reproducible in [this gist](https://gist.github.com/giovaz94/6261fece98b70abc565ea418db6374d8).
@@ -811,6 +826,7 @@ _Additional details on each of these suggestions can be provided upon request._
 Possible extensions that were left out:
 
 - food discovery by "tips" from other agents:
+
   - _doves_ provide correct tips about where other agents can find available foods, while _hawks_ provide wrong tips;
   - only _doves_ listen to the correct tips.
 
