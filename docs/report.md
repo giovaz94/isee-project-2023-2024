@@ -358,6 +358,42 @@ graph TD
 ```
 
 #### Contention
+Once two agents reach the same piece of food, they will enter a `contention` phase.Based on their personalities,
+they will begin to gain energy from the shared food source.  
+A general overview of this process is shown in the following diagram:
+
+```mermaid
+sequenceDiagram
+    participant Blob1 as Blob A
+    participant Food as Food
+    participant Blob2 as Blob B
+
+    Blob1->>Food: Reaches and collects food
+    Food-->>Blob1: Checks for other Blob
+    alt Another Blob present
+        Blob1->>Blob2: Send message<br/>[personality, total energy, foodID]
+        Blob2->>Blob2: Split energy (apply contention rule)
+        Blob2->>Blob1: Send portion for Blob A to assimilate
+        Blob2->>Blob2: Assimilate its portion & remove food
+        Blob1->>Blob1: Assimilate received portion
+    else No other Blob present
+        Blob1->>Blob1: Assimilate all energy
+        Blob1->>Food: Remove food
+    end
+```
+
+- When a `Blob` reaches a piece of food in the environment and successfully collects it, it will check whether any other
+  Blob has collected the same food.
+    - If another `Blob` is present, the first `Blob` will send a message to the other one containing:
+        - its personality
+        - the total energy of the food
+        - the foodID
+
+- The `Blob` that receives this message will then _split_ the food’s energy according to a contention rule.This rule  
+  determines how the energy should be divided is based on both `Blob` personalities.
+- The `Blob` will then proceed to assimilate its portion accordingly, eliminating the food from the environment
+  and sending a message to the other one containing the energy that should assimilate from the contention
+- Finally, the `Blob that ha received the message will proceed to update its energy accordingly.
 
 ## Salient implementation details
 
@@ -497,6 +533,65 @@ private fun collectedFoodOutcomes(blob: Blob): Belief? = collectedFoodData[blob]
     }
 }
 ```
+### Contention
+We have already taking care of the aspect of [Contention](#contention), we now proceede to describe in a more detailed fashion
+the various phases that composes this aspect. First of all when an agent reach and collect a piece of food, it will call
+an external action named `check_contention`:
+
+```kotlin
+
+internal class CheckContention(
+    private val maxContenders: Int = 2,
+) : AbstractExternalAction(check_contention, arity = 4) {
+    override fun action(request: ExternalRequest) {
+        val contendersId = request.arguments[0].castToList().toList()
+        val personality = request.arguments[1].castToAtom()
+        val energy = request.arguments[2].castToReal()
+        val foodId = request.arguments[3].castToAtom()
+        if (contendersId.size == maxContenders) {
+            val sender = request.sender
+            val message = Message(sender, Tell, Struct.of(contention, personality, energy, foodId))
+            contendersId
+                .map { it.toString().removeSurrounding("'") }
+                .filter { it != sender }
+                .forEach { sendMessage(it, message) }
+        }
+    }
+}
+```
+This accept as parameter the List of contenders ids that are on the same food, when the fist blob reach it the list is 
+composed only by its IDs, only when a second contendant reaches the piece of food it will send a message to the other 
+
+```kotlin
+Struct.of(contention, personality, energy, foodId)
+```
+and starts the contention protocol that is taking care by the following external action :
+
+```kotlin
+internal object SolveContention : AbstractExternalAction(solve_contention, arity = 6) {
+    override fun action(request: ExternalRequest) {
+        val foodId = request.arguments[0].castToAtom().value
+        val contenderId = request.arguments[1].castToAtom().value
+        val solverPersonality = request.arguments[2].castToAtom().value.castToPersonality()
+        val contenderPersonality = request.arguments[3].castToAtom().value.castToPersonality()
+        val totalEnergy = request.arguments[4].castToReal().value.toDouble()
+        val solverEnergy = request.arguments[5].castToVar()
+        val ruleOutput = contentionRule(solverPersonality, contenderPersonality, totalEnergy)
+        val contenderEnergy = ruleOutput.second
+        updateData(
+            remove_food to foodId,
+            update_energy to mapOf(contenderId to ruleOutput.second, request.sender to ruleOutput.first),
+        )
+        sendMessage(
+            contenderId,
+            Message(request.sender, Tell, Struct.of(contention_result, Real.of(contenderEnergy))),
+        )
+        addResults(Substitution.unifier(solverEnergy to Real.of(ruleOutput.first)))
+    }
+}
+```
+
+
 
 ### Addressing reproducibility
 
@@ -517,6 +612,28 @@ For the second problem, a single random number generator provider has been used 
 Random number provider and configuration can be found inside the `utils` package, [here](https://github.com/giovaz94/isee-project-2023-2024/blob/main/src/main/kotlin/io/github/evasim/utils/RandomProvider.kt).
 
 ## Results
+
+In the [original experiment](https://www.youtube.com/watch?v=YNMkADpvO4w&t=445s), blobs interact with food, and 
+consequently with each other, in a synchronous manner: pairs of blobs are selected and automatically placed on a shared 
+food item, which they compete over to gain energy.
+
+Our simulation differs from the original in the following ways:
+
+- A fixed amount of food is available in each round and remains constant throughout the simulation.
+- Blobs have the ability to search for food within the environment and will continue searching until they are full 
+  (i.e., they have accumulated enough energy to reproduce).
+
+These changes can significantly affect the simulation.For example, a blob might fail to find any food or could end up
+competing with the same blob multiple times in a single round.
+
+We conducted the experiments by running 5 simulations, each consisting of a maximum of 20 rounds, while varying the number 
+and type of blobs involved:
+
+- Equal number of _Hawk_ and _Dove_ blobs 
+- Majority of _Hawk_ blobs
+- Majority of _Dove_ blobs
+
+![Analysis Results](./resources/imgs/analysis_res.png)
 
 ## Deployment instructions
 

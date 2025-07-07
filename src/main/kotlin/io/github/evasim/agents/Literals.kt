@@ -114,14 +114,14 @@ internal val not_collected_food by OwnName
 /**
  * **Percept source belief: `contention(source(BlobId), Personality, Energy, Food)`**.
  *
- * Perception added by the environment to the agent's belief base as a result of ... TODO ...
+ * Perception added by the environment to the agent's belief base, used to signal the agent to take care of the
+ * contention outcome
  */
 internal val contention by OwnName
 
 /**
  * **Percept source belief: `contention_result(source(BlobId), `Energy`)`**.
  *
- * TODO: check
  * Perception added by the environment to the agent's belief base as a result of the [check_contention] external action
  * providing the result of a contention resolution with agent `BlobId`, providing energy `Energy`.
  */
@@ -235,16 +235,32 @@ internal val collect by OwnName
 internal val update by OwnName
 
 /**
- * **External action: `check_contention(B, P, E, F)`**.
+ * **External action: `check_contention(+BlobList, +Personality, +Energy, +FoodId)`**.
  *
- * TODO: Document this action
+ * Check if a Food, represented by FoodId is contended by two agents
+ *
+ * `BlobList` is a list representing the IDs of the agents that are contending the food.
+ * `Personality` is an atom representing the personality of the Blob that's currently checking
+ *  the contention.
+ *  `Energy` is a Real representing the total energy of the food.
+ *  `FoodId` is an atmo representing the ID of the contended food .
  */
 internal val check_contention by OwnName
 
 /**
- * **External action: `solve_contention(F, S, P, PE, E, N)`**.
+ * **External action:
+ * `solve_contention(+FoodId, +ContenderId, +SolverPersonality, +ContenderPersonality, +TotalEnergy, -SolverEnergy)`**.
  *
- * TODO: Document this action
+ *  external action that resolves contention for food identified by `FoodId` between the agent executing it and the
+ *  contender identified by `ContenderId`, using the personalities of both agents and the total energy available.
+ *
+ * `FoodId` is an atom representing the ID of the contended food .
+ * `ContenderID` an atom representing the ID of the contended agent
+ * `SolverPersonality` an atom representing the personality of the solver
+ * `ContenderPersonality` an atom representing the personality of the contender
+ * `TotalEnergy` is a real representing the total energy of the food
+ * `SolverEnergy` is an output variable representing the resulting solver energy.
+ *
  */
 internal val solve_contention by OwnName
 
