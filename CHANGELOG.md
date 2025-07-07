@@ -1,3 +1,18 @@
+## [1.0.0](https://github.com/giovaz94/evasim/compare/0.10.1...1.0.0) (2025-07-07)
+
+### ⚠ BREAKING CHANGES
+
+* finalize project
+
+### Features
+
+* finalize project ([9ef0d4e](https://github.com/giovaz94/evasim/commit/9ef0d4edf196af5a2a0cb8f44aadd9e51e72745c))
+
+### General maintenance
+
+* add authors in report ([025eb99](https://github.com/giovaz94/evasim/commit/025eb990773aaca8dda0f25c94ef814c4e4eef69))
+* improve formatting ([bd75ba0](https://github.com/giovaz94/evasim/commit/bd75ba0787cf7c7e896553801abb93e2a4be4985))
+
 ## [0.10.1](https://github.com/giovaz94/isee-project-2023-2024/compare/0.10.0...0.10.1) (2025-07-07)
 
 ### Documentation
