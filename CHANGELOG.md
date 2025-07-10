@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/giovaz94/evasim/compare/1.0.0...1.0.1) (2025-07-10)
+
+### Bug Fixes
+
+* use minusc facts for dove personality ([bae9214](https://github.com/giovaz94/evasim/commit/bae9214130a2af2f10297bb9bf8e45ba4b37e943))
+
 ## [1.0.0](https://github.com/giovaz94/evasim/compare/0.10.1...1.0.0) (2025-07-07)
 
 ### ⚠ BREAKING CHANGES
