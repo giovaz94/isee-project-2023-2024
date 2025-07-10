@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.qa)
     alias(libs.plugins.kotlin.dokka)
-    alias(libs.plugins.git.semantic.versioning)
     alias(libs.plugins.shadowJar)
     application
 }
@@ -69,11 +68,4 @@ tasks.withType<JavaExec> {
         "--add-modules",
         "javafx.controls,javafx.fxml",
     )
-}
-
-// Set the project version based on the git history.
-gitSemVer {
-    // the generated version is computed for releases
-    computeReleaseVersion = true
-    assignGitSemanticVersion()
 }
