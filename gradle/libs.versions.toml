@@ -21,7 +21,7 @@ kotest-junit5-jvm = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlin-coroutines-javafx = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-javafx", version.ref = "coroutines" }
 kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
-mockk = "io.mockk:mockk:1.14.4"
+mockk = "io.mockk:mockk:1.14.5"
 testfx-core = { module = "org.testfx:testfx-core", version.ref = "testfx" }
 testfx-junit = { module = "org.testfx:testfx-junit5", version.ref = "testfx" }
 openjfx-monocle = "org.testfx:openjfx-monocle:17.0.10"
