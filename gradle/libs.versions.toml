@@ -24,7 +24,7 @@ kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", 
 mockk = "io.mockk:mockk:1.14.5"
 testfx-core = { module = "org.testfx:testfx-core", version.ref = "testfx" }
 testfx-junit = { module = "org.testfx:testfx-junit5", version.ref = "testfx" }
-openjfx-monocle = "org.testfx:openjfx-monocle:17.0.10"
+openjfx-monocle = "org.testfx:openjfx-monocle:21.0.2"
 
 [bundles]
 kotlin-testing = [
