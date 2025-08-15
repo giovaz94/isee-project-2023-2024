@@ -44,7 +44,7 @@ coroutines = ["kotlin-coroutines", "kotlin-coroutines-javafx"]
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-qa = "org.danilopianini.gradle-kotlin-qa:0.75.0"
+kotlin-qa = "org.danilopianini.gradle-kotlin-qa:0.93.1"
 kotlin-dokka = { id = "org.jetbrains.dokka", version = "2.0.0" }
 git-semantic-versioning = "org.danilopianini.git-sensitive-semantic-versioning:6.0.1"
 shadowJar = "com.github.johnrengelman.shadow:8.1.1"
